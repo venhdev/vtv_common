@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import '../../core/base/base_lazy_load_resp.dart';
+import '../../core/base/base_lazy_load_page_resp.dart';
 import 'notification_entity.dart';
 
 class NotificationResp extends IBasePageResp<NotificationEntity> {
@@ -18,7 +18,7 @@ class NotificationResp extends IBasePageResp<NotificationEntity> {
     required super.page,
     required super.size,
     required super.totalPage,
-    required super.listData,
+    required super.listItem,
   });
 
   @override
@@ -43,7 +43,7 @@ class NotificationResp extends IBasePageResp<NotificationEntity> {
     int? page,
     int? size,
     int? totalPage,
-    List<NotificationEntity>? listData,
+    List<NotificationEntity>? listItem,
   }) {
     return NotificationResp(
       status: status ?? this.status,
@@ -53,7 +53,7 @@ class NotificationResp extends IBasePageResp<NotificationEntity> {
       page: page ?? this.page,
       size: size ?? this.size,
       totalPage: totalPage ?? this.totalPage,
-      listData: listData ?? this.listData,
+      listItem: listItem ?? this.listItem,
       // notifications: notifications ?? this.notifications,
     );
   }
@@ -67,7 +67,7 @@ class NotificationResp extends IBasePageResp<NotificationEntity> {
       'page': page,
       'size': size,
       'totalPage': totalPage,
-      'notificationDTOs': listData.map((x) => x.toMap()).toList(),
+      'notificationDTOs': listItem.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -80,7 +80,7 @@ class NotificationResp extends IBasePageResp<NotificationEntity> {
       page: map['page'] as int,
       size: map['size'] as int,
       totalPage: map['totalPage'] as int,
-      listData: List<NotificationEntity>.from(
+      listItem: List<NotificationEntity>.from(
         (map['notificationDTOs'] as List<dynamic>).map<NotificationEntity>(
           (x) => NotificationEntity.fromMap(x as Map<String, dynamic>),
         ),

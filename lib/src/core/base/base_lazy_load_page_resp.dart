@@ -2,14 +2,14 @@ import 'package:equatable/equatable.dart';
 
 abstract class IBasePageResp<T> extends Equatable {
   const IBasePageResp({
-    required this.listData,
+    required this.listItem,
     this.count,
     this.page,
     this.size,
     this.totalPage,
   });
 
-  final List<T> listData;
+  final List<T> listItem;
   final int? count;
   final int? page;
   final int? size;
@@ -17,7 +17,7 @@ abstract class IBasePageResp<T> extends Equatable {
 
   @override
   List<Object?> get props => [
-        listData,
+        listItem,
         count,
         page,
         size,

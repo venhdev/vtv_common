@@ -1,5 +1,5 @@
 //# base
-export './core/base/base_lazy_load_resp.dart';
+export './core/base/base_lazy_load_page_resp.dart';
 export './core/base/base_usecase.dart';
 export './core/base/base_response.dart';
 
@@ -17,4 +17,3 @@ export './core/error/failures.dart';
 export './core/network/error_response.dart';
 export './core/network/success_response.dart';
 export './core/network/response_handler.dart';
-
