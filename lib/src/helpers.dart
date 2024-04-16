@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/constants/types.dart';
 import 'core/error/exceptions.dart';
 import 'models/auth/auth_entity.dart';
-import 'models/auth/auth_model.dart';
 import 'models/auth/user_info_entity.dart';
 
 class ValidatorHelper {
@@ -119,38 +119,52 @@ class ColorHelper {
   static Color? getOrderStatusBackgroundColor(OrderStatus? status) {
     switch (status) {
       case OrderStatus.WAITING:
-        return Colors.grey;
+        return Colors.grey.shade400;
       case OrderStatus.PENDING:
-        return Colors.grey;
+        return Colors.grey.shade400;
+      case OrderStatus.PROCESSING:
+        return Colors.orange.shade400;
+      case OrderStatus.PICKUP_PENDING:
+        return Colors.orange.shade400;
       case OrderStatus.SHIPPING:
-        return Colors.blue;
+        return Colors.blue.shade400;
+      case OrderStatus.DELIVERED:
+        return Colors.blue.shade400;
       case OrderStatus.COMPLETED:
         return Colors.green;
       case OrderStatus.CANCEL:
         return Colors.red.shade400;
       default:
-        return null;
+        return Colors.red.shade400;
     }
   }
 }
 
 class SecureStorageHelper {
-  final _keyAuth = 'AUTHENTICATION';
+  final _keyUserInfo = 'USER_INFO';
+  final _keyAccessToken = 'ACCESS_TOKEN';
+  final _keyRefreshToken = 'REFRESH_TOKEN';
 
   SecureStorageHelper(this._storage);
   final FlutterSecureStorage _storage;
 
   FlutterSecureStorage get I => _storage;
 
-  Future<bool> get isLogin => _storage.containsKey(key: _keyAuth);
+  //*-------------------------------------------------Authentication Methods---------------------------------------------------*//
 
-  // get roles
-  Future<List<String>?> get roles async {
-    try {
-      final auth = await readAuth();
-      return auth?.userInfo.roles!.map((e) => e.toString()).toList();
-    } catch (e) {
-      throw CacheException(message: 'Có lỗi xảy ra khi đọc thông tin người dùng!');
+  //*---------------------GET-----------------------*//
+
+  Future<bool> get isLogin => _storage.containsKey(key: _keyAccessToken);
+
+  /// return true if access token is expired
+  ///
+  /// return null if not login yet
+  Future<bool?> get isTokenHasExpired async {
+    final accessToken = await this.accessToken;
+    if (accessToken != null) {
+      return JwtDecoder.isExpired(accessToken);
+    } else {
+      return null;
     }
   }
 
@@ -158,11 +172,28 @@ class SecureStorageHelper {
   /// - return null if not found (not login yet)
   Future<String?> get accessToken async {
     try {
-      final auth = await readAuth();
-      if (auth == null) return null;
-      return auth.accessToken;
+      return await _storage.read(key: _keyAccessToken);
     } catch (e) {
-      return null;
+      throw CacheException(message: 'Có lỗi xảy ra khi đọc access token!');
+    }
+  }
+
+  /// get refresh token from local storage.
+  /// - return null if not found (not login yet)
+  Future<String?> get refreshToken async {
+    try {
+      return await _storage.read(key: _keyRefreshToken);
+    } catch (e) {
+      throw CacheException(message: 'Có lỗi xảy ra khi đọc refresh token!');
+    }
+  }
+
+  Future<List<Role>?> get roles async {
+    try {
+      final info = await getUserInfo;
+      return info?.roles!.map((e) => e).toList();
+    } catch (e) {
+      throw CacheException(message: 'Có lỗi xảy ra khi đọc thông tin người dùng!');
     }
   }
 
@@ -170,44 +201,71 @@ class SecureStorageHelper {
   /// - return null if not found
   Future<String?> get username async {
     try {
-      final auth = await readAuth();
-      return auth?.userInfo.username;
+      final info = await getUserInfo;
+      return info?.username;
     } catch (e) {
       throw CacheException(message: 'Có lỗi xảy ra khi đọc thông tin người dùng!');
     }
   }
 
-  Future<AuthEntity?> readAuth() async {
-    final data = await _storage.read(key: _keyAuth);
-    if (data?.isNotEmpty ?? false) {
-      return AuthModel.fromJson(data!).toEntity();
-    } else {
-      return null;
-    }
-  }
-
-  Future<void> cacheAuth(String jsonData) async {
+  Future<UserInfoEntity?> get getUserInfo async {
     try {
-      await _storage.write(key: _keyAuth, value: jsonData);
+      final data = await _storage.read(key: _keyUserInfo);
+      if (data?.isNotEmpty ?? false) {
+        return UserInfoEntity.fromJson(data!);
+      } else {
+        return null;
+      }
     } catch (e) {
-      throw CacheException(message: 'Có lỗi xảy ra khi lưu thông tin người dùng!');
+      throw CacheException(message: 'Có lỗi xảy ra khi đọc thông tin người dùng!');
     }
   }
 
-  // update user info
-  Future<void> updateUserInfo(UserInfoEntity newInfo) async {
+  Future<AuthEntity> readAuth() async {
+    final userInfo = await getUserInfo;
+    final accessToken = await this.accessToken;
+    final refreshToken = await this.refreshToken;
+    if (userInfo == null || accessToken == null || refreshToken == null) {
+      throw CacheException(message: 'Không tìm thấy thông tin người dùng!');
+    }
+    return AuthEntity(
+      userInfo: userInfo,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    );
+  }
+
+  //*---------------------WRITE-----------------------*//
+
+  Future<void> cacheAuth(AuthEntity auth) async {
+    await saveOrUpdateUserInfo(auth.userInfo);
+    await saveOrUpdateAccessToken(auth.accessToken);
+    await saveOrUpdateRefreshToken(auth.refreshToken);
+  }
+
+  Future<void> saveOrUpdateUserInfo(UserInfoEntity userInfo) async {
     try {
-      final auth = await readAuth();
-      final newAuth = auth?.copyWith(userInfo: newInfo);
-      if (newAuth == null) throw CacheException(message: 'Không tìm thấy thông tin người dùng!');
-
-      await cacheAuth(AuthModel.fromEntity(newAuth).toJson());
+      await _storage.write(key: _keyUserInfo, value: userInfo.toJson());
     } catch (e) {
-      throw CacheException(message: 'Có lỗi xảy ra khi cập nhật thông tin người dùng!');
+      throw CacheException(message: 'Có lỗi xảy ra khi lưu (cập nhật) thông tin người dùng!');
     }
   }
 
-  Future<void> deleteAuth() async => await _storage.delete(key: _keyAuth);
+  Future<void> saveOrUpdateAccessToken(String accessToken) async {
+    try {
+      await _storage.write(key: _keyAccessToken, value: accessToken);
+    } catch (e) {
+      throw CacheException(message: 'Có lỗi xảy ra khi lưu (cập nhật) access token!');
+    }
+  }
+
+  Future<void> saveOrUpdateRefreshToken(String refreshToken) async {
+    try {
+      await _storage.write(key: _keyRefreshToken, value: refreshToken);
+    } catch (e) {
+      throw CacheException(message: 'Có lỗi xảy ra khi lưu (cập nhật) refresh token!');
+    }
+  }
 
   Future<void> deleteAll() async => await _storage.deleteAll();
 }

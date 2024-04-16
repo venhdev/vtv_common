@@ -6,11 +6,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import '../base/base_lazy_load_page_resp.dart';
 import '../constants/typedef.dart';
 
-
 // OK_BUG rebuild when the parent long list is scrolled >> lost data + rebuild lazy load
 //: DONE create a controller to keep the data + current page
 
-class LazyLoadController<T> {
+class LazyLoadController<T> extends ChangeNotifier {
   LazyLoadController({
     required this.scrollController,
     required this.items,
@@ -21,7 +20,7 @@ class LazyLoadController<T> {
   });
 
   final ScrollController scrollController;
-  final List<T> items;
+  List<T> items;
   int currentPage;
 
   /// Use GridView or ListView
@@ -31,9 +30,32 @@ class LazyLoadController<T> {
   /// Show loading indicator at the end of the list
   final bool showIndicator;
 
+  // for controller
+  bool get isFetchDataOnReload => _shouldFetchData;
+  bool _shouldFetchData = false; //! config every time reload notifyListeners()
+
   //add
   void addItems(List<T> newItems) {
     items.addAll(newItems);
+  }
+
+  void reload({List<T>? newItems}) {
+    items.clear();
+    currentPage = 1;
+    if (newItems != null) {
+      items.addAll(newItems);
+      _shouldFetchData = false;
+    } else {
+      _shouldFetchData = true;
+    }
+    notifyListeners();
+  }
+
+  void clearItems() {
+    items.clear();
+    currentPage = 1;
+    _shouldFetchData = true;
+    notifyListeners();
   }
 }
 
@@ -66,12 +88,28 @@ class _NestedLazyLoadBuilderState<T> extends State<NestedLazyLoadBuilder<T>> {
   //> scrollController dispose handled by parent
   @override
   void initState() {
+    log('[NestedLazyLoadBuilder] initState');
     super.initState();
     _loadData(widget.controller.currentPage);
     widget.controller.scrollController.addListener(() {
       final pos = widget.controller.scrollController.position;
       if (pos.pixels == pos.maxScrollExtent && !_isLoading && !_reachEnd) {
         _loadData(widget.controller.currentPage);
+      }
+    });
+
+    // refresh the list when the controller is updated
+    widget.controller.addListener(() {
+      log('[LazyLoadBuilder] listener called');
+      if (mounted) {
+        if (widget.controller.isFetchDataOnReload) {
+          _loadData(widget.controller.currentPage);
+          _reachEnd = false;
+        } else {
+          setState(() {
+            _reachEnd = false;
+          });
+        }
       }
     });
   }
@@ -146,6 +184,7 @@ class _NestedLazyLoadBuilderState<T> extends State<NestedLazyLoadBuilder<T>> {
       //   crossAxisSpacing: 8,
       //   mainAxisSpacing: 8,
       // ),
+      padding: EdgeInsets.zero,
       itemCount: widget.controller.showIndicator ? widget.controller.items.length + 1 : widget.controller.items.length,
       itemBuilder: (context, index) {
         if (widget.controller.items.isEmpty && _isLoading) {
@@ -171,6 +210,7 @@ class _NestedLazyLoadBuilderState<T> extends State<NestedLazyLoadBuilder<T>> {
       // physics: widget.scrollController != null ? const NeverScrollableScrollPhysics() : null,
       // shrinkWrap: widget.scrollController != null ? true : false,
       // controller: widget.controller.scrollController,
+      padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

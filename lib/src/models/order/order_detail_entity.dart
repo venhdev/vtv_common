@@ -2,29 +2,33 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'shipping_entity.dart';
 
-import '../order_entity.dart';
-import '../shipping_entity.dart';
+import 'order_entity.dart';
+import 'transport_entity.dart';
 
 //! OrderResp with one OrderEntity
 //! MultiOrderResp with List<OrderEntity>
 class OrderDetailEntity extends Equatable {
   final OrderEntity order;
   final ShippingEntity shipping;
-  //> transport not implemented
+  final TransportEntity? transport;
 
   const OrderDetailEntity({
     required this.order,
     required this.shipping,
+    required this.transport,
   });
 
   OrderDetailEntity copyWith({
     OrderEntity? order,
     ShippingEntity? shipping,
+    TransportEntity? transport,
   }) {
     return OrderDetailEntity(
       order: order ?? this.order,
       shipping: shipping ?? this.shipping,
+      transport: transport ?? this.transport,
     );
   }
 
@@ -32,6 +36,8 @@ class OrderDetailEntity extends Equatable {
     return OrderDetailEntity(
       order: OrderEntity.fromMap(map['orderDTO'] as Map<String, dynamic>),
       shipping: ShippingEntity.fromMap(map['shippingDTO'] as Map<String, dynamic>),
+      transport:
+          (map['transportDTO'] != null) ? TransportEntity.fromMap(map['transportDTO'] as Map<String, dynamic>) : null,
     );
   }
 
@@ -48,6 +54,7 @@ class OrderDetailEntity extends Equatable {
     return <String, dynamic>{
       'orderDTO': order.toMap(),
       'shippingDTO': shipping.toMap(),
+      'transportDTO': transport?.toMap(),
     };
   }
 

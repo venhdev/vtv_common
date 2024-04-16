@@ -16,7 +16,7 @@ class ProductVariantEntity extends Equatable {
   final int productId;
   final String productName;
   final String productImage;
-  final List<AttributeEntity> attributes;
+  final List<AttributeEntity> attributes; //! every variant must have the same attributes name
 
   const ProductVariantEntity({
     required this.productVariantId,

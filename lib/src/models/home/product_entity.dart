@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
+import '../../core/constants/types.dart';
 import 'product_variant_entity.dart';
 
 class ProductEntity extends Equatable {
@@ -39,6 +40,39 @@ class ProductEntity extends Equatable {
     required this.countProductVariant,
     required this.productVariants,
   });
+
+  // has attribute
+  bool get hasAttribute {
+    return productVariants.first.attributes.isNotEmpty;
+  }
+
+  // select variant
+  Map<String, Map<String, Status?>> get getAllVariantAttributes {
+    final Map<String, Map<String, Status?>> result = {};
+    for (final variant in productVariants) {
+      for (final attribute in variant.attributes) {
+        if (result.containsKey(attribute.name)) {
+          if (!result[attribute.name]!.containsKey(attribute.value)) {
+            result[attribute.name]!.addAll({
+              attribute.value: null,
+            });
+          }
+        } else {
+          result.addAll({
+            attribute.name: {
+              attribute.value: null,
+            },
+          });
+        }
+        // result.addAll({
+        //   attribute.name: {
+        //     attribute.value: null,
+        //   },
+        // });
+      }
+    }
+    return result;
+  }
 
   static List<ProductEntity> fromList(List<dynamic> list) {
     return List<ProductEntity>.from(list.map((e) => ProductEntity.fromMap(e as Map<String, dynamic>)));

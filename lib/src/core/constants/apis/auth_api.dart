@@ -1,6 +1,6 @@
 part of '../api.dart';
 
-//! Auth
+//! authentication-controller
 const String kAPIAuthLoginURL = '/auth/login';
 const String kAPIAuthRefreshTokenURL = '/auth/refresh-token';
 const String kAPIAuthLogoutURL = '/auth/logout';

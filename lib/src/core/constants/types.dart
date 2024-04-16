@@ -34,6 +34,7 @@ enum VoucherTypes {
 enum OrderStatus {
   WAITING, // chờ xác nhận từ shop (khi hủy)
   PENDING, // chờ xác nhận từ shop (khi mới đặt)
+  PICKUP_PENDING, // chờ shipper lấy hàng
   SHIPPING, // đang giao
   COMPLETED, // hoàn thành
   PROCESSING,

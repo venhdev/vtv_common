@@ -1,4 +1,4 @@
-export './dto/order_detail_entity.dart';
+export 'order_detail_entity.dart';
 export './dto/place_order_param.dart';
 export './dto/place_order_with_variant_param.dart';
 

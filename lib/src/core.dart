@@ -6,6 +6,9 @@ export './core/base/base_response.dart';
 //# components
 export './core/components/components.dart';
 
+//# config
+// export 'core/config/config.dart';
+
 //# constants
 export './core/constants/constants.dart';
 
@@ -17,3 +20,4 @@ export './core/error/failures.dart';
 export './core/network/error_response.dart';
 export './core/network/success_response.dart';
 export './core/network/response_handler.dart';
+export 'core/network/re_auth_client.dart';

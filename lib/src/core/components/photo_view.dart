@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -5,9 +7,11 @@ class PhotoViewPage extends StatelessWidget {
   const PhotoViewPage({
     super.key,
     required this.imageUrl,
+    this.isNetworkImage = true,
   });
 
   final String imageUrl;
+  final bool isNetworkImage;
 
   @override
   Widget build(BuildContext context) {
@@ -15,12 +19,19 @@ class PhotoViewPage extends StatelessWidget {
       body: Stack(
         children: [
           Center(
-            child: PhotoView(
-              backgroundDecoration: const BoxDecoration(color: Colors.black),
-              imageProvider: NetworkImage(imageUrl),
-              maxScale: PhotoViewComputedScale.covered * 2.5,
-              minScale: PhotoViewComputedScale.contained * 0.8,
-            ),
+            child: isNetworkImage
+                ? PhotoView(
+                    backgroundDecoration: const BoxDecoration(color: Colors.black),
+                    imageProvider: NetworkImage(imageUrl),
+                    maxScale: PhotoViewComputedScale.covered * 2.5,
+                    minScale: PhotoViewComputedScale.contained * 0.8,
+                  )
+                : PhotoView(
+                    backgroundDecoration: const BoxDecoration(color: Colors.black),
+                    imageProvider: FileImage(File(imageUrl)),
+                    maxScale: PhotoViewComputedScale.covered * 2.5,
+                    minScale: PhotoViewComputedScale.contained * 0.8,
+                  ),
           ),
           Positioned(
             top: 24,
@@ -29,7 +40,7 @@ class PhotoViewPage extends StatelessWidget {
               icon: const Icon(Icons.close),
               color: Colors.white,
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.white24),
+                backgroundColor: MaterialStateProperty.all(Colors.black38),
               ),
               onPressed: () {
                 Navigator.pop(context);

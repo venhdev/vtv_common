@@ -9,17 +9,17 @@ const String kAPICustomerProfileURL = '/customer/profile'; // GET, PUT
 //! cart-controller
 const String kAPICartGetListURL = '/customer/cart/get-list'; // GET
 const String kAPICartAddURL = '/customer/cart/add'; // POST
-const String kAPICartUpdateURL = '/customer/cart/update'; // PUT /{'cartId'} --uuid
-const String kAPICartDeleteURL = '/customer/cart/delete'; // DELETE {:cartId} --uuid
-const String kAPICartDeleteByShopIdURL = '/customer/cart/delete-by-shop-id'; // DELETE {:shopId}
+const String kAPICartUpdateURL = '/customer/cart/update'; // PUT /{cartId} --uuid
+const String kAPICartDeleteURL = '/customer/cart/delete'; // DELETE /{cartId} --uuid
+const String kAPICartDeleteByShopIdURL = '/customer/cart/delete-by-shop-id'; // DELETE /{shopId}
 
 //! *location*
-// province
+// province-controller
 const String kAPILocationProvinceGetAllURL = '/location/province/get-all'; // GET
-// district
+// district-controller
 const String kAPILocationDistrictGetAllByProvinceCodeURL =
     '/location/district/get-all-by-province-code'; // GET /{provinceCode}
-// ward
+// ward-controller
 const String kAPILocationWardGetAllByDistrictCodeURL = '/location/ward/get-all-by-district-code'; // GET /{districtCode}
 const String kAPILocationWardFullAddressURL = '/location/ward/full-address'; // GET /{wardCode}
 
@@ -45,6 +45,7 @@ const String kAPIOrderListURL = '/customer/order/list'; // GET
 const String kAPIOrderListByStatusURL = '/customer/order/list/status'; // GET /{status} --OrderStatus
 const String kAPIOrderCompleteURL = '/customer/order/complete'; // PATCH /{orderId}
 const String kAPIOrderDetailURL = '/customer/order/detail'; // GET /{orderId}
+const String kAPIOrderCancelURL = '/customer/order/cancel'; // PATCH /{orderId}
 
 //! voucher-controller
 const String kAPIVoucherListAllURL = '/voucher/list-all'; // POST /place order
@@ -60,3 +61,11 @@ const String kAPIFavoriteProductDetailURL = '/customer/favorite-product/detail';
 
 //! notification-controller
 const String kAPINotificationGetPageURL = '/customer/notification/get-page'; // GET
+const String kAPINotificationReadURL = '/customer/notification/read'; // PUT /{notificationId}
+const String kAPINotificationDeleteURL = '/customer/notification/delete'; // DELETE /{notificationId}
+
+//! review-customer-controller
+const String kAPIReviewAddURL = '/customer/review/add'; // POST
+const String kAPIReviewDeleteURL = '/customer/review/delete'; // PATCH /{reviewId}
+const String kAPIReviewExistByOrderItemURL = '/customer/review/exist/by-order-item'; // GET /{orderItemId}
+const String kAPIReviewDetailByOrderItemURL = '/customer/review/detail/by-order-item'; // GET /{orderItemId}
