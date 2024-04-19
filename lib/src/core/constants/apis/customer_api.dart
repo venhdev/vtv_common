@@ -27,6 +27,8 @@ const String kAPILocationWardFullAddressURL = '/location/ward/full-address'; // 
 const String kAPIAddressAddURL = '/customer/address/add'; // POST
 const String kAPIAddressAllURL = '/customer/address/all'; // GET
 const String kAPIAddressUpdateStatusURL = '/customer/address/update/status'; // PATCH
+const String kAPIAddressUpdateURL = '/customer/address/update'; // PUT
+// const String kAPIAddressGetURL = '/customer/address/get'; // GET
 
 //! order-controller
 // order in cart
@@ -69,3 +71,8 @@ const String kAPIReviewAddURL = '/customer/review/add'; // POST
 const String kAPIReviewDeleteURL = '/customer/review/delete'; // PATCH /{reviewId}
 const String kAPIReviewExistByOrderItemURL = '/customer/review/exist/by-order-item'; // GET /{orderItemId}
 const String kAPIReviewDetailByOrderItemURL = '/customer/review/detail/by-order-item'; // GET /{orderItemId}
+
+//# followed-shop-controller
+const String kAPIFollowedShopAddURL = '/customer/followed-shop/add'; // POST /{shopId}
+const String kAPIFollowedShopListURL = '/customer/followed-shop/list'; // GET
+const String kAPIFollowedShopDeleteURL = '/customer/followed-shop/delete'; // DELETE /{followedShopId}

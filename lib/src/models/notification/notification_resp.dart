@@ -18,7 +18,7 @@ class NotificationResp extends IBasePageResp<NotificationEntity> {
     required super.page,
     required super.size,
     required super.totalPage,
-    required super.listItem,
+    required super.items,
   });
 
   @override
@@ -43,7 +43,7 @@ class NotificationResp extends IBasePageResp<NotificationEntity> {
     int? page,
     int? size,
     int? totalPage,
-    List<NotificationEntity>? listItem,
+    List<NotificationEntity>? items,
   }) {
     return NotificationResp(
       status: status ?? this.status,
@@ -53,7 +53,7 @@ class NotificationResp extends IBasePageResp<NotificationEntity> {
       page: page ?? this.page,
       size: size ?? this.size,
       totalPage: totalPage ?? this.totalPage,
-      listItem: listItem ?? this.listItem,
+      items: items ?? this.items,
       // notifications: notifications ?? this.notifications,
     );
   }
@@ -67,7 +67,7 @@ class NotificationResp extends IBasePageResp<NotificationEntity> {
       'page': page,
       'size': size,
       'totalPage': totalPage,
-      'notificationDTOs': listItem.map((x) => x.toMap()).toList(),
+      'notificationDTOs': items.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -80,7 +80,7 @@ class NotificationResp extends IBasePageResp<NotificationEntity> {
       page: map['page'] as int,
       size: map['size'] as int,
       totalPage: map['totalPage'] as int,
-      listItem: List<NotificationEntity>.from(
+      items: List<NotificationEntity>.from(
         (map['notificationDTOs'] as List<dynamic>).map<NotificationEntity>(
           (x) => NotificationEntity.fromMap(x as Map<String, dynamic>),
         ),

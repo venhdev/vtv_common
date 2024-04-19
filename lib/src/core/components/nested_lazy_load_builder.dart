@@ -39,14 +39,14 @@ class LazyLoadController<T> extends ChangeNotifier {
     items.addAll(newItems);
   }
 
-  void reload({List<T>? newItems}) {
+  void reload({List<T>? newItems, bool shouldFetchData = true}) {
     items.clear();
     currentPage = 1;
     if (newItems != null) {
       items.addAll(newItems);
       _shouldFetchData = false;
     } else {
-      _shouldFetchData = true;
+      _shouldFetchData = shouldFetchData;
     }
     notifyListeners();
   }
@@ -56,6 +56,11 @@ class LazyLoadController<T> extends ChangeNotifier {
     currentPage = 1;
     _shouldFetchData = true;
     notifyListeners();
+  }
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'LazyLoadController: items.length=${items.length}, currentPage=$currentPage, shouldFetchData: $_shouldFetchData';
   }
 }
 
@@ -132,7 +137,7 @@ class _NestedLazyLoadBuilderState<T> extends State<NestedLazyLoadBuilder<T>> {
           return [];
         },
         (dataResp) {
-          final newItems = dataResp.data.listItem;
+          final newItems = dataResp.data.items;
           if (newItems.isEmpty) {
             log('[LazyLoadBuilder] No more items at page $page');
             _reachEnd = true;

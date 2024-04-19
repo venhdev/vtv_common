@@ -11,7 +11,7 @@ class ProductPageResp extends IBasePageResp<ProductEntity> {
     required super.page,
     required super.size,
     required super.totalPage,
-    required super.listItem,
+    required super.items,
   });
 
   ProductPageResp copyWith({
@@ -19,14 +19,14 @@ class ProductPageResp extends IBasePageResp<ProductEntity> {
     int? page,
     int? size,
     int? totalPage,
-    List<ProductEntity>? listItem,
+    List<ProductEntity>? items,
   }) {
     return ProductPageResp(
       count: count ?? this.count,
       page: page ?? this.page,
       size: size ?? this.size,
       totalPage: totalPage ?? this.totalPage,
-      listItem: listItem ?? this.listItem,
+      items: items ?? this.items,
     );
   }
 
@@ -36,7 +36,7 @@ class ProductPageResp extends IBasePageResp<ProductEntity> {
       page: map['page'] as int,
       size: map['size'] as int,
       totalPage: map['totalPage'] as int,
-      listItem: ProductEntity.fromList(map['productDTOs'] as List<dynamic>),
+      items: ProductEntity.fromList(map['productDTOs'] as List<dynamic>),
     );
   }
 
@@ -51,16 +51,16 @@ class ProductPageResp extends IBasePageResp<ProductEntity> {
         other.page == page &&
         other.size == size &&
         other.totalPage == totalPage &&
-        listEquals(other.listItem, listItem);
+        listEquals(other.items, items);
   }
 
   @override
   int get hashCode {
-    return count.hashCode ^ page.hashCode ^ size.hashCode ^ totalPage.hashCode ^ listItem.hashCode;
+    return count.hashCode ^ page.hashCode ^ size.hashCode ^ totalPage.hashCode ^ items.hashCode;
   }
 
   @override
   String toString() {
-    return 'ProductDTO(count: $count, page: $page, size: $size, totalPage: $totalPage, listItem: $listItem)';
+    return 'ProductDTO(count: $count, page: $page, size: $size, totalPage: $totalPage, items: $items)';
   }
 }

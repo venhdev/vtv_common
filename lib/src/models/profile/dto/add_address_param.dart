@@ -1,15 +1,19 @@
 import 'package:equatable/equatable.dart';
 
-class AddAddressParam extends Equatable {
+class AddOrUpdateAddressParam extends Equatable {
+  final int? addressId;
+  final String? wardCode;
+
   final String? provinceName;
   final String? districtName;
   final String? wardName;
+
   final String? fullAddress;
   final String? fullName;
   final String? phone;
-  final String? wardCode;
 
-  const AddAddressParam({
+  const AddOrUpdateAddressParam({
+    this.addressId,
     this.provinceName,
     this.districtName,
     this.wardName,
@@ -19,8 +23,9 @@ class AddAddressParam extends Equatable {
     this.wardCode,
   });
 
-  factory AddAddressParam.fromJson(Map<String, dynamic> json) {
-    return AddAddressParam(
+  factory AddOrUpdateAddressParam.fromJson(Map<String, dynamic> json) {
+    return AddOrUpdateAddressParam(
+      addressId: json['addressId'] as int?,
       provinceName: json['provinceName'] as String?,
       districtName: json['districtName'] as String?,
       wardName: json['wardName'] as String?,
@@ -32,13 +37,16 @@ class AddAddressParam extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
+        'addressId': addressId,
+        'wardCode': wardCode,
+        //
         'provinceName': provinceName,
         'districtName': districtName,
         'wardName': wardName,
+        //
         'fullAddress': fullAddress,
         'fullName': fullName,
         'phone': phone,
-        'wardCode': wardCode,
       };
 
   @override
@@ -47,6 +55,7 @@ class AddAddressParam extends Equatable {
   @override
   List<Object?> get props {
     return [
+      addressId,
       provinceName,
       districtName,
       wardName,

@@ -17,9 +17,12 @@ const String kAPIProductFilterPriceRangeURL = '/product-filter/price-range'; // 
 
 //# product-controller
 const String kAPIProductDetailURL = '/product/detail'; // GET /{productId}
+// const String kAPIProductShopURL = '/product/shop'; // GET /{shopId}
+const String kAPIProductCountFavoriteURL = '/product/count-favorite'; // GET /{productId}
 
 //# product-page-controller
 const String kAPIProductPageCategoryURL = '/product/page/category'; // GET /{categoryId}
+const String kAPIProductPageShopURL = '/product/page/shop'; // GET /{shopId}
 
 //! Other APIs (Guest)
 //# category-controller
@@ -27,3 +30,6 @@ const String kAPIAllCategoryURL = '/category/all-parent'; // GET
 
 //# review-controller
 const String kAPIReviewProductURL = '/review/product'; // GET /{productId}
+
+//# shop-detail-controller
+const String kAPIShopDetailCountFollowedURL = '/shop-detail/count-followed'; // GET /{shopId}

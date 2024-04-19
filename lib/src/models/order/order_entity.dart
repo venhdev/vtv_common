@@ -110,7 +110,7 @@ class OrderEntity extends Equatable {
       'shippingFee': shippingFee,
       'paymentTotal': paymentTotal,
       'status': status.name,
-      'orderDate': orderDate.millisecondsSinceEpoch,
+      'orderDate': orderDate.toIso8601String(),
       'loyaltyPointHistoryDTO': loyaltyPointHistory?.toMap(),
       'addressDTO': address.toMap(),
       'shopDTO': shop.toMap(),

@@ -16,6 +16,9 @@ class ValidatorHelper {
 }
 
 class StringHelper {
+  /// N/A: Not Available, Not Applicable, or No Answer
+  static String get na => 'N/A';
+  
   /// - Change [pattern] to change the format
   ///
   /// - [useTextValue] is used to convert date to text value like 'Today', 'Yesterday', 'Tomorrow', 'x days ago', 'x days later'
@@ -116,26 +119,49 @@ class StringHelper {
 }
 
 class ColorHelper {
-  static Color? getOrderStatusBackgroundColor(OrderStatus? status) {
-    switch (status) {
-      case OrderStatus.WAITING:
-        return Colors.grey.shade400;
-      case OrderStatus.PENDING:
-        return Colors.grey.shade400;
-      case OrderStatus.PROCESSING:
-        return Colors.orange.shade400;
-      case OrderStatus.PICKUP_PENDING:
-        return Colors.orange.shade400;
-      case OrderStatus.SHIPPING:
-        return Colors.blue.shade400;
-      case OrderStatus.DELIVERED:
-        return Colors.blue.shade400;
-      case OrderStatus.COMPLETED:
-        return Colors.green;
-      case OrderStatus.CANCEL:
-        return Colors.red.shade400;
-      default:
-        return Colors.red.shade400;
+  static Color? getOrderStatusBackgroundColor(OrderStatus? status, {int? shade}) {
+    if (shade != null) {
+      switch (status) {
+        case OrderStatus.WAITING:
+          return Colors.grey[shade+200];
+        case OrderStatus.PENDING:
+          return Colors.grey[shade+200];
+        case OrderStatus.PROCESSING:
+          return Colors.orange[shade];
+        case OrderStatus.PICKUP_PENDING:
+          return Colors.orange[shade];
+        case OrderStatus.SHIPPING:
+          return Colors.blue[shade];
+        case OrderStatus.DELIVERED:
+          return Colors.blue[shade];
+        case OrderStatus.COMPLETED:
+          return Colors.green[shade];
+        case OrderStatus.CANCEL:
+          return Colors.red[shade];
+        default:
+          return Colors.red[shade];
+      }
+    } else {
+      switch (status) {
+        case OrderStatus.WAITING:
+          return Colors.grey.shade400;
+        case OrderStatus.PENDING:
+          return Colors.grey.shade400;
+        case OrderStatus.PROCESSING:
+          return Colors.orange.shade400;
+        case OrderStatus.PICKUP_PENDING:
+          return Colors.orange.shade400;
+        case OrderStatus.SHIPPING:
+          return Colors.blue.shade400;
+        case OrderStatus.DELIVERED:
+          return Colors.blue.shade400;
+        case OrderStatus.COMPLETED:
+          return Colors.green;
+        case OrderStatus.CANCEL:
+          return Colors.red.shade400;
+        default:
+          return Colors.red.shade400;
+      }
     }
   }
 }

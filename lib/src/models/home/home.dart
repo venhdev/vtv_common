@@ -10,3 +10,4 @@ export 'favorite_product_entity.dart';
 export 'product_entity.dart';
 export 'product_variant_entity.dart';
 export 'review_entity.dart';
+export 'followed_shop_entity.dart';
