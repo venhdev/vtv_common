@@ -1,5 +1,4 @@
 part './apis/auth_api.dart';
-part './apis/customer_api.dart';
 part './apis/guest_api.dart';
 
 const int kPORT = 8585;
@@ -13,7 +12,8 @@ Map<String, String> baseHttpHeaders({
   String? accessToken,
 }) =>
     {
-      'Content-Type': 'application/json; charset=utf-8',
+      'Content-Type':
+          'application/json; charset=utf-8', // TODO config in dio_options | remove this when migrating to dio
       'Accept': 'application/json',
       if (refreshToken != null) 'Cookie': 'refreshToken=$refreshToken',
       if (accessToken != null) 'Authorization': 'Bearer $accessToken',
@@ -21,13 +21,20 @@ Map<String, String> baseHttpHeaders({
 
 // Uri Endpoints
 Uri baseUri({
-  String? path,
+  required String path,
   Map<String, dynamic>? queryParameters,
-}) =>
-    Uri(
-      scheme: 'http',
-      host: devDOMAIN, // change to kDOMAIN for production
-      port: kPORT,
-      path: '/api$path',
-      queryParameters: queryParameters,
-    );
+  Map<String, String>? pathVariables,
+}) {
+  if (pathVariables != null) {
+    pathVariables.forEach((key, value) {
+      path = path.replaceFirst(':$key', value);
+    });
+  }
+  return Uri(
+    scheme: 'http',
+    host: devDOMAIN, // change to kDOMAIN for production
+    port: kPORT,
+    path: '/api$path',
+    queryParameters: queryParameters,
+  );
+}

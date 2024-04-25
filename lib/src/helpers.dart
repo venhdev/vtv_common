@@ -18,7 +18,7 @@ class ValidatorHelper {
 class StringHelper {
   /// N/A: Not Available, Not Applicable, or No Answer
   static String get na => 'N/A';
-  
+
   /// - Change [pattern] to change the format
   ///
   /// - [useTextValue] is used to convert date to text value like 'Today', 'Yesterday', 'Tomorrow', 'x days ago', 'x days later'
@@ -123,9 +123,9 @@ class ColorHelper {
     if (shade != null) {
       switch (status) {
         case OrderStatus.WAITING:
-          return Colors.grey[shade+200];
+          return Colors.grey[shade + 200];
         case OrderStatus.PENDING:
-          return Colors.grey[shade+200];
+          return Colors.grey[shade + 200];
         case OrderStatus.PROCESSING:
           return Colors.orange[shade];
         case OrderStatus.PICKUP_PENDING:

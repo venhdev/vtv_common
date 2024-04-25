@@ -1,6 +1,6 @@
 part of '../api.dart';
 
-//! Product APIs (Guest)
+//! //*---------------------Product APIs (Guest)-----------------------*//
 //# product-suggestion-controller
 const String kAPISuggestionProductPageRandomlyURL = '/product-suggestion/get-page/randomly'; // GET
 // GET /api/product-suggestion/get-page/randomly/product/{productId}
@@ -9,7 +9,9 @@ const String kAPISuggestionProductPageRandomlyByAlikeProductURL =
 
 //# search-product-controller
 const String kAPISearchProductSortURL = '/search/product/sort'; // GET --only keyword
-const String kAPIGetSearchProductPriceRangeSortURL = '/search/product/price-range/sort'; // GET
+const String kAPISearchProductPriceRangeSortURL = '/search/product/price-range/sort'; // GET
+const String kAPISearchProductShopSortURL = '/search/product/shop/:shopId/sort'; // GET
+const String kAPISearchProductShopPriceRangeSortURL = '/search/product/shop/:shopId/price-range/sort'; // GET
 
 //# product-filter-controller
 const String kAPIProductFilterURL = '/product-filter'; // GET /{filter}
@@ -24,12 +26,18 @@ const String kAPIProductCountFavoriteURL = '/product/count-favorite'; // GET /{p
 const String kAPIProductPageCategoryURL = '/product/page/category'; // GET /{categoryId}
 const String kAPIProductPageShopURL = '/product/page/shop'; // GET /{shopId}
 
-//! Other APIs (Guest)
+//! //*---------------------SHOP APIs (Guest)-----------------------*//
+//# shop-detail-controller
+const String kAPIShopCountFollowedURL = '/shop/count-followed'; // GET /{shopId}
+const String kAPIShopURL = '/shop'; // GET /{shopId} >? why not add /detail
+
+//! //*---------------------Other APIs (Guest)-----------------------*//
 //# category-controller
 const String kAPIAllCategoryURL = '/category/all-parent'; // GET
 
 //# review-controller
 const String kAPIReviewProductURL = '/review/product'; // GET /{productId}
+const String kAPIReviewDetailURL = '/review/detail'; // GET /{reviewId}
 
-//# shop-detail-controller
-const String kAPIShopDetailCountFollowedURL = '/shop-detail/count-followed'; // GET /{shopId}
+//# comment-controller
+const String kAPICommentGetURL = '/comment/get'; // GET /{reviewId}

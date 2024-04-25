@@ -6,7 +6,7 @@ class PlaceOrderWithVariantParam extends Equatable {
   final int addressId;
   final String? systemVoucherCode;
   final String? shopVoucherCode;
-  final bool? useLoyaltyPoint;
+  final bool useLoyaltyPoint;
   final String paymentMethod;
   final String shippingMethod;
   final String note;
@@ -16,7 +16,7 @@ class PlaceOrderWithVariantParam extends Equatable {
     required this.addressId,
     this.systemVoucherCode,
     this.shopVoucherCode,
-    this.useLoyaltyPoint,
+    required this.useLoyaltyPoint,
     required this.paymentMethod,
     required this.shippingMethod,
     required this.note,
@@ -72,25 +72,25 @@ class PlaceOrderWithVariantParam extends Equatable {
     };
   }
 
-  factory PlaceOrderWithVariantParam.fromMap(Map<String, dynamic> map) {
-    return PlaceOrderWithVariantParam(
-      addressId: map['addressId'] as int,
-      systemVoucherCode: map['systemVoucherCode'] != null ? map['systemVoucherCode'] as String : null,
-      shopVoucherCode: map['shopVoucherCode'] != null ? map['shopVoucherCode'] as String : null,
-      useLoyaltyPoint: map['useLoyaltyPoint'] != null ? map['useLoyaltyPoint'] as bool : null,
-      paymentMethod: map['paymentMethod'] as String,
-      shippingMethod: map['shippingMethod'] as String,
-      note: map['note'] as String,
-      variantIds: Map<String, int>.from(
-        (map['variantIds'] as Map<String, int>),
-      ),
-    );
-  }
+  // factory PlaceOrderWithVariantParam.fromMap(Map<String, dynamic> map) {
+  //   return PlaceOrderWithVariantParam(
+  //     addressId: map['addressId'] as int,
+  //     systemVoucherCode: map['systemVoucherCode'] != null ? map['systemVoucherCode'] as String : null,
+  //     shopVoucherCode: map['shopVoucherCode'] != null ? map['shopVoucherCode'] as String : null,
+  //     useLoyaltyPoint: map['useLoyaltyPoint'] != null ? map['useLoyaltyPoint'] as bool : null,
+  //     paymentMethod: map['paymentMethod'] as String,
+  //     shippingMethod: map['shippingMethod'] as String,
+  //     note: map['note'] as String,
+  //     variantIds: Map<String, int>.from(
+  //       (map['variantIds'] as Map<String, int>),
+  //     ),
+  //   );
+  // }
 
   String toJson() => json.encode(toMap());
 
-  factory PlaceOrderWithVariantParam.fromJson(String source) =>
-      PlaceOrderWithVariantParam.fromMap(json.decode(source) as Map<String, dynamic>);
+  // factory PlaceOrderWithVariantParam.fromJson(String source) =>
+  //     PlaceOrderWithVariantParam.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   bool get stringify => true;

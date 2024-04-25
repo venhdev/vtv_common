@@ -6,7 +6,7 @@ class PlaceOrderWithCartParam extends Equatable {
   final int addressId;
   final String? systemVoucherCode;
   final String? shopVoucherCode;
-  final bool? useLoyaltyPoint;
+  final bool useLoyaltyPoint;
   final String paymentMethod;
   final String shippingMethod;
   final String note;
@@ -16,7 +16,7 @@ class PlaceOrderWithCartParam extends Equatable {
     required this.addressId,
     this.systemVoucherCode,
     this.shopVoucherCode,
-    this.useLoyaltyPoint,
+    required this.useLoyaltyPoint,
     required this.paymentMethod,
     required this.shippingMethod,
     required this.note,
@@ -58,23 +58,24 @@ class PlaceOrderWithCartParam extends Equatable {
     };
   }
 
-  factory PlaceOrderWithCartParam.fromMap(Map<String, dynamic> map) {
-    return PlaceOrderWithCartParam(
-      addressId: map['addressId'] as int,
-      systemVoucherCode: map['systemVoucherCode'] != null ? map['systemVoucherCode'] as String : null,
-      shopVoucherCode: map['shopVoucherCode'] != null ? map['shopVoucherCode'] as String : null,
-      useLoyaltyPoint: map['useLoyaltyPoint'] != null ? map['useLoyaltyPoint'] as bool? : null,
-      paymentMethod: map['paymentMethod'] as String,
-      shippingMethod: map['shippingMethod'] as String,
-      note: map['note'] as String,
-      cartIds: List<String>.from((map['cartIds'] as List<dynamic>)),
-    );
-  }
+  // factory PlaceOrderWithCartParam.fromMap(Map<String, dynamic> map) {
+  //   return PlaceOrderWithCartParam(
+  //     addressId: map['addressId'] as int,
+  //     systemVoucherCode: map['systemVoucherCode'] != null ? map['systemVoucherCode'] as String : null,
+  //     shopVoucherCode: map['shopVoucherCode'] != null ? map['shopVoucherCode'] as String : null,
+  //     // useLoyaltyPoint: map['useLoyaltyPoint'] != null ? map['useLoyaltyPoint'] as bool? : null,
+  //     useLoyaltyPoint:  map['useLoyaltyPoint'] as bool,
+  //     paymentMethod: map['paymentMethod'] as String,
+  //     shippingMethod: map['shippingMethod'] as String,
+  //     note: map['note'] as String,
+  //     cartIds: List<String>.from((map['cartIds'] as List<dynamic>)),
+  //   );
+  // }
 
   String toJson() => json.encode(toMap());
 
-  factory PlaceOrderWithCartParam.fromJson(String source) =>
-      PlaceOrderWithCartParam.fromMap(json.decode(source) as Map<String, dynamic>);
+  // factory PlaceOrderWithCartParam.fromJson(String source) =>
+  //     PlaceOrderWithCartParam.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   bool get stringify => true;

@@ -11,7 +11,7 @@ class CommentEntity extends Equatable {
   final Status status;
   final DateTime createDate;
   final String username;
-  final String shopName;
+  final String shopName; // maybe empty string
 
   const CommentEntity({
     required this.commentId,
@@ -23,7 +23,7 @@ class CommentEntity extends Equatable {
   });
 
   @override
-  List<Object> get props {
+  List<Object?> get props {
     return [
       commentId,
       content,
@@ -57,7 +57,7 @@ class CommentEntity extends Equatable {
       'commentId': commentId,
       'content': content,
       'status': status.name,
-      'createDate': createDate.millisecondsSinceEpoch,
+      'createDate': createDate.toIso8601String(),
       'username': username,
       'shopName': shopName,
     };
@@ -68,7 +68,7 @@ class CommentEntity extends Equatable {
       commentId: map['commentId'] as String,
       content: map['content'] as String,
       status: Status.values.firstWhere((element) => element.name == map['status'] as String),
-      createDate: DateTime.fromMillisecondsSinceEpoch(map['createDate'] as int),
+      createDate: DateTime.parse(map['createDate'] as String),
       username: map['username'] as String,
       shopName: map['shopName'] as String,
     );

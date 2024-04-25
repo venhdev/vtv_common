@@ -58,6 +58,12 @@ class LazyLoadController<T> extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearItemsNoReload() {
+    items.clear();
+    currentPage = 1;
+    _shouldFetchData = true;
+  }
+
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'LazyLoadController: items.length=${items.length}, currentPage=$currentPage, shouldFetchData: $_shouldFetchData';
@@ -137,7 +143,7 @@ class _NestedLazyLoadBuilderState<T> extends State<NestedLazyLoadBuilder<T>> {
           return [];
         },
         (dataResp) {
-          final newItems = dataResp.data.items;
+          final newItems = dataResp.data!.items;
           if (newItems.isEmpty) {
             log('[LazyLoadBuilder] No more items at page $page');
             _reachEnd = true;

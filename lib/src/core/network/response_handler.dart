@@ -59,41 +59,51 @@ SuccessResponse handleDioResponseNoData(dio.Response response, Uri url) {
     );
   }
 }
+
 /// use to handle http Response contain data from API
-/// - [T] is the type of data that will be returned wrapped in [DataResponse] (the expected data type).
+/// - [T] is the type of data that will be returned wrapped in [SuccessResponse] (the expected data type).
 /// - [R] is the type of data returned from the API's response body, Dio automatically decodes the response body to this type.
 /// (typically `Map<String, dynamic>`). You need to pass a function that will parse this data to the expected data type [T].
-DataResponse<T> handleDioResponseWithData<T, R>(
+SuccessResponse<T> handleDioResponse<T, R>(
   dio.Response response,
-  Uri url,
-  T Function(R data) parse,
-) {
+  Uri url, {
+  T Function(R data)? parse,
+  bool hasData = true,
+}) {
   if (response.statusCode! >= 200 && response.statusCode! < 300) {
-    final result = parse(response.data);
-    if (R is Map<String, dynamic>) {
-      return DataResponse(
-        result,
+    if (!hasData) {
+      return SuccessResponse(
         code: response.statusCode,
-        message: response.data['message'],
+        message: response.data['message'] ?? 'no message',
         status: response.data['status'] ?? 'unknown status',
       );
     } else {
-      return DataResponse(
-        result,
-        code: response.statusCode,
-      );
+      final result = parse!(response.data);
+      if (R is Map<String, dynamic>) {
+        return SuccessResponse(
+          data: result,
+          code: response.statusCode,
+          message: response.data['message'] ?? 'no message',
+          status: response.data['status'] ?? 'unknown status',
+        );
+      } else {
+        return SuccessResponse(
+          data: result,
+          code: response.statusCode,
+        );
+      }
     }
   } else {
     throwResponseException(
       code: response.statusCode,
-      message: response.data['message'],
+      message: response.data['message'] ?? 'no message',
       url: url,
     );
   }
 }
 
 /// use to handle http Response contain data from API
-DataResponse<T> handleResponseWithData<T>(
+SuccessResponse<T> handleResponseWithData<T>(
   Response response,
   Uri url,
   T Function(Map<String, dynamic> dataMap) fromMap,
@@ -106,8 +116,8 @@ DataResponse<T> handleResponseWithData<T>(
 
   if (response.statusCode >= 200 && response.statusCode < 300) {
     final result = fromMap(decodedBodyMap);
-    return DataResponse(
-      result,
+    return SuccessResponse<T>(
+      data: result,
       code: response.statusCode,
       message: decodedBodyMap['message'],
       status: decodedBodyMap['status'] ?? 'unknown status',
@@ -147,7 +157,7 @@ Never throwResponseException({
 
 // handle data response from data source
 FRespData<T> handleDataResponseFromDataSource<T>({
-  required Future<DataResponse<T>> Function() dataCallback,
+  required Future<SuccessResponse<T>> Function() dataCallback,
 }) async {
   try {
     return Right(await dataCallback());

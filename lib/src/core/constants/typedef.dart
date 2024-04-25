@@ -15,7 +15,7 @@ typedef Result<T> = Either<Failure, T>;
 typedef FResult<T> = Future<Result<T>>;
 
 typedef RespEither = Either<ErrorResponse, SuccessResponse>;
-typedef RespData<T> = Either<ErrorResponse, DataResponse<T>>;
+typedef RespData<T> = Either<ErrorResponse, SuccessResponse<T>>;
 
 /// => Future<Either<ErrorResponse, SuccessResponse>>
 /// - Returns:

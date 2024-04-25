@@ -5,7 +5,7 @@ class FollowedShopEntity {
   final int followedShopId;
   final int shopId;
   final String shopName;
-  final String avatar;
+  final String? avatar;
 
   const FollowedShopEntity({
     required this.followedShopId,
@@ -42,7 +42,7 @@ class FollowedShopEntity {
       followedShopId: map['followedShopId'] as int,
       shopId: map['shopId'] as int,
       shopName: map['shopName'] as String,
-      avatar: map['avatar'] as String,
+      avatar: map['avatar'] as String?,
     );
   }
 
