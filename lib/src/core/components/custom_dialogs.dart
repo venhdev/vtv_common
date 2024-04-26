@@ -77,7 +77,7 @@ Future<T?> showDialogToConfirm<T>({
 
 Future<T?> showDialogToAlert<T>(
   BuildContext context, {
-  required List<Widget> children,
+  List<Widget>? children,
   bool scrollable = false,
   Widget? title,
   TextStyle? titleTextStyle,
@@ -90,10 +90,17 @@ Future<T?> showDialogToAlert<T>(
       return AlertDialog(
         scrollable: true,
         title: title,
-        titleTextStyle: titleTextStyle,
-        content: ListBody(
-          children: children,
-        ),
+        titleTextStyle: titleTextStyle ??
+            const TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+        content: children != null
+            ? ListBody(
+                children: children,
+              )
+            : null,
         actions: <Widget>[
           TextButton(
             child: const Text('Đóng'),

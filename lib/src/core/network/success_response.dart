@@ -1,5 +1,3 @@
-// part of '../base/base_response.dart';
-
 import '../base/base_response.dart';
 
 class SuccessResponse<T extends Object?> extends BaseHttpResponse {
