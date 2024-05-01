@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../auth.dart';
-import '../../../core/components/nested_lazy_load_builder.dart';
+import '../../../core/presentation/components/nested_lazy_load_builder.dart';
 import '../../../core/constants/typedef.dart';
 import '../../domain/entities/notification_entity.dart';
 import '../../domain/entities/notification_resp.dart';

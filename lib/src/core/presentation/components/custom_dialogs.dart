@@ -32,6 +32,7 @@ Future<T?> showDialogToConfirm<T>({
                 style: TextStyle(
                   color: titleColor,
                   fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
                 ),
               )
             : null,
@@ -39,7 +40,10 @@ Future<T?> showDialogToConfirm<T>({
             ? Text(
                 content,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: contentColor),
+                style: TextStyle(
+                  color: contentColor,
+                  fontSize: 16.0,
+                ),
               )
             : null,
         actions: [

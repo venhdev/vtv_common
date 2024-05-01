@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/components/custom_widgets.dart';
+import '../../../core/presentation/components/custom_widgets.dart';
 import '../../../core/constants/typedef.dart';
 import '../../../core/constants/types.dart';
 import '../../../core/helpers.dart';
@@ -11,99 +11,171 @@ import '../../domain/entities/order_entity.dart';
 import '../components/order_purchase_item.dart';
 import 'order_detail_page.dart';
 
-const int _totalTab = 7;
-
 class OrderPurchasePage extends StatefulWidget {
+  factory OrderPurchasePage.customer({
+    required FRespData<MultiOrderEntity> Function(OrderStatus? status) dataCallback,
+    required OrderPurchasePageController pageController,
+    required void Function(OrderDetailEntity completedOrder) onReceivedCallback,
+    required OrderPurchaseItem Function(OrderEntity, void Function(OrderDetailEntity)) customerItemBuilder,
+    String appBarTitle = 'Đơn hàng của bạn',
+    List<Widget>? actions,
+  }) =>
+      OrderPurchasePage(
+        dataCallback: dataCallback,
+        pageController: pageController,
+        isCustomer: true,
+        appBarTitle: appBarTitle,
+        actions: actions,
+        customerItemBuilder: customerItemBuilder,
+      );
+
+  factory OrderPurchasePage.vendor({
+    required FRespData<MultiOrderEntity> Function(OrderStatus? status) dataCallback,
+    List<RespData<MultiOrderEntity>>? initialMultiOrders,
+    required OrderPurchasePageController pageController,
+    required OrderPurchaseItem Function(OrderEntity, void Function()) vendorItemBuilder,
+    String appBarTitle = 'Đơn hàng của bạn',
+    List<Widget>? actions,
+  }) =>
+      OrderPurchasePage(
+        dataCallback: dataCallback,
+        initialMultiOrders: initialMultiOrders,
+        pageController: pageController,
+        isCustomer: false,
+        appBarTitle: appBarTitle,
+        actions: actions,
+        vendorItemBuilder: vendorItemBuilder,
+      );
+
   const OrderPurchasePage({
     super.key,
-    required this.dataCallBack,
-    required this.itemBuilder,
-    // this.onOrderPurchaseItemPressed,
-    // this.reviewBtn,
+    required this.dataCallback,
+    this.initialMultiOrders,
+    required this.pageController,
+    required this.isCustomer,
+    this.appBarTitle = 'Đơn hàng của bạn',
+    this.actions,
+    this.customerItemBuilder,
+    this.vendorItemBuilder,
   });
 
   static const String routeName = 'purchase';
   static const String path = '/user/purchase';
 
-  final FRespData<MultiOrderEntity> Function(OrderStatus? status) dataCallBack;
+  //# option properties
+  final List<RespData<MultiOrderEntity>>? initialMultiOrders;
 
-  //! Customer view
-  /// Callback when order is received >> reload & navigate to OrderDetailPage
+  //# required properties
+  final FRespData<MultiOrderEntity> Function(OrderStatus? status) dataCallback;
+  final OrderPurchasePageController pageController;
+  final bool isCustomer;
+
+  //# custom app bar
+  final String appBarTitle;
+  final List<Widget>? actions;
+
+  //! Customer required
+  /// call [onReceivedCallback] when customer tap received >> reload & navigate to OrderDetailPage
   final OrderPurchaseItem Function(
     OrderEntity order,
     void Function(OrderDetailEntity completedOrder) onReceivedCallback,
-  ) itemBuilder;
+  )? customerItemBuilder;
 
-  // final Future<void> Function()? onOrderPurchaseItemPressed;
-  // final Widget? reviewBtn; // when order completed, show review button
+  //! Vendor required
+  final OrderPurchaseItem Function(
+    OrderEntity order,
+    void Function() reloadCallback, //> update list
+  )? vendorItemBuilder;
 
   @override
   State<OrderPurchasePage> createState() => _OrderPurchasePageState();
 }
 
 class _OrderPurchasePageState extends State<OrderPurchasePage> {
+  // late MultiOrderEntity _multiOrder;
   Future<List<RespData<MultiOrderEntity>>> _futureDataOrders() async {
+    if (widget.initialMultiOrders != null) {
+      return widget.initialMultiOrders!;
+    }
     return Future.wait(
-      List.generate(_totalTab, (index) async {
-        return await widget.dataCallBack(_statusFromIndex(index));
-        // return await _callFuture(_statusFromIndex(index));
+      List.generate(widget.pageController.tapPages.length, (index) async {
+        return await widget.dataCallback(widget.pageController.tapPages[index]);
       }),
     );
   }
 
   @override
+  void initState() {
+    super.initState();
+    // if (widget.initialMultiOrder != null) {
+    //   _multiOrder = widget.initialMultiOrder!;
+    // }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: _totalTab,
+      initialIndex: widget.pageController.initialIndex, //! Control this to show the default tab
+      length: widget.pageController.tapPages.length, //_totalTab,
       child: FutureBuilder<List<RespData<MultiOrderEntity>>>(
           future: _futureDataOrders(),
-          // future: Future.delayed(const Duration(seconds: 2), _futureDataOrders),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final listMultiOrder = snapshot.data!;
 
               return Scaffold(
                 appBar: AppBar(
-                  title: const Text('Đơn mua hàng'),
+                  title: Text(widget.appBarTitle),
+                  actions: widget.actions,
                   bottom: TabBar(
-                      isScrollable: true,
-                      tabAlignment: TabAlignment.start,
-                      tabs: List.generate(
-                        _totalTab,
-                        (index) => _buildTapButton(
-                          StringHelper.getOrderStatusName(_statusFromIndex(index)),
-                          listMultiOrder[index].fold(
-                            (error) => 0,
-                            (ok) => ok.data!.orders.length,
-                          ),
-                          backgroundColor: ColorHelper.getOrderStatusBackgroundColor(_statusFromIndex(index)),
+                    isScrollable: true,
+                    tabAlignment: TabAlignment.start,
+                    tabs: List.generate(
+                      widget.pageController.tapPages.length, //_totalTab,
+                      (index) => _buildTapButton(
+                        StringHelper.getOrderStatusName(
+                            widget.pageController.tapPages[index]), //(_statusFromIndex(index)),
+                        listMultiOrder[index].fold(
+                          (error) => 0,
+                          (ok) => ok.data!.orders.length,
                         ),
-                      )),
+                        backgroundColor: ColorHelper.getOrderStatusBackgroundColor(
+                            widget.pageController.tapPages[index]), //(_statusFromIndex(index)),
+                      ),
+                    ),
+                  ),
                 ),
                 body: TabBarView(
                   children: List.generate(
-                    _totalTab,
-                    // _buildTabBarView,
+                    widget.pageController.tapPages.length,
                     (index) => RefreshIndicator(
-                      onRefresh: () async {
-                        setState(() {});
-                      },
-                      child: _buildTabBarViewWithData(
-                        index: index,
-                        //? [orders] is empty, so it will show empty message
-                        //? if [orders] is not empty, it will show the list of orders with the corresponding status
-                        orders: listMultiOrder[index].fold(
-                          (error) => [],
-                          (ok) => ok.data!.orders,
-                        ),
-                        onReceived: (completedOrder) {
-                          // - 1. update order list in [OrderPurchasePage]
-                          // - 2. navigate to [OrderDetailPage] with new [OrderDetailEntity]
+                        onRefresh: () async {
                           setState(() {});
-                          context.go(OrderDetailPage.path, extra: completedOrder);
                         },
-                      ),
-                    ),
+                        child: widget.isCustomer
+                            ? _buildCustomerTabBarView(
+                                index: index,
+                                orders: listMultiOrder[index].fold(
+                                  (error) => [],
+                                  (ok) => ok.data!.orders,
+                                ),
+                                onReceivedCallback: (completedOrder) {
+                                  // - 1. update order list in [OrderPurchasePage]
+                                  // - 2. navigate to [OrderDetailPage] with new [OrderDetailEntity]
+                                  setState(() {});
+                                  context.go(OrderDetailPage.path, extra: completedOrder);
+                                },
+                              )
+                            : _buildVendorTabBarView(
+                                index: index,
+                                orders: listMultiOrder[index].fold(
+                                  (error) => [],
+                                  (ok) => ok.data!.orders,
+                                ),
+                                reloadCallback: () {
+                                  setState(() {}); //just update list
+                                },
+                              )),
                   ),
                 ),
               );
@@ -130,28 +202,6 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
       offset: const Offset(12, 0),
       child: Tab(text: text),
     );
-  }
-
-  /// position of each tab
-  OrderStatus? _statusFromIndex(int index) {
-    switch (index) {
-      case 0:
-        return null;
-      case 1:
-        return OrderStatus.PENDING;
-      case 2:
-        return OrderStatus.PROCESSING;
-      case 3:
-        return OrderStatus.SHIPPING;
-      case 4:
-        return OrderStatus.DELIVERED;
-      case 5:
-        return OrderStatus.COMPLETED;
-      case 6:
-        return OrderStatus.CANCEL;
-      default:
-        throw Exception('Invalid index');
-    }
   }
 
   String _getEmptyMessage(OrderStatus? status) {
@@ -188,52 +238,63 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
     }
   }
 
-  Widget _buildTabBarViewWithData({
+  Widget _buildCustomerTabBarView({
     required int index,
     required List<OrderEntity> orders,
-    required void Function(OrderDetailEntity completedOrder) onReceived,
+    required void Function(OrderDetailEntity completedOrder) onReceivedCallback,
   }) {
     if (orders.isEmpty) {
       return MessageScreen.error(
-        _getEmptyMessage(_statusFromIndex(index)),
-        _getIcon(_statusFromIndex(index)),
+        _getEmptyMessage(widget.pageController.tapPages[index]),
+        _getIcon(widget.pageController.tapPages[index]),
       );
     }
     return ListView.separated(
       separatorBuilder: (context, index) => const Divider(),
       itemCount: orders.length,
       itemBuilder: (context, index) {
-        return widget.itemBuilder(
-          orders[index],
-          onReceived,
-        );
-        // return OrderPurchaseItem(
-        //   order: orders[index],
-        //   onReceived: onReceived,
-        //   onPressed: widget.onOrderPurchaseItemPressed,
-        //   buildOnCompleted: widget.reviewBtn,
-        //   // onPressed: () async {
-        //   //   final respEither = await sl<OrderRepository>().getOrderDetail(orders[index].orderId!);
-        //   //   respEither.fold(
-        //   //     (error) => Fluttertoast.showToast(msg: error.message ?? 'Có lỗi xảy ra'),
-        //   //     (ok) async {
-        //   //       final completedOrder = await context.push<OrderDetailEntity>(OrderDetailPage.path, extra: ok.data);
-        //   //       if (completedOrder != null) onReceived(completedOrder);
-        //   //     },
-        //   //   );
-        //   // },
-        // );
+        return widget.customerItemBuilder!(orders[index], onReceivedCallback);
       },
     );
   }
 
-  // FRespData<MultiOrderEntity> _callFuture(OrderStatus? status) {
-  //   if (status == null) {
-  //     return sl<OrderRepository>().getListOrders();
-  //   } else if (status == OrderStatus.PROCESSING) {
-  //     // combine 2 lists of orders with status PROCESSING and PICKUP_PENDING
-  //     return sl<OrderRepository>().getListOrdersByStatusProcessingAndPickupPending();
-  //   }
-  //   return sl<OrderRepository>().getListOrdersByStatus(status.name);
-  // }
+  Widget _buildVendorTabBarView({
+    required int index,
+    required List<OrderEntity> orders,
+    required void Function() reloadCallback,
+  }) {
+    if (orders.isEmpty) {
+      return MessageScreen.error(
+        _getEmptyMessage(widget.pageController.tapPages[index]),
+        _getIcon(widget.pageController.tapPages[index]),
+      );
+    }
+    return ListView.separated(
+      separatorBuilder: (context, index) => const Divider(),
+      itemCount: orders.length,
+      itemBuilder: (context, index) {
+        return widget.vendorItemBuilder!(orders[index], reloadCallback);
+      },
+    );
+  }
+}
+
+const List<OrderStatus?> _defaultTapPages = [
+  null, // null => ALL
+  OrderStatus.PENDING,
+  OrderStatus.PROCESSING,
+  OrderStatus.SHIPPING,
+  OrderStatus.DELIVERED,
+  OrderStatus.COMPLETED,
+  OrderStatus.CANCEL,
+];
+
+class OrderPurchasePageController {
+  OrderPurchasePageController({
+    this.tapPages = _defaultTapPages,
+    this.initialIndex = 0,
+  });
+
+  final List<OrderStatus?> tapPages;
+  final int initialIndex;
 }

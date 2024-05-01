@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+import '../../../core/constants/types.dart';
 import 'transport_handle_entity.dart';
 
 class TransportEntity {
@@ -11,9 +12,9 @@ class TransportEntity {
   final String orderId;
   final int? shopId;
   final String shippingMethod;
-  final String? status;
+  final OrderStatus status;
   final int totalTransportHandle;
-  final List<TransportHandleEntity> transportHandleDtOs;
+  final List<TransportHandleEntity> transportHandles;
 
   TransportEntity({
     required this.transportId,
@@ -24,7 +25,7 @@ class TransportEntity {
     required this.shippingMethod,
     required this.status,
     required this.totalTransportHandle,
-    required this.transportHandleDtOs,
+    required this.transportHandles,
   });
 
   TransportEntity copyWith({
@@ -34,9 +35,9 @@ class TransportEntity {
     String? orderId,
     int? shopId,
     String? shippingMethod,
-    String? status,
+    OrderStatus? status,
     int? totalTransportHandle,
-    List<TransportHandleEntity>? transportHandleDtOs,
+    List<TransportHandleEntity>? transportHandles,
   }) {
     return TransportEntity(
       transportId: transportId ?? this.transportId,
@@ -47,7 +48,7 @@ class TransportEntity {
       shippingMethod: shippingMethod ?? this.shippingMethod,
       status: status ?? this.status,
       totalTransportHandle: totalTransportHandle ?? this.totalTransportHandle,
-      transportHandleDtOs: transportHandleDtOs ?? this.transportHandleDtOs,
+      transportHandles: transportHandles ?? this.transportHandles,
     );
   }
 
@@ -59,9 +60,9 @@ class TransportEntity {
       'orderId': orderId,
       'shopId': shopId,
       'shippingMethod': shippingMethod,
-      'status': status,
+      'status': status.name,
       'totalTransportHandle': totalTransportHandle,
-      'transportHandleDTOs': transportHandleDtOs.map((x) => x.toMap()).toList(),
+      'transportHandleDTOs': transportHandles.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -73,14 +74,15 @@ class TransportEntity {
       orderId: map['orderId'] as String,
       shopId: map['shopId'] as int?,
       shippingMethod: map['shippingMethod'] as String,
-      status: map['status'] as String?,
+      // status: map['status'] as String?,
+      status: OrderStatus.values.firstWhere((e) => e.name == map['status'] as String),
       totalTransportHandle: map['totalTransportHandle'] as int,
       // transportHandleDtOs: List<TransportHandleEntity>.from(
       //   (map['transportHandleDTOs'] as List<dynamic>?)!.map<TransportHandleEntity>(
       //     (x) => TransportHandleEntity.fromMap(x as Map<String, dynamic>),
       //   ),
       // ),
-      transportHandleDtOs: (map['transportHandleDTOs'] as List<dynamic>)
+      transportHandles: (map['transportHandleDTOs'] as List<dynamic>)
           .map<TransportHandleEntity>(
             (x) => TransportHandleEntity.fromMap(x as Map<String, dynamic>),
           )
@@ -95,7 +97,7 @@ class TransportEntity {
 
   @override
   String toString() {
-    return 'TransportEntity(transportId: $transportId, wardCodeShop: $wardCodeShop, wardCodeCustomer: $wardCodeCustomer, orderId: $orderId, shopId: $shopId, shippingMethod: $shippingMethod, status: $status, totalTransportHandle: $totalTransportHandle, transportHandleDtOs: $transportHandleDtOs)';
+    return 'TransportEntity(transportId: $transportId, wardCodeShop: $wardCodeShop, wardCodeCustomer: $wardCodeCustomer, orderId: $orderId, shopId: $shopId, shippingMethod: $shippingMethod, status: $status, totalTransportHandle: $totalTransportHandle, transportHandleDtOs: $transportHandles)';
   }
 
   @override
@@ -110,7 +112,7 @@ class TransportEntity {
         other.shippingMethod == shippingMethod &&
         other.status == status &&
         other.totalTransportHandle == totalTransportHandle &&
-        listEquals(other.transportHandleDtOs, transportHandleDtOs);
+        listEquals(other.transportHandles, transportHandles);
   }
 
   @override
@@ -123,6 +125,6 @@ class TransportEntity {
         shippingMethod.hashCode ^
         status.hashCode ^
         totalTransportHandle.hashCode ^
-        transportHandleDtOs.hashCode;
+        transportHandles.hashCode;
   }
 }

@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:go_router/go_router.dart';
 import 'package:timelines/timelines.dart';
 
 import '../../../../auth.dart';
 import '../../../core/constants/types.dart';
 import '../../../core/helpers.dart';
+import '../../../core/presentation/pages/qr_view_page.dart';
 import '../../../profile/presentation/components/address_summary.dart';
 import '../../../shop/presentation/components/shop_info.dart';
 import '../../domain/entities/order_detail_entity.dart';
 import '../../domain/entities/order_entity.dart';
 import '../../domain/entities/order_item_entity.dart';
+import '../components/action_button.dart';
 import '../components/order_item.dart';
 import '../components/order_status_badge.dart';
 import '../components/wrapper.dart';
@@ -72,7 +73,7 @@ class OrderDetailPage extends StatelessWidget {
               const SizedBox(height: 8),
 
               //# summary info: transport + shipping method + order timeline
-              _buildSummaryInfo(),
+              _buildSummaryInfo(context),
               const SizedBox(height: 8),
 
               //! order summary
@@ -158,7 +159,7 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryInfo() {
+  Widget _buildSummaryInfo(BuildContext context) {
     return Wrapper(
       child: Column(
         children: [
@@ -208,6 +209,19 @@ class OrderDetailPage extends StatelessWidget {
                         Fluttertoast.showToast(msg: 'Đã sao chép mã vận đơn');
                       },
                     ),
+                    // btn show qr code
+                    IconButton(
+                      icon: const Icon(Icons.qr_code),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return QrViewPage(data: orderDetail.transport!.transportId);
+                            },
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -234,7 +248,7 @@ class OrderDetailPage extends StatelessWidget {
                       flex: 1,
                       child: Text(
                         StringHelper.convertDateTimeToString(
-                          orderDetail.transport!.transportHandleDtOs[index].createAt,
+                          orderDetail.transport!.transportHandles[index].createAt,
                           pattern: 'dd-MM-yyyy\nHH:mm',
                         ),
                         style: const TextStyle(fontSize: 12),
@@ -243,13 +257,13 @@ class OrderDetailPage extends StatelessWidget {
                     Expanded(
                       flex: 3,
                       child: Text(
-                        '(${orderDetail.transport!.transportHandleDtOs[index].transportStatus}) ${orderDetail.transport!.transportHandleDtOs[index].messageStatus}',
+                        '(${orderDetail.transport!.transportHandles[index].transportStatus}) ${orderDetail.transport!.transportHandles[index].messageStatus}',
                       ),
                     ),
                   ],
                 ),
               ),
-              itemCount: orderDetail.transport!.transportHandleDtOs.length,
+              itemCount: orderDetail.transport!.transportHandles.length,
             ),
           ),
         ],
@@ -447,12 +461,11 @@ class OrderDetailPage extends StatelessWidget {
   Widget? _buildBottomActionByOrderStatus(BuildContext context, OrderStatus status) {
     final isVender = context.read<AuthCubit>().state.auth!.userInfo.roles!.contains(Role.VENDOR);
 
-    Widget buildByStatus(BuildContext context, OrderStatus status) {
+    Widget buildCustomerActionByStatus(BuildContext context, OrderStatus status) {
       switch (status) {
         case OrderStatus.PENDING || OrderStatus.PROCESSING:
           return ActionButton.cancelOrder(() => onCancelOrderPressed(orderDetail.order.orderId!));
         case OrderStatus.COMPLETED:
-          // return ReviewBtn(order: orderDetail.order);
           return customerReviewBtn!(orderDetail.order);
         case OrderStatus.CANCEL:
           return ActionButton.rePurchase(() => onRePurchasePressed(orderDetail.order.orderItems));
@@ -467,6 +480,7 @@ class OrderDetailPage extends StatelessWidget {
     }
 
     return Container(
+      width: double.infinity,
       color: Theme.of(context).colorScheme.primaryContainer,
       child: !isVender
           //! Customer view
@@ -487,65 +501,12 @@ class OrderDetailPage extends StatelessWidget {
 
                 //# cancel - add review - view review
                 Expanded(
-                  child: buildByStatus(context, status),
+                  child: buildCustomerActionByStatus(context, status),
                 ),
               ],
             )
           //! Vendor view
           : ActionButton.back(context),
-    );
-  }
-}
-
-class ActionButton extends StatelessWidget {
-  const ActionButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    required this.backgroundColor,
-  });
-
-  factory ActionButton.back(BuildContext context) => ActionButton(
-        label: 'Quay lại',
-        onPressed: () => context.pop(),
-        backgroundColor: Colors.grey.shade400,
-      );
-  factory ActionButton.completeOrder(void Function()? onCompleteOrderPressed) => ActionButton(
-        label: 'Đã nhận được hàng',
-        onPressed: onCompleteOrderPressed,
-        backgroundColor: Colors.green.shade300,
-      );
-  factory ActionButton.cancelOrder(void Function()? onCancelOrderPressed) => ActionButton(
-        label: 'Hủy đơn hàng',
-        onPressed: onCancelOrderPressed,
-        backgroundColor: Colors.red.shade300,
-      );
-  factory ActionButton.rePurchase(void Function()? onRePurchasePressed) => ActionButton(
-        label: 'Mua lại',
-        onPressed: onRePurchasePressed,
-        backgroundColor: Colors.green.shade300,
-      );
-  factory ActionButton.chat(void Function()? onChatPressed) => ActionButton(
-        label: 'Chat',
-        onPressed: onChatPressed,
-        backgroundColor: Colors.blue.shade300,
-      );
-
-  final String label;
-  final void Function()? onPressed;
-  final Color backgroundColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: backgroundColor,
-        shape: const RoundedRectangleBorder(),
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        padding: EdgeInsets.zero,
-      ),
-      onPressed: onPressed,
-      child: Text(label),
     );
   }
 }

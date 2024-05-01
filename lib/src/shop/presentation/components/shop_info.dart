@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/components/rating.dart';
+import '../../../core/presentation/components/rating.dart';
 import '../../../auth/presentation/bloc/auth_cubit.dart';
 import '../../domain/entities/dto/shop_detail_resp.dart';
 import 'shop_info_btn.dart';

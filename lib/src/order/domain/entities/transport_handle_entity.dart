@@ -1,13 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import '../../../core/constants/types.dart';
+
 class TransportHandleEntity {
   final String transportHandleId;
   final String username;
   final String wardCode;
   final bool handled;
   final String messageStatus;
-  final String transportStatus;
+  final OrderStatus transportStatus;
   final DateTime createAt;
   final DateTime updateAt;
 
@@ -22,14 +24,13 @@ class TransportHandleEntity {
     required this.updateAt,
   });
 
-
   TransportHandleEntity copyWith({
     String? transportHandleId,
     String? username,
     String? wardCode,
     bool? handled,
     String? messageStatus,
-    String? transportStatus,
+    OrderStatus? transportStatus,
     DateTime? createAt,
     DateTime? updateAt,
   }) {
@@ -52,7 +53,7 @@ class TransportHandleEntity {
       'wardCode': wardCode,
       'handled': handled,
       'messageStatus': messageStatus,
-      'transportStatus': transportStatus,
+      'transportStatus': transportStatus.name,
       'createAt': createAt.toIso8601String(),
       'updateAt': updateAt.toIso8601String(),
     };
@@ -65,7 +66,8 @@ class TransportHandleEntity {
       wardCode: map['wardCode'] as String,
       handled: map['handled'] as bool,
       messageStatus: map['messageStatus'] as String,
-      transportStatus: map['transportStatus'] as String,
+      // transportStatus: map['transportStatus'] as String,
+      transportStatus: OrderStatus.values.firstWhere((e) => e.name == map['transportStatus'] as String),
       createAt: DateTime.parse(map['createAt'] as String),
       updateAt: DateTime.parse(map['updateAt'] as String),
     );
@@ -73,7 +75,8 @@ class TransportHandleEntity {
 
   String toJson() => json.encode(toMap());
 
-  factory TransportHandleEntity.fromJson(String source) => TransportHandleEntity.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory TransportHandleEntity.fromJson(String source) =>
+      TransportHandleEntity.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
@@ -83,27 +86,26 @@ class TransportHandleEntity {
   @override
   bool operator ==(covariant TransportHandleEntity other) {
     if (identical(this, other)) return true;
-  
-    return 
-      other.transportHandleId == transportHandleId &&
-      other.username == username &&
-      other.wardCode == wardCode &&
-      other.handled == handled &&
-      other.messageStatus == messageStatus &&
-      other.transportStatus == transportStatus &&
-      other.createAt == createAt &&
-      other.updateAt == updateAt;
+
+    return other.transportHandleId == transportHandleId &&
+        other.username == username &&
+        other.wardCode == wardCode &&
+        other.handled == handled &&
+        other.messageStatus == messageStatus &&
+        other.transportStatus == transportStatus &&
+        other.createAt == createAt &&
+        other.updateAt == updateAt;
   }
 
   @override
   int get hashCode {
     return transportHandleId.hashCode ^
-      username.hashCode ^
-      wardCode.hashCode ^
-      handled.hashCode ^
-      messageStatus.hashCode ^
-      transportStatus.hashCode ^
-      createAt.hashCode ^
-      updateAt.hashCode;
+        username.hashCode ^
+        wardCode.hashCode ^
+        handled.hashCode ^
+        messageStatus.hashCode ^
+        transportStatus.hashCode ^
+        createAt.hashCode ^
+        updateAt.hashCode;
   }
 }

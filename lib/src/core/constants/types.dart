@@ -4,6 +4,7 @@ enum Role {
   CUSTOMER,
   ADMIN,
   VENDOR,
+  DELIVER,
 }
 
 enum Status {
@@ -32,6 +33,7 @@ enum VoucherTypes {
 }
 
 enum OrderStatus {
+  // all roles
   WAITING, // chờ xác nhận từ shop (khi hủy)
   PENDING, // chờ xác nhận từ shop (khi mới đặt)
   PICKUP_PENDING, // chờ shipper lấy hàng
@@ -40,4 +42,11 @@ enum OrderStatus {
   PROCESSING,
   CANCEL, // đơn đã hủy
   DELIVERED, // đã giao ??? đang được giaoC
+
+  // for vendor only
+  UNPAID, // chưa thanh toán
+
+  // for deliver only
+  PICKED_UP,
+  WAREHOUSE,
 }

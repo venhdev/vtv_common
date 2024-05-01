@@ -8,37 +8,70 @@ import 'order_item.dart';
 import 'order_status_badge.dart';
 
 class OrderPurchaseItem extends StatelessWidget {
+  // factory OrderPurchaseItem.customer({
+  //   required OrderEntity order,
+  //   required VoidCallback? onPressed, // nav to [OrderDetailPage]
+  //   required VoidCallback? onReceivedPressed, // customer confirm received order
+  //   required Widget buildWhenCompleted, // this will be review button
+  //   VoidCallback? onShopPressed, // maybe nav to [ShopPage]
+  // }) =>
+  //     OrderPurchaseItem(
+  //       order: order,
+  //       isCustomer: true,
+  //       onPressed: onPressed,
+  //       onReceivedPressed: onReceivedPressed,
+  //       buildWhenCompleted: buildWhenCompleted,
+  //       onShopPressed: onShopPressed,
+  //     );
+  // factory OrderPurchaseItem.vendor({
+  //   required OrderEntity order,
+  //   required VoidCallback? onPressed, // nav to [OrderDetailPage]
+  //   required VoidCallback? onAccepted, // vendor accept order
+  //   required VoidCallback? onWaitingForShipping, // vendor ship order
+  //   VoidCallback? onShopPressed, // maybe nav to [ShopPage]
+  // }) =>
+  //     OrderPurchaseItem(
+  //       order: order,
+  //       isCustomer: false,
+  //       onPressed: onPressed,
+  //       onShopPressed: onShopPressed,
+  //       onAcceptedPressed: onAccepted,
+  //       onWaitingForShippingPressed: onWaitingForShipping,
+  //     );
+
   const OrderPurchaseItem({
     super.key,
     required this.order,
     this.onPressed,
     this.onShopPressed,
-    this.onReceivedPressed, // this.onReceived,
-    this.buildOnCompleted,
+    this.showShopInfo = true,
+    this.actionBuilder,
+    // this.onReceivedPressed,
+    // this.onAcceptedPressed,
+    // this.onWaitingForShippingPressed,
+    // this.buildWhenCompleted,
   });
 
   final OrderEntity order;
-  final VoidCallback? onPressed; // when user tap on purchase order item
+  final VoidCallback? onPressed;
+  final bool showShopInfo;
 
-  //! Customer view
+  // // Vendor required
+  // // vendor accept order (status PENDING => PROCESSING) means vendor start to prepare order
+  // final VoidCallback? onAcceptedPressed;
+  // // vendor ship order (status PROCESSING => SHIPPING) means vendor start to ship order
+  // final VoidCallback? onWaitingForShippingPressed;
+
+  // // Customer required
+  // final VoidCallback? onReceivedPressed;
+
+  // build base on order status
+
+  //# Widget build base on order status
+  final Widget Function(OrderStatus status)? actionBuilder;
+
+  //# Others (optional)
   final VoidCallback? onShopPressed;
-  final VoidCallback? onReceivedPressed;
-
-  //! Base on order status
-  final Widget? buildOnCompleted;
-  // onTap: () async {
-  //   final respEither = await sl<OrderRepository>().getOrderDetail(order.orderId!);
-  //   respEither.fold(
-  //     (error) => Fluttertoast.showToast(msg: error.message ?? 'Có lỗi xảy ra'),
-  //     (ok) async {
-  //       final completedOrder = await context.push<OrderDetailEntity>(OrderDetailPage.path, extra: ok.data);
-  //       if (completedOrder != null) onReceived(completedOrder);
-  //     },
-  //   );
-  // },
-
-  /// when user confirm received order (status = DELIVERED)
-  // final void Function(OrderDetailEntity completedOrder) onReceived;
 
   @override
   Widget build(BuildContext context) {
@@ -49,21 +82,22 @@ class OrderPurchaseItem extends StatelessWidget {
         child: Column(
           children: [
             //# shop info + order status
-            Row(
-              // crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: ShopInfo(
-                    shopId: order.shop.shopId,
-                    shopName: order.shop.name,
-                    shopAvatar: order.shop.avatar,
-                    onPressed: onShopPressed,
-                    // onPressed: () => context.push('${ShopPage.path}/${order.shop.shopId}'),
+            if (showShopInfo)
+              Row(
+                // crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: ShopInfo(
+                      shopId: order.shop.shopId,
+                      shopName: order.shop.name,
+                      shopAvatar: order.shop.avatar,
+                      onPressed: onShopPressed,
+                      // onPressed: () => context.push('${ShopPage.path}/${order.shop.shopId}'),
+                    ),
                   ),
-                ),
-                OrderStatusBadge(status: order.status),
-              ],
-            ),
+                  OrderStatusBadge(status: order.status),
+                ],
+              ),
 
             //# show the first order item
             const SizedBox(height: 8),
@@ -91,40 +125,85 @@ class OrderPurchaseItem extends StatelessWidget {
               ),
             ),
 
-            //# order status = DELIVERED show button to confirm received
-            const SizedBox(height: 8),
-            if (order.status == OrderStatus.DELIVERED) _buildReceivedBtn(context),
-            if (order.status == OrderStatus.COMPLETED && buildOnCompleted != null) buildOnCompleted!,
+            //# action button base on order status
+            if (actionBuilder != null) ...[
+              const SizedBox(height: 8),
+              actionBuilder!(order.status),
+            ]
 
-            // ReviewBtn(order: order, labelNotReview: 'Bạn chưa đánh giá sản phẩm'),
+            //# order status = DELIVERED show button to confirm received
+            // if (isCustomer) ...[
+            //   if (order.status == OrderStatus.DELIVERED)
+            //     OrderPurchaseItemAction(
+            //       label: 'Bạn đã nhận được hàng chưa?',
+            //       buttonLabel: 'Đã nhận',
+            //       onPressed: onReceivedPressed,
+            //     ),
+            // ] else ...[
+            //   if (order.status == OrderStatus.PENDING)
+            //     OrderPurchaseItemAction(
+            //       label: 'Xác nhận đơn hàng này?',
+            //       buttonLabel: 'Xác nhận',
+            //       onPressed: onAcceptedPressed,
+            //       backgroundColor: Colors.blue.shade100,
+            //       buttonColor: Colors.blue.shade200,
+            //     ),
+            //   if (order.status == OrderStatus.PROCESSING)
+            //     OrderPurchaseItemAction(
+            //       label: 'Đơn hàng đã chuẩn bị xong?',
+            //       buttonLabel: 'Chờ giao hàng',
+            //       onPressed: onWaitingForShippingPressed,
+            //       backgroundColor: Colors.orange.shade100,
+            //       buttonColor: Colors.orange.shade400,
+            //     ),
+            // ],
+
+            // if (order.status == OrderStatus.COMPLETED && buildWhenCompleted != null) buildWhenCompleted!,
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildReceivedBtn(BuildContext context) {
+class OrderPurchaseItemAction extends StatelessWidget {
+  const OrderPurchaseItemAction({
+    super.key,
+    required this.label,
+    required this.buttonLabel,
+    required this.onPressed,
+    this.backgroundColor,
+    this.buttonColor,
+  });
+
+  final String label;
+  final String buttonLabel;
+
+  final VoidCallback? onPressed;
+
+  final Color? backgroundColor;
+  final Color? buttonColor;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.green.shade100,
+        color: backgroundColor ?? Colors.green.shade100,
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Bạn đã nhận được hàng chưa?'),
+          Text(label),
+          // TODO test row 2 btn
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              backgroundColor: Colors.green.shade400,
+              backgroundColor: buttonColor ?? Colors.green.shade400,
             ),
-            onPressed: onReceivedPressed,
-            // onPressed: () async {
-            //   final orderDetail = await CustomerHandler.completeOrder(context, order.orderId!);
-            //   if (orderDetail != null) onReceived(orderDetail);
-            // },
-            child: const Text('Đã nhận hàng', style: TextStyle(fontWeight: FontWeight.bold)),
+            onPressed: onPressed,
+            child: Text(buttonLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),

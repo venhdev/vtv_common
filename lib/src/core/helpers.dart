@@ -96,24 +96,62 @@ class StringHelper {
       case null:
         return 'Tất cả';
       case OrderStatus.WAITING:
-        return 'Draft'; // when create order (not place order yet) --not show in order list
+        return 'WAITING'; // when create order (not place order yet) --not show in order list
       case OrderStatus.PENDING:
         return 'Chờ xác nhận';
+      case OrderStatus.PROCESSING:
+        return 'Đang lấy hàng';
+      case OrderStatus.PICKUP_PENDING:
+        return 'Sẵn sàng giao';
       case OrderStatus.SHIPPING:
         return 'Đang giao';
-      case OrderStatus.COMPLETED:
-        return 'Hoàn thành';
       case OrderStatus.DELIVERED:
         return 'Đã giao';
+      case OrderStatus.COMPLETED:
+        return 'Hoàn thành';
+
+      // Vendor Only
+      case OrderStatus.UNPAID:
+        return 'Chưa thanh toán';
+
+      // Others
       case OrderStatus.CANCEL:
         return 'Đã hủy';
-      // Vendor Only
-      case OrderStatus.PROCESSING:
-        return 'Đang xử lý';
 
       //! Unknown status
       default:
         return status.name;
+    }
+  }
+
+  static String getOrderStatusNameByDriver(OrderStatus? status) {
+    switch (status) {
+      // case null:
+      //   return 'Tất cả';
+      // case OrderStatus.WAITING:
+      //   return 'WAITING'; // when create order (not place order yet) --not show in order list
+      // case OrderStatus.PENDING:
+      //   return 'Chờ xác nhận';
+      case OrderStatus.PROCESSING:
+        return 'Đang đóng gói';
+      case OrderStatus.PICKUP_PENDING:
+        return 'Chờ vận chuyển';
+      case OrderStatus.SHIPPING:
+        return 'Đang giao';
+      case OrderStatus.DELIVERED:
+        return 'Đã giao';
+      case OrderStatus.COMPLETED:
+        return 'Hoàn thành';
+
+
+      // Others
+      case OrderStatus.CANCEL:
+        return 'Đã hủy';
+
+      //! Unknown status
+      default:
+        throw UnimplementedError('Chưa xác định được trạng thái: $status');
+        // return status.name;
     }
   }
 }

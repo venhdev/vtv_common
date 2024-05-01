@@ -1,76 +1,99 @@
 import 'package:flutter/material.dart';
 
-// class Wrapper extends StatelessWidget {
-//   const Wrapper({
-//     super.key,
-//     required this.child,
-//     this.backgroundColor = Colors.white,
-//     this.padding = const EdgeInsets.all(8),
-//   });
-
-//   final Widget child;
-//   final Color? backgroundColor;
-//   final EdgeInsetsGeometry? padding;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       padding: padding,
-//       decoration: BoxDecoration(
-//         // border: Border.all(color: Colors.grey),
-//         borderRadius: BorderRadius.circular(8),
-//         color: backgroundColor,
-//         boxShadow: [
-//           BoxShadow(
-//             color: Colors.grey.withOpacity(0.2),
-//             spreadRadius: 1,
-//             blurRadius: 2,
-//             offset: const Offset(0, 2), // changes position of shadow
-//           ),
-//         ],
-//       ),
-//       child: child,
-//     );
-//   }
-// }
-
 class Wrapper extends StatelessWidget {
   const Wrapper({
     super.key,
-    required this.child,
+    this.onPressed,
+    this.child,
+    this.label,
+    this.suffixLabel,
     this.backgroundColor = Colors.white,
     this.padding = const EdgeInsets.all(8),
+    this.margin, // = const EdgeInsets.all(2)
     this.border,
     this.useBoxShadow = true,
+    this.crossAxisAlignment = CrossAxisAlignment.start,
   });
 
-  final Widget child;
+  final VoidCallback? onPressed;
+
+  final Widget? child;
+  final WrapperLabel? label;
+  final Widget? suffixLabel;
+
   final Color? backgroundColor;
   final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
   final BoxBorder? border;
   final bool useBoxShadow;
+
+  final CrossAxisAlignment crossAxisAlignment;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: padding,
-      margin: const EdgeInsets.all(2),
-      decoration: BoxDecoration(
-        border: border,
-        borderRadius: BorderRadius.circular(4),
-        color: backgroundColor,
-        boxShadow: useBoxShadow
-            ? [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 1,
-                  blurRadius: 2,
-                  offset: const Offset(0, 1), // changes position of shadow
+      margin: margin,
+      child: InkWell(
+        onTap: onPressed,
+        child: Ink(
+          padding: padding,
+          decoration: BoxDecoration(
+            border: border,
+            borderRadius: BorderRadius.circular(4),
+            color: backgroundColor,
+            boxShadow: useBoxShadow
+                ? [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 2,
+                      offset: const Offset(0, 1), // changes position of shadow
+                    ),
+                  ]
+                : null,
+          ),
+          child: Column(
+            crossAxisAlignment: crossAxisAlignment,
+            children: [
+              if (label != null || suffixLabel != null)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    label ?? const SizedBox.shrink(),
+                    suffixLabel ?? const SizedBox.shrink(),
+                  ],
                 ),
-              ]
-            : null,
+              child ?? const SizedBox.shrink(),
+            ],
+          ),
+        ),
       ),
-      child: child,
+    );
+  }
+}
+
+class WrapperLabel extends StatelessWidget {
+  const WrapperLabel({
+    super.key,
+    required this.icon,
+    required this.labelText,
+    this.labelStyle = const TextStyle(fontWeight: FontWeight.bold),
+    this.iconColor,
+  });
+
+  final IconData icon;
+  final String labelText;
+  final TextStyle? labelStyle;
+  final Color? iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, color: iconColor),
+        const SizedBox(width: 4),
+        Text(labelText, style: labelStyle),
+      ],
     );
   }
 }

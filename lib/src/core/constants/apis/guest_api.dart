@@ -31,6 +31,16 @@ const String kAPIProductPageShopURL = '/product/page/shop'; // GET /{shopId}
 const String kAPIShopCountFollowedURL = '/shop/count-followed'; // GET /{shopId}
 const String kAPIShopURL = '/shop'; // GET /{shopId} >? why not add /detail
 
+//! //*---------------------Location APIs (Guest)-----------------------*//
+// province-controller
+const String kAPILocationProvinceGetAllURL = '/location/province/get-all'; // GET
+// district-controller
+const String kAPILocationDistrictGetAllByProvinceCodeURL =
+    '/location/district/get-all-by-province-code'; // GET /{provinceCode}
+// ward-controller
+const String kAPILocationWardGetAllByDistrictCodeURL = '/location/ward/get-all-by-district-code'; // GET /{districtCode}
+const String kAPILocationWardFullAddressURL = '/location/ward/full-address'; // GET /{wardCode}
+
 //! //*---------------------Other APIs (Guest)-----------------------*//
 //# category-controller
 const String kAPIAllCategoryURL = '/category/all-parent'; // GET
@@ -41,3 +51,4 @@ const String kAPIReviewDetailURL = '/review/detail'; // GET /{reviewId}
 
 //# comment-controller
 const String kAPICommentGetURL = '/comment/get'; // GET /{reviewId}
+

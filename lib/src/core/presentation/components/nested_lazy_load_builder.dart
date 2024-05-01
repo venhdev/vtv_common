@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import '../base/base_lazy_load_page_resp.dart';
-import '../constants/typedef.dart';
+import '../../base/base_lazy_load_page_resp.dart';
+import '../../constants/typedef.dart';
 
 // OK_BUG rebuild when the parent long list is scrolled >> lost data + rebuild lazy load
 //: DONE create a controller to keep the data + current page

@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:developer';
 import 'package:http/http.dart' as http show Client;
 
 import '../../../../core.dart';
@@ -57,6 +57,7 @@ class AuthDataSourceImpl implements AuthDataSource {
       'fcmToken': fcmToken,
     };
     final url = baseUri(path: kAPIAuthLoginURL);
+    log(url.toString());
 
     // send request
     final response = await _client.post(

@@ -1,18 +1,19 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
-class OrderRequestWithCartParam extends Equatable {
+class OrderRequestWithCartParam {
   final int addressId;
   final String? systemVoucherCode;
   final String? shopVoucherCode;
   final bool useLoyaltyPoint;
   final String paymentMethod;
   final String shippingMethod;
-  final String note;
+  String note;
   final List<String?> cartIds;
 
-  const OrderRequestWithCartParam({
+  OrderRequestWithCartParam({
     required this.addressId,
     this.systemVoucherCode,
     this.shopVoucherCode,
@@ -78,19 +79,28 @@ class OrderRequestWithCartParam extends Equatable {
   //     PlaceOrderWithCartParam.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  bool get stringify => true;
+  bool operator ==(covariant OrderRequestWithCartParam other) {
+    if (identical(this, other)) return true;
+
+    return other.addressId == addressId &&
+        other.systemVoucherCode == systemVoucherCode &&
+        other.shopVoucherCode == shopVoucherCode &&
+        other.useLoyaltyPoint == useLoyaltyPoint &&
+        other.paymentMethod == paymentMethod &&
+        other.shippingMethod == shippingMethod &&
+        other.note == note &&
+        listEquals(other.cartIds, cartIds);
+  }
 
   @override
-  List<Object?> get props {
-    return [
-      addressId,
-      systemVoucherCode,
-      shopVoucherCode,
-      useLoyaltyPoint,
-      paymentMethod,
-      shippingMethod,
-      note,
-      cartIds,
-    ];
+  int get hashCode {
+    return addressId.hashCode ^
+        systemVoucherCode.hashCode ^
+        shopVoucherCode.hashCode ^
+        useLoyaltyPoint.hashCode ^
+        paymentMethod.hashCode ^
+        shippingMethod.hashCode ^
+        note.hashCode ^
+        cartIds.hashCode;
   }
 }

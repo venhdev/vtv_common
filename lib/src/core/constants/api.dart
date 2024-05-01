@@ -22,7 +22,7 @@ Map<String, String> baseHttpHeaders({
 // Uri Endpoints
 Uri baseUri({
   required String path,
-  Map<String, dynamic>? queryParameters,
+  Map<String, String>? queryParameters,
   Map<String, String>? pathVariables,
 }) {
   if (pathVariables != null) {
