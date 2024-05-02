@@ -3,3 +3,4 @@
 
 
 export 'src/dev/dev_page.dart';
+export 'src/dev/dev_utils.dart';

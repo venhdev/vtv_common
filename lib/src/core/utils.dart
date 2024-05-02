@@ -2,57 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-
-class VTVConstants {
-  static const String appName = 'Flutter Starter';
-  static const String appVersion = '1.0.0';
-  static const String appBuildNumber = '1';
-  static const String appPackage = 'com.example.flutter_starter';
-}
+import 'package:network_info_plus/network_info_plus.dart';
 
 class UiUtils {
-  BuildContext context;
-  UiUtils(this.context);
+  // BuildContext context;
+  // UiUtils(this.context);
 
-  bool isDarkMode() {
+  static bool isDarkMode(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark;
   }
 
-  Future<XFile?> showImagePicker() async {
+  //TODO change to dark/light mode using provider
+}
+
+class FileUtils {
+  static Future<XFile?> showImagePicker() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     return pickedFile;
   }
+}
 
-  // Future<void> startLoading() async {
-  //   return showDialog<void>(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (context) {
-  //       return SimpleDialog(
-  //         elevation: 0.0,
-  //         backgroundColor: Colors.transparent,
-  //         children: <Widget>[
-  //           ElevatedButton(
-  //             onPressed: () {
-  //               debugPrint('text');
-  //               // Navigator.of(context).pop();
-  //               Navigator.pop(context);
-  //             },
-  //             child: const Text('POP'),
-  //           ),
-  //           const Center(
-  //             child: CircularProgressIndicator(),
-  //           )
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
-  // Future<void> stopLoading() async {
-  //   Navigator.of(context).pop();
-  // }
+class NetWorkUtils {
+  static Future<String?> wifiIPv4() async {
+    try {
+      return await NetworkInfo().getWifiIP().then((ip) => ip);
+    } catch (_) {
+      return null;
+    }
+  }
 }
 
 class LocalNotificationUtils {

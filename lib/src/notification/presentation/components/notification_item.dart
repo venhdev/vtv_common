@@ -154,17 +154,4 @@ class _NotificationItemState extends State<NotificationItem> {
       ),
     );
   }
-
-  TextButton _buildMarkAsReadBtn() {
-    return TextButton(
-      onPressed: () {
-        // context.go('/notification/all');
-        // log('Mark as read: ${widget.notification.notificationId}');
-        widget.markAsRead(widget.notification.notificationId);
-      },
-      child: const Text(
-        'Đánh dấu đã đọc',
-      ),
-    );
-  }
 }

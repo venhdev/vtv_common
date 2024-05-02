@@ -1,5 +1,4 @@
 import 'package:vtv_common/src/core/constants/typedef.dart';
-import 'package:vtv_common/src/core/network/response_handler.dart';
 
 import 'package:vtv_common/src/shop/domain/entities/dto/shop_detail_resp.dart';
 

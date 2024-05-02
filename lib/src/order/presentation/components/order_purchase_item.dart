@@ -8,37 +8,6 @@ import 'order_item.dart';
 import 'order_status_badge.dart';
 
 class OrderPurchaseItem extends StatelessWidget {
-  // factory OrderPurchaseItem.customer({
-  //   required OrderEntity order,
-  //   required VoidCallback? onPressed, // nav to [OrderDetailPage]
-  //   required VoidCallback? onReceivedPressed, // customer confirm received order
-  //   required Widget buildWhenCompleted, // this will be review button
-  //   VoidCallback? onShopPressed, // maybe nav to [ShopPage]
-  // }) =>
-  //     OrderPurchaseItem(
-  //       order: order,
-  //       isCustomer: true,
-  //       onPressed: onPressed,
-  //       onReceivedPressed: onReceivedPressed,
-  //       buildWhenCompleted: buildWhenCompleted,
-  //       onShopPressed: onShopPressed,
-  //     );
-  // factory OrderPurchaseItem.vendor({
-  //   required OrderEntity order,
-  //   required VoidCallback? onPressed, // nav to [OrderDetailPage]
-  //   required VoidCallback? onAccepted, // vendor accept order
-  //   required VoidCallback? onWaitingForShipping, // vendor ship order
-  //   VoidCallback? onShopPressed, // maybe nav to [ShopPage]
-  // }) =>
-  //     OrderPurchaseItem(
-  //       order: order,
-  //       isCustomer: false,
-  //       onPressed: onPressed,
-  //       onShopPressed: onShopPressed,
-  //       onAcceptedPressed: onAccepted,
-  //       onWaitingForShippingPressed: onWaitingForShipping,
-  //     );
-
   const OrderPurchaseItem({
     super.key,
     required this.order,
@@ -46,26 +15,11 @@ class OrderPurchaseItem extends StatelessWidget {
     this.onShopPressed,
     this.showShopInfo = true,
     this.actionBuilder,
-    // this.onReceivedPressed,
-    // this.onAcceptedPressed,
-    // this.onWaitingForShippingPressed,
-    // this.buildWhenCompleted,
   });
 
   final OrderEntity order;
   final VoidCallback? onPressed;
   final bool showShopInfo;
-
-  // // Vendor required
-  // // vendor accept order (status PENDING => PROCESSING) means vendor start to prepare order
-  // final VoidCallback? onAcceptedPressed;
-  // // vendor ship order (status PROCESSING => SHIPPING) means vendor start to ship order
-  // final VoidCallback? onWaitingForShippingPressed;
-
-  // // Customer required
-  // final VoidCallback? onReceivedPressed;
-
-  // build base on order status
 
   //# Widget build base on order status
   final Widget Function(OrderStatus status)? actionBuilder;
@@ -130,35 +84,6 @@ class OrderPurchaseItem extends StatelessWidget {
               const SizedBox(height: 8),
               actionBuilder!(order.status),
             ]
-
-            //# order status = DELIVERED show button to confirm received
-            // if (isCustomer) ...[
-            //   if (order.status == OrderStatus.DELIVERED)
-            //     OrderPurchaseItemAction(
-            //       label: 'Bạn đã nhận được hàng chưa?',
-            //       buttonLabel: 'Đã nhận',
-            //       onPressed: onReceivedPressed,
-            //     ),
-            // ] else ...[
-            //   if (order.status == OrderStatus.PENDING)
-            //     OrderPurchaseItemAction(
-            //       label: 'Xác nhận đơn hàng này?',
-            //       buttonLabel: 'Xác nhận',
-            //       onPressed: onAcceptedPressed,
-            //       backgroundColor: Colors.blue.shade100,
-            //       buttonColor: Colors.blue.shade200,
-            //     ),
-            //   if (order.status == OrderStatus.PROCESSING)
-            //     OrderPurchaseItemAction(
-            //       label: 'Đơn hàng đã chuẩn bị xong?',
-            //       buttonLabel: 'Chờ giao hàng',
-            //       onPressed: onWaitingForShippingPressed,
-            //       backgroundColor: Colors.orange.shade100,
-            //       buttonColor: Colors.orange.shade400,
-            //     ),
-            // ],
-
-            // if (order.status == OrderStatus.COMPLETED && buildWhenCompleted != null) buildWhenCompleted!,
           ],
         ),
       ),
@@ -174,15 +99,21 @@ class OrderPurchaseItemAction extends StatelessWidget {
     required this.onPressed,
     this.backgroundColor,
     this.buttonColor,
+    this.secondButtonLabel,
+    this.secondOnPressed,
+    this.secondButtonColor,
   });
 
   final String label;
   final String buttonLabel;
-
   final VoidCallback? onPressed;
+  final Color? buttonColor;
+
+  final String? secondButtonLabel;
+  final VoidCallback? secondOnPressed;
+  final Color? secondButtonColor;
 
   final Color? backgroundColor;
-  final Color? buttonColor;
 
   @override
   Widget build(BuildContext context) {
@@ -196,14 +127,29 @@ class OrderPurchaseItemAction extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label),
-          // TODO test row 2 btn
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              backgroundColor: buttonColor ?? Colors.green.shade400,
-            ),
-            onPressed: onPressed,
-            child: Text(buttonLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              //# first button
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  backgroundColor: buttonColor ?? Colors.green.shade400,
+                ),
+                onPressed: onPressed,
+                child: Text(buttonLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              //# second button
+              if (secondButtonLabel != null)
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    backgroundColor: secondButtonColor ?? Colors.green.shade400,
+                  ),
+                  onPressed: secondOnPressed,
+                  child: Text(secondButtonLabel!, style: const TextStyle(fontWeight: FontWeight.bold)),
+                ),
+            ],
           ),
         ],
       ),

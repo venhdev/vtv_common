@@ -12,7 +12,7 @@ import 'package:http/http.dart';
 //   Duration Function(int) delay = _defaultDelay,
 //   FutureOr<void> Function(BaseRequest, BaseResponse?, int)? onRetry,
 // })
-
+@Deprecated('Use Dio with Interceptors instead')
 class ReAuthClient extends BaseClient {
   ReAuthClient(
     this._inner, {

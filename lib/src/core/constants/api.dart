@@ -2,9 +2,8 @@ part './apis/auth_api.dart';
 part './apis/guest_api.dart';
 
 const int kPORT = 8585;
-// const String kDOMAIN = '172.16.20.208';
-String devDOMAIN = '192.168.1.8'; // NOTE: For development purposes
-// const String kAPIBaseURL = 'http://$kDOMAIN:$kPORT/api';
+// const String kHOST = '172.16.20.208';
+String host = '192.168.1.8'; // NOTE: For development purposes
 
 // Http Headers
 Map<String, String> baseHttpHeaders({
@@ -12,8 +11,8 @@ Map<String, String> baseHttpHeaders({
   String? accessToken,
 }) =>
     {
-      'Content-Type':
-          'application/json; charset=utf-8', // TODO config in dio_options | remove this when migrating to dio
+      // TODO config in dio_options | remove this when migrating to dio
+      'Content-Type': 'application/json; charset=utf-8',
       'Accept': 'application/json',
       if (refreshToken != null) 'Cookie': 'refreshToken=$refreshToken',
       if (accessToken != null) 'Authorization': 'Bearer $accessToken',
@@ -32,7 +31,7 @@ Uri baseUri({
   }
   return Uri(
     scheme: 'http',
-    host: devDOMAIN, // change to kDOMAIN for production
+    host: host, // change to kDOMAIN for production
     port: kPORT,
     path: '/api$path',
     queryParameters: queryParameters,

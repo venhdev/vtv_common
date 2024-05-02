@@ -11,9 +11,7 @@ import 'package:vtv_common/core.dart';
 class DevPage extends StatefulWidget {
   const DevPage({super.key, required this.sl, this.onBackPressed});
 
-  static const String routeName = '/dev';
   final GetIt sl;
-
   final VoidCallback? onBackPressed;
 
   @override
@@ -29,14 +27,14 @@ class _DevPageState extends State<DevPage> {
 
   String? forceAccessToken;
 
-  TextEditingController domainTextController = TextEditingController(text: devDOMAIN);
+  TextEditingController domainTextController = TextEditingController(text: host);
   Future<void> setDomain(String newDomain) async {
-    if (newDomain == devDOMAIN) {
+    if (newDomain == host) {
       Fluttertoast.showToast(msg: 'Domain is the same');
     } else {
-      devDOMAIN = newDomain;
-      await sl<SharedPreferencesHelper>().I.setString('devDomain', devDOMAIN);
-      Fluttertoast.showToast(msg: 'Server domain has been changed to $devDOMAIN');
+      host = newDomain;
+      await sl<SharedPreferencesHelper>().I.setString('host', host);
+      Fluttertoast.showToast(msg: 'Server domain has been changed to $host');
       setState(() {});
     }
   }
@@ -45,7 +43,7 @@ class _DevPageState extends State<DevPage> {
   void initState() {
     super.initState();
     sl = widget.sl;
-    domainTextController.text = devDOMAIN;
+    domainTextController.text = host;
     sl<SecureStorageHelper>().accessToken.then((token) {
       if (mounted && token != null) {
         Fluttertoast.showToast(msg: 'loaded access token');
@@ -78,44 +76,13 @@ class _DevPageState extends State<DevPage> {
             _buildToken(),
             const Divider(),
             _buildFCM(),
-            const Divider(),
-            // textfield to force replace accessToken
-            _buildForceChangeAccessToken(),
-
-            //*--------------------------------
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Navigator.of(context).push(
-            //       MaterialPageRoute(
-            //         builder: (context) => const TestPage(),
-            //       ),
-            //     );
-            //   },
-            //   child: const Text('Button'),
-            // ),
-
-            // _goToTestPage(context),
+            // const Divider(),
+            // _buildForceChangeAccessToken(),
           ],
         ),
       ),
     );
   }
-
-  // ElevatedButton _goToTestPage(BuildContext context) {
-  //   return ElevatedButton(
-  //     onPressed: () {
-  //       debugPrint('text');
-  //       Navigator.of(context).push(
-  //         MaterialPageRoute(
-  //           builder: (context) {
-  //             return const TestPage();
-  //           },
-  //         ),
-  //       );
-  //     },
-  //     child: const Text('Test Page'),
-  //   );
-  // }
 
   AppBar _devAppBar(BuildContext context) {
     return AppBar(
@@ -156,6 +123,7 @@ class _DevPageState extends State<DevPage> {
     );
   }
 
+  // ignore: unused_element
   TextField _buildForceChangeAccessToken() {
     return TextField(
       decoration: InputDecoration(
@@ -261,7 +229,7 @@ class _DevPageState extends State<DevPage> {
   Column _buildDomain() {
     return Column(
       children: <Widget>[
-        Text('current Domain: $devDOMAIN'),
+        Text('current Domain: $host'),
         TextField(
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
@@ -289,83 +257,6 @@ class _DevPageState extends State<DevPage> {
   }
 }
 
-// class TestPage extends StatefulWidget {
-//   const TestPage({super.key});
-
-//   @override
-//   State<TestPage> createState() => _TestPageState();
-// }
-
-// class _TestPageState extends State<TestPage> {
-//   final dio = Dio();
-//   String? token;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     dio.options.baseUrl = 'http://$devDOMAIN:$kPORT/api';
-
-//     dio.interceptors.add(AuthInterceptor());
-//     // dio.interceptors.add(LogInterceptor(
-//     //   request: true,
-//     //   responseBody: true,
-//     //   requestBody: false,
-//     //   requestHeader: true,
-//     //   responseHeader: false,
-//     // ));
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // ignore: prefer_const_constructors
-//     return Scaffold(
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             ElevatedButton(
-//               onPressed: () {
-//                 dio.get(
-//                   kAPINotificationGetPageURL,
-//                   queryParameters: {
-//                     'page': 1,
-//                     'size': 10,
-//                   },
-//                 ).then(
-//                   (value) {
-//                     log('result: ${value.data}');
-//                   },
-//                 );
-//                 // dio
-//                 //     .get('https://661931f99a41b1b3dfbf2dfd.mockapi.io/api/demo')
-//                 //     .then((value) => log('result: ${value.data}'));
-
-//                 // dio
-//                 //     .get('https://661931f99a41b1b3dfbf2dfd.mockapi.io/api/refreshToken')
-//                 //     .then((value) => log('result: ${value.data}'));
-//               },
-//               child: const Text('Notification Get Page'),
-//             ),
-//             ElevatedButton(
-//               onPressed: () {
-//                 sl<SharedPreferencesHelper>().I.setString('token', 'oldToken').then((value) => log(
-//                       value.toString(),
-//                     ));
-//               },
-//               child: const Text('set old token'),
-//             ),
-//             ElevatedButton(
-//               onPressed: () {
-//                 log('${sl<SharedPreferencesHelper>().I.getString('token')}');
-//               },
-//               child: const Text('get token'),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 
 
