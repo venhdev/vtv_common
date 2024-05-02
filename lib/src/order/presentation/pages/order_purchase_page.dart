@@ -15,7 +15,6 @@ class OrderPurchasePage extends StatefulWidget {
   factory OrderPurchasePage.customer({
     required FRespData<MultiOrderEntity> Function(OrderStatus? status) dataCallback,
     required OrderPurchasePageController pageController,
-    required void Function(OrderDetailEntity completedOrder) onReceivedCallback,
     required OrderPurchaseItem Function(OrderEntity, void Function(OrderDetailEntity)) customerItemBuilder,
     String appBarTitle = 'Đơn hàng của bạn',
     List<Widget>? actions,
@@ -92,9 +91,11 @@ class OrderPurchasePage extends StatefulWidget {
 }
 
 class _OrderPurchasePageState extends State<OrderPurchasePage> {
+  bool loadInitialData = true;
   // late MultiOrderEntity _multiOrder;
-  Future<List<RespData<MultiOrderEntity>>> _futureDataOrders() async {
-    if (widget.initialMultiOrders != null) {
+  Future<List<RespData<MultiOrderEntity>>> _futureDataOrders(bool loadInitialData) async {
+    if (widget.initialMultiOrders != null && loadInitialData) {
+      loadInitialData = false;
       return widget.initialMultiOrders!;
     }
     return Future.wait(
@@ -118,7 +119,7 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
       initialIndex: widget.pageController.initialIndex, //! Control this to show the default tab
       length: widget.pageController.tapPages.length, //_totalTab,
       child: FutureBuilder<List<RespData<MultiOrderEntity>>>(
-          future: _futureDataOrders(),
+          future: _futureDataOrders(loadInitialData),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final listMultiOrder = snapshot.data!;
@@ -155,10 +156,11 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                         child: widget.isCustomer
                             ? _buildCustomerTabBarView(
                                 index: index,
-                                orders: listMultiOrder[index].fold(
-                                  (error) => [],
-                                  (ok) => ok.data!.orders,
-                                ),
+                                resultMultiOrder: listMultiOrder[index],
+                                // orders: listMultiOrder[index].fold(
+                                //   (error) => [],
+                                //   (ok) => ok.data!.orders,
+                                // ),
                                 onReceivedCallback: (completedOrder) {
                                   // - 1. update order list in [OrderPurchasePage]
                                   // - 2. navigate to [OrderDetailPage] with new [OrderDetailEntity]
@@ -168,10 +170,11 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                               )
                             : _buildVendorTabBarView(
                                 index: index,
-                                orders: listMultiOrder[index].fold(
-                                  (error) => [],
-                                  (ok) => ok.data!.orders,
-                                ),
+                                resultMultiOrder: listMultiOrder[index],
+                                // orders: listMultiOrder[index].fold(
+                                //   (error) => [],
+                                //   (ok) => ok.data!.orders,
+                                // ),
                                 reloadCallback: () {
                                   setState(() {}); //just update list
                                 },
@@ -240,40 +243,92 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
 
   Widget _buildCustomerTabBarView({
     required int index,
-    required List<OrderEntity> orders,
+    // required List<OrderEntity> orders,
+    required RespData<MultiOrderEntity> resultMultiOrder,
     required void Function(OrderDetailEntity completedOrder) onReceivedCallback,
   }) {
-    if (orders.isEmpty) {
-      return MessageScreen.error(
-        _getEmptyMessage(widget.pageController.tapPages[index]),
+    return resultMultiOrder.fold(
+      (error) => MessageScreen.error(
+        // _getEmptyMessage(widget.pageController.tapPages[index]),
+        error.message ?? 'Lỗi khi lấy dữ liệu đơn hàng!',
         _getIcon(widget.pageController.tapPages[index]),
-      );
-    }
-    return ListView.separated(
-      separatorBuilder: (context, index) => const Divider(),
-      itemCount: orders.length,
-      itemBuilder: (context, index) {
-        return widget.customerItemBuilder!(orders[index], onReceivedCallback);
+      ),
+      (multiOrderRes) {
+        if (multiOrderRes.data!.orders.isEmpty) {
+          return MessageScreen.error(
+            _getEmptyMessage(widget.pageController.tapPages[index]),
+            _getIcon(widget.pageController.tapPages[index]),
+          );
+        }
+        final multiOrder = multiOrderRes.data!;
+        return Column(
+          children: [
+            Row(
+              children: [
+                SizedBox(width: 4),
+                Text('Tổng số đơn hàng: ${multiOrder.count}'),
+                const Spacer(),
+                Text('Tổng tiền: ${StringHelper.formatCurrency(multiOrder.totalPayment)}'),
+                SizedBox(width: 4),
+              ],
+            ),
+            Expanded(
+              child: ListView.separated(
+                separatorBuilder: (context, index) => const Divider(),
+                itemCount: multiOrder.orders.length,
+                itemBuilder: (context, index) {
+                  return widget.customerItemBuilder!(multiOrder.orders[index], onReceivedCallback);
+                },
+              ),
+            ),
+          ],
+        );
       },
     );
+
   }
 
   Widget _buildVendorTabBarView({
     required int index,
-    required List<OrderEntity> orders,
+    // required List<OrderEntity> orders,
+    required RespData<MultiOrderEntity> resultMultiOrder,
     required void Function() reloadCallback,
   }) {
-    if (orders.isEmpty) {
-      return MessageScreen.error(
+    return resultMultiOrder.fold(
+      (error) => MessageScreen.error(
         _getEmptyMessage(widget.pageController.tapPages[index]),
         _getIcon(widget.pageController.tapPages[index]),
-      );
-    }
-    return ListView.separated(
-      separatorBuilder: (context, index) => const Divider(),
-      itemCount: orders.length,
-      itemBuilder: (context, index) {
-        return widget.vendorItemBuilder!(orders[index], reloadCallback);
+      ),
+      (multiOrderRes) {
+        if (multiOrderRes.data!.orders.isEmpty) {
+          return MessageScreen.error(
+            _getEmptyMessage(widget.pageController.tapPages[index]),
+            _getIcon(widget.pageController.tapPages[index]),
+          );
+        }
+        final multiOrder = multiOrderRes.data!;
+        return Column(
+          children: [
+            Row(
+              children: [
+                SizedBox(width: 4),
+                Text('Tổng số đơn hàng: ${multiOrder.count}'),
+                const Spacer(),
+                Text('Tổng tiền: ${StringHelper.formatCurrency(multiOrder.totalPayment)}'),
+                SizedBox(width: 4),
+              ],
+            ),
+            Expanded(
+              child: ListView.separated(
+                separatorBuilder: (context, index) => const Divider(),
+                itemCount: multiOrder.orders.length,
+                itemBuilder: (context, index) {
+                  return widget.vendorItemBuilder!(multiOrder.orders[index], reloadCallback);
+                },
+              ),
+            ),
+          ],
+        );
       },
     );
   }

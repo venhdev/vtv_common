@@ -96,13 +96,13 @@ class StringHelper {
       case null:
         return 'Tất cả';
       case OrderStatus.WAITING:
-        return 'WAITING'; // when create order (not place order yet) --not show in order list
+        return 'Đang chờ'; // when create order (not place order yet) --not show in order list
       case OrderStatus.PENDING:
         return 'Chờ xác nhận';
       case OrderStatus.PROCESSING:
-        return 'Đang lấy hàng';
+        return 'Đang đóng gói';
       case OrderStatus.PICKUP_PENDING:
-        return 'Sẵn sàng giao';
+        return 'Chờ lấy hàng';
       case OrderStatus.SHIPPING:
         return 'Đang giao';
       case OrderStatus.DELIVERED:
