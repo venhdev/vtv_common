@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../core/presentation/components/custom_widgets.dart';
 import '../../../core/constants/typedef.dart';
@@ -22,7 +21,7 @@ class OrderPurchasePage extends StatefulWidget {
       OrderPurchasePage(
         dataCallback: dataCallback,
         pageController: pageController,
-        isCustomer: true,
+        isVendor: false,
         appBarTitle: appBarTitle,
         actions: actions,
         customerItemBuilder: customerItemBuilder,
@@ -40,7 +39,7 @@ class OrderPurchasePage extends StatefulWidget {
         dataCallback: dataCallback,
         initialMultiOrders: initialMultiOrders,
         pageController: pageController,
-        isCustomer: false,
+        isVendor: true,
         appBarTitle: appBarTitle,
         actions: actions,
         vendorItemBuilder: vendorItemBuilder,
@@ -51,7 +50,7 @@ class OrderPurchasePage extends StatefulWidget {
     required this.dataCallback,
     this.initialMultiOrders,
     required this.pageController,
-    required this.isCustomer,
+    required this.isVendor,
     this.appBarTitle = 'Đơn hàng của bạn',
     this.actions,
     this.customerItemBuilder,
@@ -67,7 +66,7 @@ class OrderPurchasePage extends StatefulWidget {
   //# required properties
   final FRespData<MultiOrderEntity> Function(OrderStatus? status) dataCallback;
   final OrderPurchasePageController pageController;
-  final bool isCustomer;
+  final bool isVendor;
 
   //# custom app bar
   final String appBarTitle;
@@ -144,7 +143,7 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                         onRefresh: () async {
                           setState(() {});
                         },
-                        child: widget.isCustomer
+                        child: !widget.isVendor
                             ? _buildCustomerTabBarView(
                                 index: index,
                                 multiOrderResp: listMultiOrder[index],
@@ -152,14 +151,21 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                                   // - 1. update order list in [OrderPurchasePage]
                                   // - 2. navigate to [OrderDetailPage] with new [OrderDetailEntity]
                                   setState(() {});
-                                  context.go(OrderDetailPage.path, extra: completedOrder);
+                                  // context.go(OrderDetailPage.path, extra: completedOrder);
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return OrderDetailPage(orderDetail: completedOrder, isVendor: widget.isVendor);
+                                      },
+                                    ),
+                                  );
                                 },
                               )
                             : _buildVendorTabBarView(
                                 index: index,
                                 multiOrderResp: listMultiOrder[index],
                                 reloadCallback: () {
-                                  setState(() {}); //just update list
+                                  setState(() {}); // just update list
                                 },
                               )),
                   ),

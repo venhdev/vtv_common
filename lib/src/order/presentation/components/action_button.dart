@@ -8,28 +8,30 @@ class ActionButton extends StatelessWidget {
     required this.onPressed,
     required this.backgroundColor,
   });
-
-  factory ActionButton.back(BuildContext context) => ActionButton(
+  //! All Roles
+  factory ActionButton.back(BuildContext context, {VoidCallback? onBack}) => ActionButton(
         label: 'Quay lại',
-        onPressed: () => context.pop(),
+        onPressed: onBack ?? () => context.pop(),
         backgroundColor: Colors.grey.shade400,
       );
-  factory ActionButton.completeOrder(void Function()? onCompleteOrderPressed) => ActionButton(
+
+  //! Button for Customer Roles
+  factory ActionButton.customerCompleteOrder(void Function()? onCompleteOrderPressed) => ActionButton(
         label: 'Đã nhận được hàng',
         onPressed: onCompleteOrderPressed,
         backgroundColor: Colors.green.shade300,
       );
-  factory ActionButton.cancelOrder(void Function()? onCancelOrderPressed) => ActionButton(
+  factory ActionButton.customerCancelOrder(void Function()? onCancelOrderPressed) => ActionButton(
         label: 'Hủy đơn hàng',
         onPressed: onCancelOrderPressed,
         backgroundColor: Colors.red.shade300,
       );
-  factory ActionButton.rePurchase(void Function()? onRePurchasePressed) => ActionButton(
+  factory ActionButton.customerRePurchase(void Function()? onRePurchasePressed) => ActionButton(
         label: 'Mua lại',
         onPressed: onRePurchasePressed,
         backgroundColor: Colors.green.shade300,
       );
-  factory ActionButton.chat(void Function()? onChatPressed) => ActionButton(
+  factory ActionButton.customerChat(void Function()? onChatPressed) => ActionButton(
         label: 'Chat',
         onPressed: onChatPressed,
         backgroundColor: Colors.blue.shade300,

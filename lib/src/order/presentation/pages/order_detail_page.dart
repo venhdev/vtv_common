@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:timelines/timelines.dart';
 
-import '../../../../auth.dart';
 import '../../../core/constants/types.dart';
 import '../../../core/helpers.dart';
 import '../../../core/presentation/pages/qr_view_page.dart';
@@ -23,26 +21,53 @@ import '../components/wrapper.dart';
 class OrderDetailPage extends StatelessWidget {
   const OrderDetailPage({
     super.key,
+    required this.isVendor,
+    required this.orderDetail,
+    this.onCompleteOrderPressed,
+    this.onCancelOrderPressed,
+    this.onRePurchasePressed,
+    this.customerReviewBtn,
+    this.onOrderItemPressed,
+    this.onBack,
+  });
+
+  const OrderDetailPage.customer({
+    super.key,
     required this.orderDetail,
     required this.onCompleteOrderPressed,
     required this.onCancelOrderPressed,
     required this.onRePurchasePressed,
-    this.customerReviewBtn,
+    required this.customerReviewBtn,
     this.onOrderItemPressed,
-  });
+    this.onBack,
+  }) : isVendor = false;
 
-  static const String routeName = 'order-detail';
-  static const String path = '/user/purchase/order-detail';
+  const OrderDetailPage.vendor({
+    super.key,
+    required this.orderDetail,
+    this.onOrderItemPressed,
+    this.onBack,
+  })  : isVendor = true,
+        onCompleteOrderPressed = null,
+        onCancelOrderPressed = null,
+        onRePurchasePressed = null,
+        customerReviewBtn = null;
+
+  // static const String routeName = 'order-detail';
+  // static const String path = '/user/purchase/order-detail';
 
   final OrderDetailEntity orderDetail;
-
   final void Function(OrderItemEntity orderItem)? onOrderItemPressed;
+  final bool isVendor;
 
-  //! Customer view
-  final Future<void> Function(String orderId) onCompleteOrderPressed;
-  final Future<void> Function(String orderId) onCancelOrderPressed;
-  final Future<void> Function(List<OrderItemEntity> orderItems) onRePurchasePressed;
+  //! Customer required properties
+  final Future<void> Function(String orderId)? onCompleteOrderPressed;
+  final Future<void> Function(String orderId)? onCancelOrderPressed;
+  final Future<void> Function(List<OrderItemEntity> orderItems)? onRePurchasePressed;
   final Widget Function(OrderEntity order)? customerReviewBtn;
+
+  //! Custom (for all role)
+  final void Function()? onBack; // default using context.pop() (GoRouter)
 
   @override
   Widget build(BuildContext context) {
@@ -458,21 +483,21 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 
-  Widget? _buildBottomActionByOrderStatus(BuildContext context, OrderStatus status) {
-    final isVender = context.read<AuthCubit>().state.auth!.userInfo.roles!.contains(Role.VENDOR);
-
+  Widget _buildBottomActionByOrderStatus(BuildContext context, OrderStatus status) {
     Widget buildCustomerActionByStatus(BuildContext context, OrderStatus status) {
       switch (status) {
-        case OrderStatus.PENDING || OrderStatus.PROCESSING:
-          return ActionButton.cancelOrder(() => onCancelOrderPressed(orderDetail.order.orderId!));
+        case OrderStatus.WAITING:
+          return ActionButton.back(context, onBack: onBack);
+        case OrderStatus.PENDING || OrderStatus.PROCESSING || OrderStatus.PICKUP_PENDING:
+          return ActionButton.customerCancelOrder(() => onCancelOrderPressed!(orderDetail.order.orderId!));
         case OrderStatus.COMPLETED:
           return customerReviewBtn!(orderDetail.order);
         case OrderStatus.CANCEL:
-          return ActionButton.rePurchase(() => onRePurchasePressed(orderDetail.order.orderItems));
-        case OrderStatus.PICKUP_PENDING || OrderStatus.SHIPPING:
-          return ActionButton.back(context);
+          return ActionButton.customerRePurchase(() => onRePurchasePressed!(orderDetail.order.orderItems));
+        case OrderStatus.SHIPPING:
+          return ActionButton.back(context, onBack: onBack);
         case OrderStatus.DELIVERED:
-          return ActionButton.completeOrder(() => onCompleteOrderPressed(orderDetail.order.orderId!));
+          return ActionButton.customerCompleteOrder(() => onCompleteOrderPressed!(orderDetail.order.orderId!));
 
         default:
           throw UnimplementedError('Not implement for status: $status');
@@ -482,31 +507,32 @@ class OrderDetailPage extends StatelessWidget {
     return Container(
       width: double.infinity,
       color: Theme.of(context).colorScheme.primaryContainer,
-      child: !isVender
-          //! Customer view
-          ? Row(
+      child: isVendor
+          //! Vendor actions
+          ? ActionButton.back(context, onBack: onBack)
+          //! Customer actions
+          : Row(
               children: [
-                //# chat
+                //# first half: chat - rePurchase
                 Expanded(
                   child: Row(
                     children: [
-                      Expanded(flex: 1, child: ActionButton.chat(null)),
+                      Expanded(flex: 1, child: ActionButton.customerChat(null)),
                       if (status == OrderStatus.COMPLETED)
                         Expanded(
                             flex: 2,
-                            child: ActionButton.rePurchase(() => onRePurchasePressed(orderDetail.order.orderItems))),
+                            child: ActionButton.customerRePurchase(
+                                () => onRePurchasePressed!(orderDetail.order.orderItems))),
                     ],
                   ),
                 ),
 
-                //# cancel - add review - view review
+                //# second half: action by status
                 Expanded(
                   child: buildCustomerActionByStatus(context, status),
                 ),
               ],
-            )
-          //! Vendor view
-          : ActionButton.back(context),
+            ),
     );
   }
 }
