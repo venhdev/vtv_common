@@ -73,6 +73,7 @@ SuccessResponse<T> handleDioResponse<T, R>(
   T Function(R data)? parse,
   bool hasData = true,
 }) {
+  assert((hasData && parse != null) || !hasData, 'parse function is required when hasData');
   if (response.statusCode! >= 200 && response.statusCode! < 300) {
     if (!hasData) {
       return SuccessResponse(

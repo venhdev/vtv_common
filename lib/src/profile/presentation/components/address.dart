@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../domain/entities/address_entity.dart';
 
-class AddressSummary extends StatelessWidget {
-  const AddressSummary({
+class Address extends StatelessWidget {
+  const Address({
     super.key,
     required this.address,
     this.onTap,

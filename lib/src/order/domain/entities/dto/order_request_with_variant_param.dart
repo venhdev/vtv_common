@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
+import '../../../../core/constants/types.dart';
+
 class OrderRequestWithVariantParam extends Equatable {
   final int addressId;
   final String? systemVoucherCode;
   final String? shopVoucherCode;
   final bool useLoyaltyPoint;
-  final String paymentMethod;
+  final PaymentTypes paymentMethod;
   final String shippingMethod;
   final String note;
   final Map<String, int> variantIds; // key: variantId, value: quantity
@@ -42,7 +44,7 @@ class OrderRequestWithVariantParam extends Equatable {
     String? systemVoucherCode,
     String? shopVoucherCode,
     bool? useLoyaltyPoint,
-    String? paymentMethod,
+    PaymentTypes? paymentMethod,
     String? shippingMethod,
     String? note,
     Map<String, int>? variantIds,
@@ -65,7 +67,7 @@ class OrderRequestWithVariantParam extends Equatable {
       'systemVoucherCode': systemVoucherCode,
       'shopVoucherCode': shopVoucherCode,
       'useLoyaltyPoint': useLoyaltyPoint,
-      'paymentMethod': paymentMethod,
+      'paymentMethod': paymentMethod.name,
       'shippingMethod': shippingMethod,
       'note': note,
       'productVariantIdsAndQuantities': variantIds,

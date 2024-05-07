@@ -4,6 +4,7 @@ class Wrapper extends StatelessWidget {
   const Wrapper({
     super.key,
     this.onPressed,
+    this.disabled = false,
     this.child,
     this.label,
     this.suffixLabel,
@@ -16,6 +17,8 @@ class Wrapper extends StatelessWidget {
   });
 
   final VoidCallback? onPressed;
+  /// disable touch event {onPressed}
+  final bool disabled; 
 
   final Widget? child;
   final WrapperLabel? label;
@@ -34,7 +37,7 @@ class Wrapper extends StatelessWidget {
     return Container(
       margin: margin,
       child: InkWell(
-        onTap: onPressed,
+        onTap: disabled ? null : onPressed,
         child: Ink(
           padding: padding,
           decoration: BoxDecoration(

@@ -26,6 +26,10 @@ const String kAPIProductCountFavoriteURL = '/product/count-favorite'; // GET /{p
 const String kAPIProductPageCategoryURL = '/product/page/category'; // GET /{categoryId}
 const String kAPIProductPageShopURL = '/product/page/shop'; // GET /{shopId}
 
+//# category-shop-guest-controller
+const String kAPICategoryShopByShopIdURL = '/category-shop/get-list/shop-id'; // GET /{shopId}
+const String kAPICategoryShopByCategoryShopIdURL = '/category-shop/category-shop-id'; // GET /{categoryShopId}
+
 //! //*---------------------SHOP APIs (Guest)-----------------------*//
 //# shop-detail-controller
 const String kAPIShopCountFollowedURL = '/shop/count-followed'; // GET /{shopId}

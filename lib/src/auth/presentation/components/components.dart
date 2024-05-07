@@ -4,3 +4,4 @@
 
 export 'catalog_item.dart';
 export 'text_field_custom.dart';
+export 'register_form.dart';

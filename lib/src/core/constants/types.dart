@@ -50,3 +50,9 @@ enum OrderStatus {
   PICKED_UP,
   WAREHOUSE,
 }
+
+enum PaymentTypes {
+  COD,
+  VNPay,
+  Wallet,
+}

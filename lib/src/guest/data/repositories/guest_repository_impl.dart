@@ -1,4 +1,5 @@
 import 'package:vtv_common/src/core/constants/typedef.dart';
+import 'package:vtv_common/src/shop/domain/entities/category_shop_entity.dart';
 
 import 'package:vtv_common/src/shop/domain/entities/dto/shop_detail_resp.dart';
 
@@ -60,6 +61,20 @@ class GuestRepositoryImpl implements GuestRepository {
             data:
                 '${fullAddressResp.data?.ward.fullName}, ${fullAddressResp.data?.district.fullName}, ${fullAddressResp.data?.province.fullName}');
       },
+    );
+  }
+
+  @override
+  FRespData<CategoryShopEntity> getCategoryShopByCategoryShopId(int categoryShopId) async {
+    return handleDataResponseFromDataSource(
+      dataCallback: () async => await _guestDataSource.getCategoryShopByCategoryShopId(categoryShopId),
+    );
+  }
+
+  @override
+  FRespData<List<CategoryShopEntity>> getCategoryShopByShopId(int shopId) async {
+    return handleDataResponseFromDataSource(
+      dataCallback: () async => await _guestDataSource.getCategoryShopByShopId(shopId),
     );
   }
 }

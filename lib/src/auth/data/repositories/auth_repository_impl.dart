@@ -9,6 +9,7 @@ import '../../../core/error/exceptions.dart';
 import '../../../core/error/failures.dart';
 import '../../../core/helpers.dart';
 import '../../../core/network/error_response.dart';
+import '../../../core/network/response_handler.dart';
 import '../../../core/network/success_response.dart';
 import '../../domain/entities/auth_entity.dart';
 import '../../domain/entities/dto/register_params.dart';
@@ -205,5 +206,19 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (e) {
       return Left(UnexpectedError(message: e.toString()));
     }
+  }
+
+  @override
+  FRespEither activeCustomerAccount(String username, String otp) async {
+    return handleSuccessResponseFromDataSource(
+      noDataCallback: () async => _authDataSource.activeCustomerAccount(username, otp),
+    );
+  }
+
+  @override
+  FRespEither sendMailForActiveAccount(String username) async {
+    return handleSuccessResponseFromDataSource(
+      noDataCallback: () async => _authDataSource.sendMailForActiveAccount(username),
+    );
   }
 }

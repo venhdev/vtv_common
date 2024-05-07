@@ -74,18 +74,27 @@ class StringHelper {
     throw Exception('Không xác định được loại voucher');
   }
 
+  static String getPaymentNameByPaymentTypes(PaymentTypes method) {
+    switch (method) {
+      case PaymentTypes.COD: // Cash on delivery
+        return 'Thanh toán khi nhận hàng';
+      case PaymentTypes.VNPay:
+        return 'Thanh toán qua cổng VNPay';
+      case PaymentTypes.Wallet:
+        return 'Thanh toán bằng VTV Wallet';
+      default:
+        return method.name;
+    }
+  }
+
   static String getPaymentName(String method) {
     switch (method) {
       case 'COD': // Cash on delivery
         return 'Thanh toán khi nhận hàng';
-      case 'MOMO':
-        return 'MoMo';
-      case 'zalopay':
-        return 'ZaloPay';
-      case 'visa':
-        return 'Visa';
-      case 'mastercard':
-        return 'MasterCard';
+      case 'VNPay':
+        return 'Thanh toán qua cổng VNPay';
+      case 'Wallet':
+        return 'Thanh toán bằng VTV Wallet';
       default:
         return method;
     }
@@ -143,7 +152,6 @@ class StringHelper {
       case OrderStatus.COMPLETED:
         return 'Hoàn thành';
 
-
       // Others
       case OrderStatus.CANCEL:
         return 'Đã hủy';
@@ -151,7 +159,7 @@ class StringHelper {
       //! Unknown status
       default:
         throw UnimplementedError('Chưa xác định được trạng thái: $status');
-        // return status.name;
+      // return status.name;
     }
   }
 }

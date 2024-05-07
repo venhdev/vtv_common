@@ -79,15 +79,16 @@ Future<T?> showDialogToConfirm<T>({
   );
 }
 
-Future<T?> showDialogToAlert<T>(
+Future showDialogToAlert(
   BuildContext context, {
   List<Widget>? children,
   bool scrollable = false,
   Widget? title,
   TextStyle? titleTextStyle,
   bool barrierDismissible = true,
+  String confirmText = 'Đóng',
 }) async {
-  return showDialog<T>(
+  return showDialog(
     context: context,
     barrierDismissible: barrierDismissible, // user must tap button if set to false
     builder: (BuildContext context) {
@@ -107,7 +108,7 @@ Future<T?> showDialogToAlert<T>(
             : null,
         actions: <Widget>[
           TextButton(
-            child: const Text('Đóng'),
+            child: Text(confirmText),
             onPressed: () {
               Navigator.of(context).pop();
             },

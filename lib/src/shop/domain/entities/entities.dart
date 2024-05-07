@@ -3,3 +3,4 @@
 
 export 'dto/dto.dart';
 export 'shop_entity.dart';
+export 'category_shop_entity.dart';

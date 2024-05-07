@@ -1,5 +1,6 @@
 import '../../../core/constants/typedef.dart';
 import '../../../profile/domain/domain.dart';
+import '../../../shop/domain/entities/category_shop_entity.dart';
 import '../../../shop/domain/entities/dto/shop_detail_resp.dart';
 
 abstract class GuestRepository {
@@ -12,4 +13,8 @@ abstract class GuestRepository {
   FRespData<List<DistrictEntity>> getDistrictsByProvinceCode(String provinceCode);
   FRespData<List<WardEntity>> getWardsByDistrictCode(String districtCode);
   FRespData<String> getFullAddressByWardCode(String wardCode);
+
+  //# category-shop-guest-controller
+  FRespData<List<CategoryShopEntity>> getCategoryShopByShopId(int shopId);
+  FRespData<CategoryShopEntity> getCategoryShopByCategoryShopId(int categoryShopId);
 }

@@ -34,5 +34,8 @@ abstract class AuthRepository {
   FRespEither sendOTPForResetPassword(String username);
   FRespEither resetPasswordViaOTP(String username, String otpCode, String newPassword);
 
+  //# customer-controller
+  FRespEither sendMailForActiveAccount(String username);
+  FRespEither activeCustomerAccount(String username, String otp);
   // ----------------- Auth -----------------
 }

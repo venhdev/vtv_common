@@ -12,7 +12,7 @@ import 'voucher_order_entity.dart';
 class OrderEntity extends Equatable {
   final String? orderId; // --uuid
   final String? note;
-  final String paymentMethod;
+  final PaymentTypes paymentMethod;
   final String shippingMethod;
   final int count;
   final int totalPrice;
@@ -60,7 +60,7 @@ class OrderEntity extends Equatable {
   OrderEntity copyWith({
     String? orderId,
     String? note,
-    String? paymentMethod,
+    PaymentTypes? paymentMethod,
     String? shippingMethod,
     int? count,
     int? totalPrice,
@@ -101,7 +101,7 @@ class OrderEntity extends Equatable {
     return <String, dynamic>{
       'orderId': orderId,
       'note': note,
-      'paymentMethod': paymentMethod,
+      'paymentMethod': paymentMethod.name,
       'shippingMethod': shippingMethod,
       'count': count,
       'totalPrice': totalPrice,
@@ -123,7 +123,8 @@ class OrderEntity extends Equatable {
     return OrderEntity(
       orderId: map['orderId'] != null ? map['orderId'] as String : null,
       note: map['note'] as String?,
-      paymentMethod: map['paymentMethod'] as String,
+      // paymentMethod: map['paymentMethod'] as String,
+      paymentMethod: PaymentTypes.values.firstWhere((e) => e.name == map['paymentMethod'] as String),
       shippingMethod: map['shippingMethod'] as String,
       count: map['count'] as int,
       totalPrice: map['totalPrice'] as int,

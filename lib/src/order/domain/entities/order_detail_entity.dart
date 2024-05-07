@@ -14,12 +14,14 @@ class OrderDetailEntity extends Equatable {
   final ShippingEntity shipping;
   final TransportEntity? transport;
   final int? totalPoint; // current loyalty point
+  final int? balance; // current loyalty point
 
   const OrderDetailEntity({
     required this.order,
     required this.shipping,
     required this.transport,
     required this.totalPoint,
+    required this.balance,
   });
 
   OrderDetailEntity copyWith({
@@ -27,12 +29,14 @@ class OrderDetailEntity extends Equatable {
     ShippingEntity? shipping,
     TransportEntity? transport,
     int? totalPoint,
+    int? balance,
   }) {
     return OrderDetailEntity(
       order: order ?? this.order,
       shipping: shipping ?? this.shipping,
       transport: transport ?? this.transport,
       totalPoint: totalPoint ?? this.totalPoint,
+      balance: balance ?? this.balance,
     );
   }
 
@@ -43,6 +47,7 @@ class OrderDetailEntity extends Equatable {
       transport:
           (map['transportDTO'] != null) ? TransportEntity.fromMap(map['transportDTO'] as Map<String, dynamic>) : null,
       totalPoint: map['totalPoint'] as int?,
+      balance: map['balance'] as int?,
     );
   }
 
@@ -50,7 +55,13 @@ class OrderDetailEntity extends Equatable {
       OrderDetailEntity.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  List<Object> get props => [order, shipping];
+  List<Object?> get props => [
+        order,
+        shipping,
+        transport,
+        totalPoint,
+        balance,
+      ];
 
   @override
   bool get stringify => true;
@@ -61,6 +72,7 @@ class OrderDetailEntity extends Equatable {
       'shippingDTO': shipping.toMap(),
       'transportDTO': transport?.toMap(),
       'totalPoint': totalPoint,
+      'balance': balance,
     };
   }
 

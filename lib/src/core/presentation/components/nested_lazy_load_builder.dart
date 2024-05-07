@@ -39,6 +39,11 @@ class LazyLoadController<T> extends ChangeNotifier {
     items.addAll(newItems);
   }
 
+  void removeAt(int index) {
+    items.removeAt(index);
+    notifyListeners();
+  }
+
   void reload({List<T>? newItems, bool shouldFetchData = true}) {
     items.clear();
     currentPage = 1;
@@ -102,8 +107,10 @@ class _NestedLazyLoadBuilderState<T> extends State<NestedLazyLoadBuilder<T>> {
     log('[NestedLazyLoadBuilder] initState');
     super.initState();
     _loadData(widget.controller.currentPage);
+    log('[NestedLazyLoadBuilder] initState: addListener');
     widget.controller.scrollController.addListener(() {
       final pos = widget.controller.scrollController.position;
+      // log('[NestedLazyLoadBuilder] scrollController listener called: pixels=${pos.pixels}, maxScrollExtent=${pos.maxScrollExtent}');
       if (pos.pixels == pos.maxScrollExtent && !_isLoading && !_reachEnd) {
         _loadData(widget.controller.currentPage);
       }
@@ -115,7 +122,6 @@ class _NestedLazyLoadBuilderState<T> extends State<NestedLazyLoadBuilder<T>> {
       if (mounted) {
         if (widget.controller.isFetchDataOnReload) {
           _loadData(widget.controller.currentPage);
-          _reachEnd = false;
         } else {
           setState(() {
             _reachEnd = false;
@@ -123,6 +129,15 @@ class _NestedLazyLoadBuilderState<T> extends State<NestedLazyLoadBuilder<T>> {
         }
       }
     });
+  }
+
+  @override
+  void dispose() {
+    // log('[NestedLazyLoadBuilder] dispose: no action');
+    widget.controller.scrollController.removeListener(() {
+      log('[NestedLazyLoadBuilder] dispose: remove listener called');
+    });
+    super.dispose();
   }
 
   Future<void> _loadData(int page) async {
@@ -133,7 +148,7 @@ class _NestedLazyLoadBuilderState<T> extends State<NestedLazyLoadBuilder<T>> {
         });
       }
 
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500)); //NOTE: dev only
 
       List<T> data;
       final dataEither = await widget.dataCallback(page);
@@ -149,6 +164,7 @@ class _NestedLazyLoadBuilderState<T> extends State<NestedLazyLoadBuilder<T>> {
             _reachEnd = true;
           } else {
             widget.controller.currentPage++;
+            _reachEnd = false;
           }
           return newItems;
         },

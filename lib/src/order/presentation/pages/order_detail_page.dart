@@ -6,13 +6,12 @@ import 'package:timelines/timelines.dart';
 import '../../../core/constants/types.dart';
 import '../../../core/helpers.dart';
 import '../../../core/presentation/pages/qr_view_page.dart';
-import '../../../profile/presentation/components/address_summary.dart';
-import '../../../shop/presentation/components/shop_info.dart';
+import '../../../profile/presentation/components/address.dart';
 import '../../domain/entities/order_detail_entity.dart';
 import '../../domain/entities/order_entity.dart';
 import '../../domain/entities/order_item_entity.dart';
 import '../components/action_button.dart';
-import '../components/order_item.dart';
+import '../components/order_section/order_section.dart';
 import '../components/order_status_badge.dart';
 import '../components/wrapper.dart';
 
@@ -23,6 +22,7 @@ class OrderDetailPage extends StatelessWidget {
     super.key,
     required this.isVendor,
     required this.orderDetail,
+    this.onPayPressed,
     this.onCompleteOrderPressed,
     this.onCancelOrderPressed,
     this.onRePurchasePressed,
@@ -38,6 +38,7 @@ class OrderDetailPage extends StatelessWidget {
     required this.onCancelOrderPressed,
     required this.onRePurchasePressed,
     required this.customerReviewBtn,
+    required this.onPayPressed,
     this.onOrderItemPressed,
     this.onBack,
   }) : isVendor = false;
@@ -51,7 +52,8 @@ class OrderDetailPage extends StatelessWidget {
         onCompleteOrderPressed = null,
         onCancelOrderPressed = null,
         onRePurchasePressed = null,
-        customerReviewBtn = null;
+        customerReviewBtn = null,
+        onPayPressed = null;
 
   // static const String routeName = 'order-detail';
   // static const String path = '/user/purchase/order-detail';
@@ -63,6 +65,7 @@ class OrderDetailPage extends StatelessWidget {
   //! Customer required properties
   final Future<void> Function(String orderId)? onCompleteOrderPressed;
   final Future<void> Function(String orderId)? onCancelOrderPressed;
+  final Future<void> Function(String orderId)? onPayPressed;
   final Future<void> Function(List<OrderItemEntity> orderItems)? onRePurchasePressed;
   final Widget Function(OrderEntity order)? customerReviewBtn;
 
@@ -98,27 +101,35 @@ class OrderDetailPage extends StatelessWidget {
               const SizedBox(height: 8),
 
               //# summary info: transport + shipping method + order timeline
-              _buildSummaryInfo(context),
+              _transportSummary(context),
               const SizedBox(height: 8),
 
-              //! order summary
-              _buildShopInfoAndItems(context), // shop info, list of items
+              //! shop info + list of items
+              OrderSectionShopItems(
+                order: orderDetail.order,
+                hideShopVoucherCode: true,
+                onItemPressed: (item) => onOrderItemPressed?.call(item),
+              ),
               const SizedBox(height: 8),
 
               //! payment method
-              _buildPaymentMethod(),
+              // _buildPaymentMethod(),
+              OrderSectionPaymentMethod(
+                disabled: true,
+                paymentMethod: orderDetail.order.paymentMethod,
+                paid: orderDetail.order.status != OrderStatus.UNPAID,
+              ),
               const SizedBox(height: 8),
 
               //! total price
-              _buildTotalPrice(),
-              const SizedBox(height: 8),
+              OrderSectionSingleOrderPayment(order: orderDetail.order),
+              // hideVoucherCode: true,
 
               //! note
-              _buildNote(),
-
-              //? cancel button -> move to bottom sheet
-              // if (orderDetail.order.status == OrderStatus.PENDING || orderDetail.order.status == OrderStatus.PROCESSING)
-              //   _buildCancelButton(context),
+              if (orderDetail.order.note?.isNotEmpty ?? false) ...[
+                const SizedBox(height: 4),
+                OrderSectionNote(note: orderDetail.order.note!, readOnly: true),
+              ],
 
               const SizedBox(height: 48),
             ],
@@ -184,7 +195,7 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryInfo(BuildContext context) {
+  Widget _transportSummary(BuildContext context) {
     return Wrapper(
       child: Column(
         children: [
@@ -220,11 +231,6 @@ class OrderDetailPage extends StatelessWidget {
                           ],
                         ),
                       ),
-                      // child: Text.rich(
-                      //   'Mã vận đơn:',
-                      //   overflow: TextOverflow.ellipsis,
-                      //   style: TextStyle(fontSize: 12)
-                      // ),
                     ),
                     //btn copy
                     IconButton(
@@ -253,9 +259,9 @@ class OrderDetailPage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 2),
-          _buildShippingMethod(),
-          const SizedBox(height: 2),
-          _buildDeliveryAddress(),
+          OrderSectionShippingMethod(order: orderDetail.order, showShippingFee: false),
+          const SizedBox(height: 4),
+          Address(address: orderDetail.order.address, color: Colors.white, suffixIcon: null),
           Timeline.tileBuilder(
             padding: const EdgeInsets.all(8),
             theme: TimelineThemeData(nodePosition: 0),
@@ -317,177 +323,13 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildNote() {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text.rich(
-        TextSpan(
-          text: 'Ghi chú: ',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-          children: [
-            TextSpan(
-              text: orderDetail.order.note ?? '(không có)',
-              style: TextStyle(
-                color: orderDetail.order.note == null ? Colors.grey : Colors.black,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTotalPrice() {
-    return Wrapper(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Text(
-            'Tổng cộng',
-            textAlign: TextAlign.start,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          _totalSummaryPriceItem('Tổng tiền hàng:', orderDetail.order.totalPrice),
-          _totalSummaryPriceItem('Phí vận chuyển:', orderDetail.order.shippingFee),
-
-          _totalSummaryPriceItem('Giảm giá hệ thống:', orderDetail.order.discountSystem),
-          _totalSummaryPriceItem('Giảm giá cửa hàng:', orderDetail.order.discountShop),
-
-          if (orderDetail.order.loyaltyPointHistory != null) ...[
-            _totalSummaryPriceItem(
-              'Giảm giá điểm tích lũy:',
-              orderDetail.order.loyaltyPointHistory!.point,
-            ),
-          ],
-
-          // total price
-          const Divider(thickness: 0.2, height: 4),
-          _totalSummaryPriceItem(
-            'Tổng thanh toán:',
-            orderDetail.order.paymentTotal,
-            color: Colors.red,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _totalSummaryPriceItem(String title, int price, {Color? color}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(title),
-        Text(
-          StringHelper.formatCurrency(price),
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPaymentMethod() {
-    return Wrapper(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text(
-            'Phương thức thanh toán',
-            textAlign: TextAlign.start,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          // Text(widget.order.paymentMethod),
-          Text(StringHelper.getPaymentName(orderDetail.order.paymentMethod)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDeliveryAddress() {
-    return AddressSummary(
-      address: orderDetail.order.address,
-      color: Colors.white,
-      suffixIcon: null,
-    );
-  }
-
-  Widget _buildShippingMethod() {
-    return Wrapper(
-      useBoxShadow: false,
-      border: Border.all(color: Colors.grey.shade500),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text(
-            'Phương thức vận chuyển',
-            textAlign: TextAlign.start,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          // method name
-          Text(orderDetail.order.shippingMethod),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildShopInfoAndItems(BuildContext context) {
-    return Wrapper(
-      child: Column(
-        children: [
-          //! shop info --circle shop avatar
-          ShopInfo.viewOnly(
-            shopId: orderDetail.order.shop.shopId,
-            shopName: orderDetail.order.shop.name,
-            shopAvatar: orderDetail.order.shop.avatar,
-          ),
-          const SizedBox(height: 8),
-
-          //! list of items
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: orderDetail.order.orderItems.length,
-            separatorBuilder: (context, index) => const Divider(thickness: 0.4, height: 8),
-            itemBuilder: (context, index) {
-              final item = orderDetail.order.orderItems[index];
-              return TextButton(
-                onPressed: () => onOrderItemPressed?.call(item),
-                // onPressed: () {
-                //   // Navigator.of(context).push(
-                //   //   MaterialPageRoute(
-                //   //     builder: (context) {
-                //   //       return ProductDetailPage(productId: item.productVariant.productId);
-                //   //     },
-                //   //   ),
-                //   // );
-                // },
-                style: TextButton.styleFrom(
-                  shape: const RoundedRectangleBorder(),
-                  padding: EdgeInsets.zero,
-                ),
-                child: OrderItem(item),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildBottomActionByOrderStatus(BuildContext context, OrderStatus status) {
     Widget buildCustomerActionByStatus(BuildContext context, OrderStatus status) {
       switch (status) {
         case OrderStatus.WAITING:
           return ActionButton.back(context, onBack: onBack);
+        case OrderStatus.UNPAID:
+          return ActionButton.pay(() => onPayPressed!(orderDetail.order.orderId!));
         case OrderStatus.PENDING || OrderStatus.PROCESSING || OrderStatus.PICKUP_PENDING:
           return ActionButton.customerCancelOrder(() => onCancelOrderPressed!(orderDetail.order.orderId!));
         case OrderStatus.COMPLETED:
@@ -500,7 +342,8 @@ class OrderDetailPage extends StatelessWidget {
           return ActionButton.customerCompleteOrder(() => onCompleteOrderPressed!(orderDetail.order.orderId!));
 
         default:
-          throw UnimplementedError('Not implement for status: $status');
+          return ActionButton.back(context, onBack: onBack);
+        // throw UnimplementedError('Not implement for status: $status');
       }
     }
 

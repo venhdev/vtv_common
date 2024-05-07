@@ -10,11 +10,11 @@ class ForgotPasswordPage extends StatefulWidget {
     required this.handleResetPassword,
   });
 
-  static const String routeName = 'forgot-password';
-  static const String path = '/user/login/forgot-password';
+  // static const String routeName = 'forgot-password';
+  // static const String path = '/user/login/forgot-password';
 
   final FutureOr<bool> Function(String username) onSendCode; // true if send code success (parent call API)
-  final FutureOr<void> Function(String username, String otp, String newPassword) handleResetPassword;
+  final Future<void> Function(String username, String otp, String newPassword) handleResetPassword;
 
   @override
   State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
@@ -29,6 +29,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   bool _isCodeSent = false;
   bool _isSendingCode = false;
+  bool _isChangingPassword = false;
 
   @override
   void dispose() {
@@ -93,6 +94,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       appBar: AppBar(
         title: const Text('Quên mật khẩu'),
         backgroundColor: Colors.transparent,
+        leading: _isSendingCode || _isChangingPassword
+            ? const IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: null,
+              )
+            : null,
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -146,6 +153,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       label: 'Mã xác nhận',
                       hint: 'Nhập mã xác nhận',
                       isRequired: true,
+                      keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Chưa nhập mã xác nhận';
@@ -195,10 +203,20 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         ),
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
+                            setState(() {
+                              _isChangingPassword = true;
+                            });
                             await handleResetPassword();
+                            setState(() {
+                              _isChangingPassword = false;
+                            });
                           }
                         },
-                        child: const Text('Đổi mật khẩu'),
+                        child: _isChangingPassword
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : const Text('Đổi mật khẩu'),
                       ),
                     ),
                   ],

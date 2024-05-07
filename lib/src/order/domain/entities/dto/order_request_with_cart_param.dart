@@ -3,12 +3,14 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+import '../../../../core/constants/types.dart';
+
 class OrderRequestWithCartParam {
   final int addressId;
   final String? systemVoucherCode;
   final String? shopVoucherCode;
   final bool useLoyaltyPoint;
-  final String paymentMethod;
+  final PaymentTypes paymentMethod;
   final String shippingMethod;
   String note;
   final List<String?> cartIds;
@@ -29,7 +31,7 @@ class OrderRequestWithCartParam {
     String? systemVoucherCode,
     String? shopVoucherCode,
     bool? useLoyaltyPoint,
-    String? paymentMethod,
+    PaymentTypes? paymentMethod,
     String? shippingMethod,
     String? note,
     List<String>? cartIds,
@@ -52,7 +54,7 @@ class OrderRequestWithCartParam {
       'systemVoucherCode': systemVoucherCode,
       'shopVoucherCode': shopVoucherCode,
       'useLoyaltyPoint': useLoyaltyPoint,
-      'paymentMethod': paymentMethod,
+      'paymentMethod': paymentMethod.name,
       'shippingMethod': shippingMethod,
       'note': note,
       'cartIds': cartIds,

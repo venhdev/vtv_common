@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http show Client;
+import 'package:dio/dio.dart' as dio;
 
 import '../../../../core.dart';
 import '../../domain/entities/auth_entity.dart';
@@ -10,23 +11,24 @@ import '../../domain/entities/user_info_entity.dart';
 // <https://pub.dev/packages/jwt_decoder>
 
 abstract class AuthDataSource {
-  // ======================  Auth controller ======================
+  //# ======================  Auth controller ======================
   Future<SuccessResponse<AuthEntity>> loginWithUsernameAndPassword(String username, String password);
   Future<SuccessResponse> register(RegisterParams registerDTO);
   Future<SuccessResponse> logoutAndRevokeRefreshToken(String refreshToken); // use for logout
   Future<SuccessResponse<String>> getNewAccessToken(String refreshToken); // handing expired token
-  // ======================  Auth controller ======================
 
-  // ======================  Customer controller ======================
+  //# ======================  Customer controller ======================
   // Get user's profile
   Future<SuccessResponse<AuthEntity>> getUserProfile();
   // Edit user's profile
   Future<SuccessResponse<UserInfoEntity>> editUserProfile({required UserInfoEntity newInfo});
 
-  /// Request send OTP to the user's email
+  // Request send OTP to the user's email
   Future<SuccessResponse> sendOTPForResetPasswordViaUsername(String username);
+  Future<SuccessResponse> sendMailForActiveAccount(String username);
+  Future<SuccessResponse> activeCustomerAccount(String username, String otp);
 
-  /// Request reset password with OTP code received from the user's email
+  // Request reset password with OTP code received from the user's email
   Future<SuccessResponse> resetPassword({
     required String username,
     required String otp,
@@ -37,15 +39,15 @@ abstract class AuthDataSource {
     required String oldPassword,
     required String newPassword,
   });
-  // ======================  Customer controller ======================
 }
 
 class AuthDataSourceImpl implements AuthDataSource {
   final http.Client _client;
+  final dio.Dio _dio;
   final FirebaseCloudMessagingManager _fcmManager;
   final SecureStorageHelper _secureStorageHelper;
 
-  AuthDataSourceImpl(this._client, this._fcmManager, this._secureStorageHelper);
+  AuthDataSourceImpl(this._client, this._fcmManager, this._secureStorageHelper, this._dio);
 
   @override
   Future<SuccessResponse<AuthEntity>> loginWithUsernameAndPassword(String username, String password) async {
@@ -273,5 +275,32 @@ class AuthDataSourceImpl implements AuthDataSource {
         url: url,
       );
     }
+  }
+
+  @override
+  Future<SuccessResponse<Object?>> activeCustomerAccount(String username, String otp) async {
+    final url = baseUri(path: kAPICustomerActiveAccountURL);
+
+    final dio.Response response = await _dio.postUri(
+      url,
+      data: {
+        'username': username,
+        'otp': otp,
+      },
+    );
+
+    return handleDioResponse(response, url, hasData: false);
+  }
+
+  @override
+  Future<SuccessResponse<Object?>> sendMailForActiveAccount(String username) async {
+    final url = baseUri(
+      path: kAPICustomerSendEmailActiveAccountURL,
+      queryParameters: {'username': username},
+    );
+
+    final dio.Response response = await _dio.getUri(url);
+
+    return handleDioResponse(response, url, hasData: false);
   }
 }

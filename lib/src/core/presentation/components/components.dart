@@ -6,6 +6,8 @@ export 'custom_buttons.dart';
 export 'custom_dialogs.dart';
 export 'custom_widgets.dart';
 export 'image_cacheable.dart';
+export 'lazy_load_builder.dart';
 export 'nested_lazy_load_builder.dart';
+export 'options_dialog.dart';
 export 'rating.dart';
 export 'scanner_button_widgets.dart';

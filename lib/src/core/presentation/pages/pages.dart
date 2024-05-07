@@ -4,3 +4,4 @@
 export 'photo_view.dart';
 export 'qr_scan_page.dart';
 export 'qr_view_page.dart';
+export 'full_screen_dialog.dart';

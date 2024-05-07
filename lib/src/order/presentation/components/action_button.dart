@@ -16,6 +16,11 @@ class ActionButton extends StatelessWidget {
       );
 
   //! Button for Customer Roles
+  factory ActionButton.pay(void Function()? onPayPressed) => ActionButton(
+        label: 'Thanh toán',
+        onPressed: onPayPressed,
+        backgroundColor: Colors.green.shade300,
+      );
   factory ActionButton.customerCompleteOrder(void Function()? onCompleteOrderPressed) => ActionButton(
         label: 'Đã nhận được hàng',
         onPressed: onCompleteOrderPressed,

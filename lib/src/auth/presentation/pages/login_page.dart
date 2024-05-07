@@ -1,26 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../bloc/auth_cubit.dart';
 import '../components/text_field_custom.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({
     super.key,
     this.onLoginPressed,
-    this.onNavRegister,
-    this.onNavForgotPassword,
-    this.invokeAuthChanged,
+    this.onRegisterPressed,
+    this.onForgotPasswordPressed,
     this.showTitle = true,
   });
 
   final Future<void> Function(String username, String password)? onLoginPressed; // only call when validate success
-  final VoidCallback? onNavRegister;
-  final VoidCallback? onNavForgotPassword;
+  final VoidCallback? onRegisterPressed;
+  final VoidCallback? onForgotPasswordPressed;
 
   /// only call when auth status changed and page is mounted
-  final void Function(AuthStatus status)? invokeAuthChanged;
 
   // ui
   final bool showTitle;
@@ -45,73 +41,68 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthCubit, AuthState>(
-      listener: (context, state) {
-        widget.invokeAuthChanged?.call(state.status);
-      },
-      child: Scaffold(
-        appBar: widget.showTitle
-            ? AppBar(
-                title: const Text('Đăng nhập'),
-                backgroundColor: Colors.transparent,
-              )
-            : null,
-        body: Center(
-          child: SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              margin: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 12,
-                    offset: Offset(0, 12),
-                  ),
-                ],
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      "VTV",
-                      style: GoogleFonts.ribeye(
-                        fontSize: 36,
-                        fontWeight: FontWeight.w400,
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextFieldCustom(
-                      controller: _usernameController,
-                      label: 'Tài khoản',
-                      hint: 'Nhập tên tài khoản',
-                      isRequired: true,
-                      prefixIcon: const Icon(Icons.person),
-                    ),
-                    const SizedBox(height: 12),
-                    TextFieldCustom(
-                      controller: _passwordController,
-                      label: 'Mật khẩu',
-                      hint: 'Nhập mật khẩu',
-                      isRequired: true,
-                      obscureText: true,
-                      prefixIcon: const Icon(Icons.lock),
-                    ),
-                    // forgot password btn
-                    _buildForgotPasswordBtn(context),
-                    const SizedBox(height: 18),
-                    // btn login
-                    _buildLoginButton(context),
-                    // register
-                    _buildRegisterBtn(context),
-                  ],
+    return Scaffold(
+      appBar: widget.showTitle
+          ? AppBar(
+              title: const Text('Đăng nhập'),
+              backgroundColor: Colors.transparent,
+            )
+          : null,
+      body: Center(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            margin: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 12,
+                  offset: Offset(0, 12),
                 ),
+              ],
+            ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    "VTV",
+                    style: GoogleFonts.ribeye(
+                      fontSize: 36,
+                      fontWeight: FontWeight.w400,
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFieldCustom(
+                    controller: _usernameController,
+                    label: 'Tài khoản',
+                    hint: 'Nhập tên tài khoản',
+                    isRequired: true,
+                    prefixIcon: const Icon(Icons.person),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFieldCustom(
+                    controller: _passwordController,
+                    label: 'Mật khẩu',
+                    hint: 'Nhập mật khẩu',
+                    isRequired: true,
+                    obscureText: true,
+                    prefixIcon: const Icon(Icons.lock),
+                  ),
+                  // forgot password btn
+                  _buildForgotPasswordBtn(context),
+                  const SizedBox(height: 18),
+                  // btn login
+                  _buildLoginButton(context),
+                  // register
+                  _buildRegisterBtn(context),
+                ],
               ),
             ),
           ),
@@ -124,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
     return Align(
       alignment: Alignment.center,
       child: TextButton(
-        onPressed: widget.onNavRegister,
+        onPressed: widget.onRegisterPressed,
         child: const Text(
           'Chưa có tài khoản? Đăng ký ngay!',
           style: TextStyle(
@@ -141,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
     return Align(
       alignment: Alignment.centerRight,
       child: TextButton(
-        onPressed: widget.onNavForgotPassword,
+        onPressed: widget.onForgotPasswordPressed,
         child: const Text(
           'Quên mật khẩu?',
           style: TextStyle(

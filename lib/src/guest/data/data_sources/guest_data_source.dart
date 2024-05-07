@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../../../core/constants/api.dart';
 import '../../../core/network/network.dart';
 import '../../../profile/domain/entities/entities.dart';
+import '../../../shop/domain/entities/category_shop_entity.dart';
 import '../../../shop/domain/entities/dto/shop_detail_resp.dart';
 
 abstract class GuestDataSource {
@@ -15,6 +16,10 @@ abstract class GuestDataSource {
   Future<SuccessResponse<List<DistrictEntity>>> getDistrictsByProvinceCode(String provinceCode);
   Future<SuccessResponse<List<WardEntity>>> getWardsByDistrictCode(String districtCode);
   Future<SuccessResponse<FullAddressResp>> getFullAddressByWardCode(String wardCode);
+
+  //# category-shop-guest-controller
+  Future<SuccessResponse<List<CategoryShopEntity>>> getCategoryShopByShopId(int shopId);
+  Future<SuccessResponse<CategoryShopEntity>> getCategoryShopByCategoryShopId(int categoryShopId);
 }
 
 class GuestDataSourceImpl implements GuestDataSource {
@@ -113,6 +118,36 @@ class GuestDataSourceImpl implements GuestDataSource {
       parse: (data) => (data['districtDTOs'] as List<dynamic>)
           .map(
             (district) => DistrictEntity.fromMap(district),
+          )
+          .toList(),
+    );
+  }
+
+  @override
+  Future<SuccessResponse<CategoryShopEntity>> getCategoryShopByCategoryShopId(int categoryShopId) async {
+    final url = baseUri(path: '$kAPICategoryShopByCategoryShopIdURL/$categoryShopId');
+
+    final response = await _dio.getUri(url);
+
+    return handleDioResponse<CategoryShopEntity, Map<String, dynamic>>(
+      response,
+      url,
+      parse: (jsonMap) => CategoryShopEntity.fromMap(jsonMap),
+    );
+  }
+
+  @override
+  Future<SuccessResponse<List<CategoryShopEntity>>> getCategoryShopByShopId(int shopId) async {
+    final url = baseUri(path: '$kAPICategoryShopByShopIdURL/$shopId');
+
+    final response = await _dio.getUri(url);
+
+    return handleDioResponse<List<CategoryShopEntity>, Map<String, dynamic>>(
+      response,
+      url,
+      parse: (jsonMap) => (jsonMap['categoryShopDTOs'] as List<dynamic>)
+          .map(
+            (categoryShop) => CategoryShopEntity.fromMap(categoryShop),
           )
           .toList(),
     );

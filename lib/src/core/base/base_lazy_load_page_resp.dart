@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
 
 abstract class IBasePageResp<T> extends Equatable {
@@ -23,4 +24,7 @@ abstract class IBasePageResp<T> extends Equatable {
         size,
         totalPage,
       ];
+
+  @override
+  bool get stringify => true;
 }
