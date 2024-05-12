@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
-import '../../../core/helpers.dart';
+import '../../../core/utils.dart';
 import '../../domain/entities/notification_entity.dart';
 
 class NotificationItem extends StatefulWidget {
@@ -130,7 +130,7 @@ class _NotificationItemState extends State<NotificationItem> {
                           children: [
                             Text(
                               // notification.createAt.toString(),
-                              StringHelper.convertDateTimeToString(
+                              StringUtils.convertDateTimeToString(
                                 widget.notification.createAt,
                                 pattern: 'dd/MM/yyyy HH:mm',
                               ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../core/helpers.dart';
+import '../../../core/utils.dart';
 import '../../domain/entities/dto/register_params.dart';
-import 'text_field_custom.dart';
+import '../../../core/presentation/components/outline_text_field.dart';
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({
@@ -70,17 +70,17 @@ class _RegisterFormState extends State<RegisterForm> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                TextFieldCustom(
+                OutlineTextField(
                   controller: _fullNameController,
                   label: 'Họ và tên',
-                  hint: 'Nhập tên đầy đủ của bạn',
+                  hintText: 'Nhập tên đầy đủ của bạn',
                   prefixIcon: const Icon(Icons.badge),
                 ),
                 const SizedBox(height: 12),
-                TextFieldCustom(
+                OutlineTextField(
                   controller: _genderController,
                   label: 'Giới tính',
-                  hint: 'Chọn giới tính của bạn',
+                  hintText: 'Chọn giới tính của bạn',
                   readOnly: true,
                   onTap: () async {
                     // show dialog to choose gender
@@ -119,11 +119,11 @@ class _RegisterFormState extends State<RegisterForm> {
                   prefixIcon: const Icon(Icons.wc),
                 ),
                 const SizedBox(height: 12),
-                TextFieldCustom(
+                OutlineTextField(
                   controller: _dobController,
                   readOnly: true,
                   label: 'Ngày sinh',
-                  hint: 'Chọn ngày sinh của bạn',
+                  hintText: 'Chọn ngày sinh của bạn',
                   prefixIcon: const Icon(Icons.cake),
                   onTap: () async {
                     final pickedDate = await showDatePicker(
@@ -133,7 +133,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     );
 
                     if (pickedDate != null) {
-                      _dobController.text = StringHelper.convertDateTimeToString(
+                      _dobController.text = StringUtils.convertDateTimeToString(
                         pickedDate,
                         pattern: 'dd/MM/yyyy',
                       );
@@ -142,32 +142,32 @@ class _RegisterFormState extends State<RegisterForm> {
                   },
                 ),
                 const SizedBox(height: 12),
-                TextFieldCustom(
+                OutlineTextField(
                   controller: _usernameController,
                   label: 'Tài khoản',
-                  hint: 'Nhập tên tài khoản',
+                  hintText: 'Nhập tên tài khoản',
                   prefixIcon: const Icon(Icons.person),
                 ),
                 const SizedBox(height: 12),
-                TextFieldCustom(
+                OutlineTextField(
                   controller: _emailController,
                   label: 'Email',
-                  hint: 'Nhập email',
+                  hintText: 'Nhập email',
                   prefixIcon: const Icon(Icons.email),
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Email không được để trống';
-                    } else if (!ValidatorHelper.isValidEmail(value)) {
+                    } else if (!ValidationUtils.isValidEmail(value)) {
                       return 'Email không hợp lệ';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 12),
-                TextFieldCustom(
+                OutlineTextField(
                   controller: _passwordController,
                   label: 'Mật khẩu',
-                  hint: 'Nhập mật khẩu',
+                  hintText: 'Nhập mật khẩu',
                   obscureText: true,
                   prefixIcon: const Icon(Icons.lock),
                   validator: (value) {
@@ -178,10 +178,10 @@ class _RegisterFormState extends State<RegisterForm> {
                   },
                 ),
                 const SizedBox(height: 12),
-                TextFieldCustom(
+                OutlineTextField(
                   controller: _confirmPasswordController,
                   label: 'Xác nhận mật khẩu',
-                  hint: 'Nhập lại mật khẩu',
+                  hintText: 'Nhập lại mật khẩu',
                   obscureText: true,
                   prefixIcon: const Icon(Icons.lock),
                   validator: (value) {

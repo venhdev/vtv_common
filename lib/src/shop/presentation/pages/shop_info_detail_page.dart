@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vtv_common/src/core/presentation/components/rating.dart';
-import 'package:vtv_common/src/order/presentation/components/wrapper.dart';
+import 'package:vtv_common/src/core/presentation/components/wrapper.dart';
 import 'package:vtv_common/src/shop/domain/entities/dto/shop_detail_resp.dart';
 import 'package:vtv_common/src/shop/presentation/components/shop_info.dart';
 

@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:timelines/timelines.dart';
 
 import '../../../core/constants/types.dart';
-import '../../../core/helpers.dart';
+import '../../../core/utils.dart';
 import '../../../core/presentation/pages/qr_view_page.dart';
 import '../../../profile/presentation/components/address.dart';
 import '../../domain/entities/order_detail_entity.dart';
@@ -13,7 +13,7 @@ import '../../domain/entities/order_item_entity.dart';
 import '../components/action_button.dart';
 import '../components/order_section/order_section.dart';
 import '../components/order_status_badge.dart';
-import '../components/wrapper.dart';
+import '../../../core/presentation/components/wrapper.dart';
 
 // const String _noVoucherMsg = 'Không áp dụng';
 
@@ -88,7 +88,7 @@ class OrderDetailPage extends StatelessWidget {
               //! order status 'mã đơn hàng' + 'ngày đặt hàng' + copy button
               Wrapper(
                 // backgroundColor: Colors.red.shade100,
-                backgroundColor: ColorHelper.getOrderStatusBackgroundColor(orderDetail.order.status, shade: 100),
+                backgroundColor: ColorUtils.getOrderStatusBackgroundColor(orderDetail.order.status, shade: 100),
                 child: Column(
                   children: [
                     // order date + order id
@@ -147,7 +147,7 @@ class OrderDetailPage extends StatelessWidget {
             // 'Ngày đặt hàng',
             TextSpan(text: 'Ngày đặt hàng:\n', children: [
               TextSpan(
-                text: StringHelper.convertDateTimeToString(
+                text: StringUtils.convertDateTimeToString(
                   (orderDetail.order.orderDate).toLocal(),
                   pattern: 'dd-MM-yyyy hh:mm aa',
                 ),
@@ -278,7 +278,7 @@ class OrderDetailPage extends StatelessWidget {
                     Expanded(
                       flex: 1,
                       child: Text(
-                        StringHelper.convertDateTimeToString(
+                        StringUtils.convertDateTimeToString(
                           orderDetail.transport!.transportHandles[index].createAt,
                           pattern: 'dd-MM-yyyy\nHH:mm',
                         ),
@@ -334,6 +334,7 @@ class OrderDetailPage extends StatelessWidget {
           return ActionButton.customerCancelOrder(() => onCancelOrderPressed!(orderDetail.order.orderId!));
         case OrderStatus.COMPLETED:
           return customerReviewBtn!(orderDetail.order);
+          // return ActionButton.back(context, onBack: onBack);
         case OrderStatus.CANCEL:
           return ActionButton.customerRePurchase(() => onRePurchasePressed!(orderDetail.order.orderItems));
         case OrderStatus.SHIPPING:
@@ -366,6 +367,11 @@ class OrderDetailPage extends StatelessWidget {
                             flex: 2,
                             child: ActionButton.customerRePurchase(
                                 () => onRePurchasePressed!(orderDetail.order.orderItems))),
+                      if (status == OrderStatus.UNPAID)
+                        Expanded(
+                            flex: 2,
+                            child: ActionButton.customerCancelOrder(
+                                () => onCancelOrderPressed!(orderDetail.order.orderId!))),
                     ],
                   ),
                 ),

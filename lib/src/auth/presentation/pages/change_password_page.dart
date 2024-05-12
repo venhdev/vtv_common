@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../components/text_field_custom.dart';
+import '../../../core/presentation/components/outline_text_field.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key, required this.onChangePassword});
@@ -48,26 +48,26 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  TextFieldCustom(
+                  OutlineTextField(
                     controller: _oldPasswordController,
                     label: 'Mật khẩu hiện tại',
-                    hint: 'Nhập mật khẩu hiện tại',
+                    hintText: 'Nhập mật khẩu hiện tại',
                     obscureText: true,
                     prefixIcon: const Icon(Icons.lock),
                   ),
                   const SizedBox(height: 24),
-                  TextFieldCustom(
+                  OutlineTextField(
                     controller: _newPasswordController,
                     label: 'Mật khẩu mới',
-                    hint: 'Nhập mật khẩu mới',
+                    hintText: 'Nhập mật khẩu mới',
                     obscureText: true,
                     prefixIcon: const Icon(Icons.lock),
                   ),
                   const SizedBox(height: 24),
-                  TextFieldCustom(
+                  OutlineTextField(
                     controller: _confirmPasswordController,
                     label: 'Xác nhận mật khẩu mới',
-                    hint: 'Nhập lại mật khẩu mới',
+                    hintText: 'Nhập lại mật khẩu mới',
                     obscureText: true,
                     prefixIcon: const Icon(Icons.lock),
                     validator: (value) {

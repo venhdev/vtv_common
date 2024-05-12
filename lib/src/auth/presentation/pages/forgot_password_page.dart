@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import '../components/text_field_custom.dart';
+import '../../../core/presentation/components/outline_text_field.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({
@@ -134,11 +134,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  TextFieldCustom(
+                  OutlineTextField(
                     readOnly: _isCodeSent,
                     controller: _emailController,
                     label: 'Tài khoản',
-                    hint: 'Nhập tên tài khoản',
+                    hintText: 'Nhập tên tài khoản',
                     isRequired: true,
                     suffixIcon: IconButton(
                       onPressed: () async => await handleSendCode(),
@@ -148,10 +148,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   // when code is sent add more fields to form
                   if (_isCodeSent) ...[
                     const SizedBox(height: 12),
-                    TextFieldCustom(
+                    OutlineTextField(
                       controller: _codeController,
                       label: 'Mã xác nhận',
-                      hint: 'Nhập mã xác nhận',
+                      hintText: 'Nhập mã xác nhận',
                       isRequired: true,
                       keyboardType: TextInputType.number,
                       validator: (value) {
@@ -162,10 +162,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       },
                     ),
                     const SizedBox(height: 12),
-                    TextFieldCustom(
+                    OutlineTextField(
                       controller: _passwordController,
                       label: 'Mật khẩu mới',
-                      hint: 'Nhập mật khẩu mới',
+                      hintText: 'Nhập mật khẩu mới',
                       isRequired: true,
                       obscureText: true,
                       validator: (value) {
@@ -176,10 +176,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       },
                     ),
                     const SizedBox(height: 12),
-                    TextFieldCustom(
+                    OutlineTextField(
                       controller: _confirmPasswordController,
                       label: 'Xác nhận mật khẩu mới',
-                      hint: 'Nhập lại mật khẩu mới',
+                      hintText: 'Nhập lại mật khẩu mới',
                       isRequired: true,
                       obscureText: true,
                       validator: (value) {

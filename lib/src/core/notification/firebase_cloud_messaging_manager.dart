@@ -4,7 +4,7 @@ import 'dart:math' show Random;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import '../utils.dart';
+import '../helpers.dart';
 
 // foreground message handler
 void _foregroundMessageHandler(RemoteMessage message) {
@@ -83,7 +83,7 @@ void handleShowPushNotification(RemoteMessage message) {
   //   payload: message.data.toString(),
   // );
 
-  LocalNotificationUtils(FlutterLocalNotificationsPlugin()).showNotification(
+  LocalNotificationHelper(FlutterLocalNotificationsPlugin()).showNotification(
     id: Random().nextInt(1000),
     title: message.notification?.title ?? 'No title',
     body: message.notification?.body ?? 'No body',

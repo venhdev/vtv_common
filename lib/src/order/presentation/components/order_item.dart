@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/helpers.dart';
+import '../../../core/utils.dart';
 import '../../domain/entities/order_item_entity.dart';
 
 class OrderItem extends StatelessWidget {
@@ -65,7 +65,7 @@ class OrderItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      StringHelper.formatCurrency(item.productVariant.price),
+                      StringUtils.formatCurrency(item.productVariant.price),
                       style: const TextStyle(
                         fontWeight: FontWeight.w500,
                       ),

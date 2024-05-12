@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../core/constants/api.dart';
 import '../../../core/network/network.dart';
+import '../../../home/domain/entities/category_entity.dart';
 import '../../../profile/domain/entities/entities.dart';
 import '../../../shop/domain/entities/category_shop_entity.dart';
 import '../../../shop/domain/entities/dto/shop_detail_resp.dart';
@@ -20,6 +21,17 @@ abstract class GuestDataSource {
   //# category-shop-guest-controller
   Future<SuccessResponse<List<CategoryShopEntity>>> getCategoryShopByShopId(int shopId);
   Future<SuccessResponse<CategoryShopEntity>> getCategoryShopByCategoryShopId(int categoryShopId);
+
+  //# category-controller
+  // GET
+  // /api/category/all-parent
+  // const String kAPIAllCategoryParentURL = '/category/all-parent'; // GET
+  Future<SuccessResponse<List<CategoryEntity>>> getAllParentCategory();
+
+  // GET
+  // /api/category/all-category/by-parent/{categoryId}
+  // const String kAPIAllCategoryByParentURL = '/category/all-category/by-parent'; // GET /{categoryId}
+  Future<SuccessResponse<List<CategoryEntity>>> getAllCategoryByParent(int categoryId);
 }
 
 class GuestDataSourceImpl implements GuestDataSource {
@@ -148,6 +160,40 @@ class GuestDataSourceImpl implements GuestDataSource {
       parse: (jsonMap) => (jsonMap['categoryShopDTOs'] as List<dynamic>)
           .map(
             (categoryShop) => CategoryShopEntity.fromMap(categoryShop),
+          )
+          .toList(),
+    );
+  }
+
+  @override
+  Future<SuccessResponse<List<CategoryEntity>>> getAllCategoryByParent(int categoryId) async {
+    final url = baseUri(path: '$kAPIAllCategoryByParentURL/$categoryId');
+
+    final response = await _dio.getUri(url);
+
+    return handleDioResponse<List<CategoryEntity>, Map<String, dynamic>>(
+      response,
+      url,
+      parse: (jsonMap) => (jsonMap['categoryDTOs'] as List<dynamic>)
+          .map(
+            (category) => CategoryEntity.fromMap(category),
+          )
+          .toList(),
+    );
+  }
+
+  @override
+  Future<SuccessResponse<List<CategoryEntity>>> getAllParentCategory() async {
+    final url = baseUri(path: kAPIAllCategoryParentURL);
+
+    final response = await _dio.getUri(url);
+
+    return handleDioResponse<List<CategoryEntity>, Map<String, dynamic>>(
+      response,
+      url,
+      parse: (jsonMap) => (jsonMap['categoryDTOs'] as List<dynamic>)
+          .map(
+            (category) => CategoryEntity.fromMap(category),
           )
           .toList(),
     );

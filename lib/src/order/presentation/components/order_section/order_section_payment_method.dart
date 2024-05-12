@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/types.dart';
-import '../../../../core/helpers.dart';
 import '../../../../core/presentation/components/options_dialog.dart';
-import '../wrapper.dart';
+import '../../../../core/utils.dart';
+import '../../../../core/presentation/components/wrapper.dart';
 
 const _hintStyle = TextStyle(color: Colors.grey, fontSize: 12);
 
@@ -31,7 +31,7 @@ class OrderSectionPaymentMethod extends StatelessWidget {
     if (!PaymentTypes.values.contains(method)) return const SizedBox.shrink();
 
     return Text(
-      StringHelper.getPaymentNameByPaymentTypes(method),
+      StringUtils.getPaymentNameByPaymentTypes(method),
       style: const TextStyle(fontSize: 12, color: Colors.grey),
     );
   }
@@ -46,7 +46,7 @@ class OrderSectionPaymentMethod extends StatelessWidget {
     switch (method) {
       case PaymentTypes.Wallet:
         return Text(
-          ' (số dư ví: ${StringHelper.formatCurrency(balance!)})',
+          ' (số dư ví: ${StringUtils.formatCurrency(balance!)})',
           style: _hintStyle,
         );
       default:
@@ -102,7 +102,7 @@ class OrderSectionPaymentMethod extends StatelessWidget {
                       children: [
                         Icon(paymentIcon(value), color: paymentColor(value)),
                         const SizedBox(width: 2),
-                        Text(StringHelper.getPaymentNameByPaymentTypes(value)),
+                        Text(StringUtils.getPaymentNameByPaymentTypes(value)),
                         const SizedBox(width: 2),
                       ],
                     ),

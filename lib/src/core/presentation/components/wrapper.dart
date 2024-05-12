@@ -6,6 +6,7 @@ class Wrapper extends StatelessWidget {
     this.onPressed,
     this.disabled = false,
     this.child,
+    this.bottom,
     this.label,
     this.suffixLabel,
     this.backgroundColor = Colors.white,
@@ -17,10 +18,12 @@ class Wrapper extends StatelessWidget {
   });
 
   final VoidCallback? onPressed;
+
   /// disable touch event {onPressed}
-  final bool disabled; 
+  final bool disabled;
 
   final Widget? child;
+  final Widget? bottom;
   final WrapperLabel? label;
   final Widget? suffixLabel;
 
@@ -67,6 +70,7 @@ class Wrapper extends StatelessWidget {
                   ],
                 ),
               child ?? const SizedBox.shrink(),
+              if (bottom != null) bottom!,
             ],
           ),
         ),
@@ -78,13 +82,13 @@ class Wrapper extends StatelessWidget {
 class WrapperLabel extends StatelessWidget {
   const WrapperLabel({
     super.key,
-    required this.icon,
+    this.icon,
     required this.labelText,
     this.labelStyle = const TextStyle(fontWeight: FontWeight.bold),
     this.iconColor,
   });
 
-  final IconData icon;
+  final IconData? icon;
   final String labelText;
   final TextStyle? labelStyle;
   final Color? iconColor;
@@ -93,8 +97,7 @@ class WrapperLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: iconColor),
-        const SizedBox(width: 4),
+        if (icon != null) ...[Icon(icon!, color: iconColor), const SizedBox(width: 4)],
         Text(labelText, style: labelStyle),
       ],
     );

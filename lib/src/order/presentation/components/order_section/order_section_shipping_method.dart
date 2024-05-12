@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/helpers.dart';
+import '../../../../core/utils.dart';
 import '../../../domain/entities/order_entity.dart';
-import '../wrapper.dart';
+import '../../../../core/presentation/components/wrapper.dart';
 
 class OrderSectionShippingMethod extends StatelessWidget {
   const OrderSectionShippingMethod({
@@ -32,7 +32,7 @@ class OrderSectionShippingMethod extends StatelessWidget {
                 const Text(
                   'Phí vận chuyển:',
                 ),
-                Text(StringHelper.formatCurrency(_order.shippingFee)),
+                Text(StringUtils.formatCurrency(_order.shippingFee)),
               ],
             )
           : null,

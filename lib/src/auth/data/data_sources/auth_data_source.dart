@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:http/http.dart' as http show Client;
+
 import 'package:dio/dio.dart' as dio;
+import 'package:http/http.dart' as http show Client;
 
 import '../../../../core.dart';
 import '../../domain/entities/auth_entity.dart';

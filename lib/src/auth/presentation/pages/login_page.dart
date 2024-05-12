@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../components/text_field_custom.dart';
+import '../../../core/presentation/components/outline_text_field.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({
@@ -79,18 +79,18 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  TextFieldCustom(
+                  OutlineTextField(
                     controller: _usernameController,
                     label: 'Tài khoản',
-                    hint: 'Nhập tên tài khoản',
+                    hintText: 'Nhập tên tài khoản',
                     isRequired: true,
                     prefixIcon: const Icon(Icons.person),
                   ),
                   const SizedBox(height: 12),
-                  TextFieldCustom(
+                  OutlineTextField(
                     controller: _passwordController,
                     label: 'Mật khẩu',
-                    hint: 'Nhập mật khẩu',
+                    hintText: 'Nhập mật khẩu',
                     isRequired: true,
                     obscureText: true,
                     prefixIcon: const Icon(Icons.lock),

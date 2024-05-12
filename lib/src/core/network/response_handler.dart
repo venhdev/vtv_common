@@ -82,8 +82,9 @@ SuccessResponse<T> handleDioResponse<T, R>(
         status: response.data['status'] ?? 'unknown status',
       );
     } else {
+      //! condition 'R is Map<String, dynamic>' always return false => use response.data
       final result = parse!(response.data);
-      if (R is Map<String, dynamic>) {
+      if (response.data is Map<String, dynamic>) {
         return SuccessResponse(
           data: result,
           code: response.statusCode,

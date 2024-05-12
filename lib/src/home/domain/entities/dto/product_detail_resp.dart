@@ -12,8 +12,8 @@ class ProductDetailResp extends Equatable {
   final int code;
   final int categoryId;
   final String categoryName;
-  final int categoryParentId;
-  final String categoryParentName;
+  final int? categoryParentId;
+  final String? categoryParentName;
   final int shopId;
   final String shopName;
   final String shopAvatar;
@@ -36,7 +36,7 @@ class ProductDetailResp extends Equatable {
   });
 
   @override
-  List<Object> get props {
+  List<Object?> get props {
     return [
       status,
       message,
@@ -107,8 +107,8 @@ class ProductDetailResp extends Equatable {
       code: map['code'] as int,
       categoryId: map['categoryId'] as int,
       categoryName: map['categoryName'] as String,
-      categoryParentId: map['categoryParentId'] as int,
-      categoryParentName: map['categoryParentName'] as String,
+      categoryParentId: map['categoryParentId'] as int?,
+      categoryParentName: map['categoryParentName'] as String?,
       shopId: map['shopId'] as int,
       shopName: map['shopName'] as String,
       shopAvatar: map['shopAvatar'] as String,

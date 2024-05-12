@@ -1,215 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:intl/intl.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'constants/types.dart';
-import 'error/exceptions.dart';
 import '../auth/domain/entities/auth_entity.dart';
 import '../auth/domain/entities/user_info_entity.dart';
+import 'constants/types.dart';
+import 'error/exceptions.dart';
 
-class ValidatorHelper {
-  static bool isValidEmail(String email) {
-    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
-  }
-}
+class UiHelper {
+  BuildContext context;
+  UiHelper(this.context);
 
-class StringHelper {
-  /// N/A: Not Available, Not Applicable, or No Answer
-  static String get na => 'N/A';
-
-  /// - Change [pattern] to change the format
-  ///
-  /// - [useTextValue] is used to convert date to text value like 'Today', 'Yesterday', 'Tomorrow', 'x days ago', 'x days later'
-  static String convertDateTimeToString(
-    DateTime date, {
-    String pattern = 'dd-MM-yyyy',
-    bool useTextValue = false,
-  }) {
-    if (useTextValue) {
-      // just get day, month, year
-      final now = DateTime.now();
-      DateTime today = DateTime(now.year, now.month, now.day);
-      DateTime tomorrow = today.add(const Duration(days: 1));
-      DateTime yesterday = today.subtract(const Duration(days: 1));
-      if (date == today) {
-        return 'Hôm nay';
-      } else if (date == tomorrow) {
-        return 'Ngày mai';
-      } else if (date == yesterday) {
-        return 'Hôm qua';
-      } else if (date.isAfter(today)) {
-        final remaining = date.difference(today).inDays; // get remaining days
-        return '$remaining ngày nữa';
-      } else if (date.isBefore(today)) {
-        final passed = today.difference(date).inDays; // get passed days
-        return '$passed ngày trước';
-      }
-    }
-
-    return DateFormat(pattern).format(date);
+  bool isDarkMode() {
+    return Theme.of(context).brightness == Brightness.dark;
   }
 
-  static String formatCurrency(int value, {bool showUnit = true, String? unit = 'đ'}) {
-    var f = NumberFormat.decimalPattern();
-    if (!showUnit) return f.format(value);
-    return '${f.format(value)}$unit';
-  }
-
-  static String getVoucherDescribe({required String type, required int discount}) {
-    if (type == VoucherTypes.PERCENTAGE_SYSTEM.name) {
-      return 'Giảm $discount%';
-    } else if (type == VoucherTypes.PERCENTAGE_SHOP.name) {
-      return 'Giảm $discount%';
-    } else if (type == VoucherTypes.MONEY_SHOP.name) {
-      return 'Giảm ${formatCurrency(discount)}';
-    } else if (type == VoucherTypes.MONEY_SYSTEM.name) {
-      return 'Giảm ${formatCurrency(discount)}';
-    } else if (type == VoucherTypes.FIXED_SHOP.name) {
-      return 'Giảm ${formatCurrency(discount)}';
-    } else if (type == VoucherTypes.SHIPPING.name) {
-      return 'Miễn phí vận chuyển đến ${formatCurrency(discount)}';
-    }
-    throw Exception('Không xác định được loại voucher');
-  }
-
-  static String getPaymentNameByPaymentTypes(PaymentTypes method) {
-    switch (method) {
-      case PaymentTypes.COD: // Cash on delivery
-        return 'Thanh toán khi nhận hàng';
-      case PaymentTypes.VNPay:
-        return 'Thanh toán qua cổng VNPay';
-      case PaymentTypes.Wallet:
-        return 'Thanh toán bằng VTV Wallet';
-      default:
-        return method.name;
-    }
-  }
-
-  static String getPaymentName(String method) {
-    switch (method) {
-      case 'COD': // Cash on delivery
-        return 'Thanh toán khi nhận hàng';
-      case 'VNPay':
-        return 'Thanh toán qua cổng VNPay';
-      case 'Wallet':
-        return 'Thanh toán bằng VTV Wallet';
-      default:
-        return method;
-    }
-  }
-
-  static String getOrderStatusName(OrderStatus? status) {
-    switch (status) {
-      case null:
-        return 'Tất cả';
-      case OrderStatus.WAITING:
-        return 'Đang chờ'; // when create order (not place order yet) --not show in order list
-      case OrderStatus.PENDING:
-        return 'Chờ xác nhận';
-      case OrderStatus.PROCESSING:
-        return 'Đang đóng gói';
-      case OrderStatus.PICKUP_PENDING:
-        return 'Chờ lấy hàng';
-      case OrderStatus.SHIPPING:
-        return 'Đang giao';
-      case OrderStatus.DELIVERED:
-        return 'Đã giao';
-      case OrderStatus.COMPLETED:
-        return 'Hoàn thành';
-
-      // Vendor Only
-      case OrderStatus.UNPAID:
-        return 'Chưa thanh toán';
-
-      // Others
-      case OrderStatus.CANCEL:
-        return 'Đã hủy';
-
-      //! Unknown status
-      default:
-        return status.name;
-    }
-  }
-
-  static String getOrderStatusNameByDriver(OrderStatus? status) {
-    switch (status) {
-      // case null:
-      //   return 'Tất cả';
-      // case OrderStatus.WAITING:
-      //   return 'WAITING'; // when create order (not place order yet) --not show in order list
-      // case OrderStatus.PENDING:
-      //   return 'Chờ xác nhận';
-      case OrderStatus.PROCESSING:
-        return 'Đang đóng gói';
-      case OrderStatus.PICKUP_PENDING:
-        return 'Chờ vận chuyển';
-      case OrderStatus.SHIPPING:
-        return 'Đang giao';
-      case OrderStatus.DELIVERED:
-        return 'Đã giao';
-      case OrderStatus.COMPLETED:
-        return 'Hoàn thành';
-
-      // Others
-      case OrderStatus.CANCEL:
-        return 'Đã hủy';
-
-      //! Unknown status
-      default:
-        throw UnimplementedError('Chưa xác định được trạng thái: $status');
-      // return status.name;
-    }
-  }
-}
-
-class ColorHelper {
-  static Color? getOrderStatusBackgroundColor(OrderStatus? status, {int? shade}) {
-    if (shade != null) {
-      switch (status) {
-        case OrderStatus.WAITING:
-          return Colors.grey[shade + 200];
-        case OrderStatus.PENDING:
-          return Colors.grey[shade + 200];
-        case OrderStatus.PROCESSING:
-          return Colors.orange[shade];
-        case OrderStatus.PICKUP_PENDING:
-          return Colors.orange[shade];
-        case OrderStatus.SHIPPING:
-          return Colors.blue[shade];
-        case OrderStatus.DELIVERED:
-          return Colors.blue[shade];
-        case OrderStatus.COMPLETED:
-          return Colors.green[shade];
-        case OrderStatus.CANCEL:
-          return Colors.red[shade];
-        default:
-          return Colors.red[shade];
-      }
-    } else {
-      switch (status) {
-        case OrderStatus.WAITING:
-          return Colors.grey.shade400;
-        case OrderStatus.PENDING:
-          return Colors.grey.shade400;
-        case OrderStatus.PROCESSING:
-          return Colors.orange.shade400;
-        case OrderStatus.PICKUP_PENDING:
-          return Colors.orange.shade400;
-        case OrderStatus.SHIPPING:
-          return Colors.blue.shade400;
-        case OrderStatus.DELIVERED:
-          return Colors.blue.shade400;
-        case OrderStatus.COMPLETED:
-          return Colors.green;
-        case OrderStatus.CANCEL:
-          return Colors.red.shade400;
-        default:
-          return Colors.red.shade400;
-      }
-    }
-  }
+  //TODO change to dark/light mode using provider
 }
 
 class SecureStorageHelper {
@@ -363,5 +172,66 @@ class SharedPreferencesHelper {
 
   Future<void> setDarkMode(bool value) async {
     await _prefs.setBool(_keyTheme, value);
+  }
+}
+
+class LocalNotificationHelper {
+  //? Retrieving pending notification requests
+  // <https://pub.dev/packages/flutter_local_notifications#retrieving-pending-notification-requests>
+  // Future<List<PendingNotificationRequest>> pendingNotificationRequests() async {
+  //   return await _flutterLocalNotificationsPlugin.pendingNotificationRequests();
+  // }
+  //? Retrieving active notifications
+  // <https://pub.dev/packages/flutter_local_notifications#retrieving-active-notifications>
+  // Future<List<ActiveNotification>> activeNotifications() async {
+  //   return await _flutterLocalNotificationsPlugin.getActiveNotifications();
+  // }
+
+  // final String kDefaultNotificationChannelId = 'default_notification';
+  LocalNotificationHelper(this._flutterLocalNotificationsPlugin);
+
+  // get instance of flutter_local_notifications
+  FlutterLocalNotificationsPlugin get I => _flutterLocalNotificationsPlugin;
+
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
+
+  Future<void> init() async {
+    InitializationSettings initializationSettings = const InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      // iOS: DarwinInitializationSettings(),
+    );
+    await _flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+    );
+  }
+
+  /// Default Notification Details >> single notification
+  static const NotificationDetails defaultNotificationDetails = NotificationDetails(
+    android: AndroidNotificationDetails(
+      'DEFAULT_NOTIFICATION_CHANNEL_ID',
+      'Default Notification Channel',
+      importance: Importance.max,
+      priority: Priority.high,
+    ),
+  );
+
+  // Display a default notification
+  Future<void> showNotification({
+    required int id,
+    required String title,
+    required String body,
+    String? payload,
+  }) async {
+    await _flutterLocalNotificationsPlugin
+        .show(
+          id,
+          title,
+          body,
+          defaultNotificationDetails,
+          payload: payload,
+        )
+        .onError(
+          (error, stackTrace) => Fluttertoast.showToast(msg: error.toString()),
+        );
   }
 }

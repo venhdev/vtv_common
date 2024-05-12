@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/presentation/components/custom_widgets.dart';
 import '../../../core/constants/typedef.dart';
 import '../../../core/constants/types.dart';
-import '../../../core/helpers.dart';
+import '../../../core/utils.dart';
 import '../../domain/entities/multi_order_entity.dart';
 import '../../domain/entities/order_detail_entity.dart';
 import '../../domain/entities/order_entity.dart';
@@ -124,13 +124,13 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                     tabs: List.generate(
                       widget.pageController.tapPages.length, //_totalTab,
                       (index) => _buildTapButton(
-                        StringHelper.getOrderStatusName(
+                        StringUtils.getOrderStatusName(
                             widget.pageController.tapPages[index]), //(_statusFromIndex(index)),
                         listMultiOrder[index].fold(
                           (error) => 0,
                           (ok) => ok.data!.orders.length,
                         ),
-                        backgroundColor: ColorHelper.getOrderStatusBackgroundColor(
+                        backgroundColor: ColorUtils.getOrderStatusBackgroundColor(
                             widget.pageController.tapPages[index]), //(_statusFromIndex(index)),
                       ),
                     ),
@@ -255,7 +255,7 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                 const SizedBox(width: 4),
                 Text('Tổng số đơn hàng: ${multiOrder.count}'),
                 const Spacer(),
-                Text('Tổng tiền: ${StringHelper.formatCurrency(multiOrder.totalPayment)}'),
+                Text('Tổng tiền: ${StringUtils.formatCurrency(multiOrder.totalPayment)}'),
                 const SizedBox(width: 4),
               ],
             ),
@@ -299,7 +299,7 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                 const SizedBox(width: 4),
                 Text('Tổng số đơn hàng: ${multiOrder.count}'),
                 const Spacer(),
-                Text('Tổng tiền: ${StringHelper.formatCurrency(multiOrder.totalPayment)}'),
+                Text('Tổng tiền: ${StringUtils.formatCurrency(multiOrder.totalPayment)}'),
                 const SizedBox(width: 4),
               ],
             ),

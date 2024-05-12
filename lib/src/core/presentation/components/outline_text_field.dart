@@ -1,11 +1,60 @@
 import 'package:flutter/material.dart';
 
-class TextFieldCustom extends StatelessWidget {
-  const TextFieldCustom({
+class OutlineTextFieldLabel extends StatelessWidget {
+  const OutlineTextFieldLabel({super.key, required this.label, required this.isRequired});
+
+  final String label;
+  final bool isRequired;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (isRequired)
+          const Text(
+            '* ',
+            style: TextStyle(
+              color: Colors.red,
+            ),
+          ),
+        Text(
+          '$label ',
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+    // return Text.rich(
+    //   TextSpan(
+    //     text: '$label ',
+    //     style: const TextStyle(
+    //       fontSize: 14,
+    //       fontWeight: FontWeight.w500,
+    //     ),
+    //     children: isRequired
+    //         ? [
+    //             const TextSpan(
+    //               text: '*',
+    //               style: TextStyle(
+    //                 color: Colors.red,
+    //               ),
+    //             ),
+    //           ]
+    //         : null,
+    //   ),
+    // );
+  }
+}
+
+class OutlineTextField extends StatelessWidget {
+  const OutlineTextField({
     super.key,
-    required this.controller,
+    this.controller,
     required this.label,
-    required this.hint,
+    this.hintText,
     this.focusedBorderColor,
     this.enabledBorderColor,
     this.suffixIcon,
@@ -18,11 +67,15 @@ class TextFieldCustom extends StatelessWidget {
     this.readOnly = false,
     this.onTap,
     this.initialValue,
+    this.borderSideWidth = 2.0,
+    this.onChanged,
+    this.onFieldSubmitted,
+    this.contentPadding,
   });
 
   final TextEditingController? controller;
   final String label;
-  final String hint;
+  final String? hintText;
   final Color? focusedBorderColor;
   final Color? enabledBorderColor;
   final Widget? suffixIcon;
@@ -33,12 +86,20 @@ class TextFieldCustom extends StatelessWidget {
   final bool checkEmpty;
   final TextInputType? keyboardType;
 
+  final double borderSideWidth;
+
   final String? Function(String?)? validator;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onFieldSubmitted;
 
   // properties for touchable text field
   final bool readOnly;
   final VoidCallback? onTap;
   final String? initialValue;
+  
+
+  // style properties
+ final EdgeInsetsGeometry? contentPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -46,27 +107,9 @@ class TextFieldCustom extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text.rich(
-          TextSpan(
-            text: '$label ',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-            children: isRequired
-                ? [
-                    const TextSpan(
-                      text: '*',
-                      style: TextStyle(
-                        color: Colors.red,
-                      ),
-                    ),
-                  ]
-                : null,
-          ),
-        ),
-        const SizedBox(height: 4),
         TextFormField(
+          onChanged: onChanged,
+          onFieldSubmitted: onFieldSubmitted,
           readOnly: readOnly,
           onTap: onTap,
           initialValue: initialValue,
@@ -75,25 +118,26 @@ class TextFieldCustom extends StatelessWidget {
           obscureText: obscureText,
           keyboardType: keyboardType,
           decoration: InputDecoration(
+            contentPadding: contentPadding,
+            label: OutlineTextFieldLabel(label: label, isRequired: isRequired),
             suffixIcon: suffixIcon,
             prefixIcon: prefixIcon,
-            hintText: hint,
+            hintText: hintText,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: focusedBorderColor ??
-                    Theme.of(context).colorScheme.primaryContainer,
-                width: 2.0,
+                color: focusedBorderColor ?? Theme.of(context).colorScheme.primaryContainer,
+                width: borderSideWidth,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
                 color: enabledBorderColor ?? const Color(0xFF000000),
-                width: 2.0,
+                width: borderSideWidth,
               ),
             ),
           ),

@@ -4,7 +4,7 @@ import '../../../../shop/presentation/components/shop_info.dart';
 import '../../../domain/entities/order_entity.dart';
 import '../../../domain/entities/order_item_entity.dart';
 import '../order_item.dart';
-import '../wrapper.dart';
+import '../../../../core/presentation/components/wrapper.dart';
 import 'order_section_shop_voucher.dart';
 
 class OrderSectionShopItems extends StatelessWidget {

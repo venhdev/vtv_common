@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../wrapper.dart';
+import '../../../../core/presentation/components/wrapper.dart';
 
 class OrderSectionShopVoucher extends StatelessWidget {
   const OrderSectionShopVoucher({

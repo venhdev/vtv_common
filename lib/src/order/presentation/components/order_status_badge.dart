@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/types.dart';
-import '../../../core/helpers.dart';
+import '../../../core/utils.dart';
 
 enum OrderStatusBadgeType { customer, vendor, driver }
 
@@ -26,18 +26,18 @@ class OrderStatusBadge extends StatelessWidget {
   String nameByType(OrderStatusBadgeType type) {
     switch (type) {
       case OrderStatusBadgeType.customer || OrderStatusBadgeType.vendor:
-        return StringHelper.getOrderStatusName(status);
+        return StringUtils.getOrderStatusName(status);
       case OrderStatusBadgeType.driver:
-        return StringHelper.getOrderStatusNameByDriver(status);
+        return StringUtils.getOrderStatusNameByDriver(status);
       default:
-        return StringHelper.getOrderStatusName(status);
+        return StringUtils.getOrderStatusName(status);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Card.filled(
-      color: ColorHelper.getOrderStatusBackgroundColor(status),
+      color: ColorUtils.getOrderStatusBackgroundColor(status),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
       child: Padding(
         padding: const EdgeInsets.all(2.0),

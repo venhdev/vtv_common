@@ -46,6 +46,11 @@ class ProductEntity extends Equatable {
     return productVariants.first.attributes.isNotEmpty;
   }
 
+  // check if there still have stock of the product (any variant)
+  bool get inStock {
+    return productVariants.any((element) => element.quantity > 0);
+  }
+
   // select variant
   Map<String, Map<String, Status?>> get getAllVariantAttributes {
     final Map<String, Map<String, Status?>> result = {};

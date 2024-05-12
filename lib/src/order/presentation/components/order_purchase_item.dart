@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/types.dart';
-import '../../../core/helpers.dart';
+import '../../../core/utils.dart';
 import '../../../shop/presentation/components/shop_info.dart';
 import '../../domain/entities/order_entity.dart';
 import 'order_item.dart';
@@ -74,7 +74,7 @@ class OrderPurchaseItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('${order.orderItems.length} sản phẩm'),
-                  Text('Tổng thanh toán: ${StringHelper.formatCurrency(order.paymentTotal)}'),
+                  Text('Tổng thanh toán: ${StringUtils.formatCurrency(order.paymentTotal)}'),
                 ],
               ),
             ),

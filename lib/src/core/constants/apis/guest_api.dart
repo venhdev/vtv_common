@@ -56,3 +56,6 @@ const String kAPIReviewDetailURL = '/review/detail'; // GET /{reviewId}
 //# comment-controller
 const String kAPICommentGetURL = '/comment/get'; // GET /{reviewId}
 
+//# category-controller
+const String kAPIAllCategoryParentURL = '/category/all-parent'; // GET
+const String kAPIAllCategoryByParentURL = '/category/all-category/by-parent'; // GET /{categoryId}

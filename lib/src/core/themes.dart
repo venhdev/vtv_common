@@ -33,4 +33,12 @@ class VTVTheme {
         brightness: Brightness.dark,
         colorSchemeSeed: Colors.blue,
       );
+
+  //# Custom Style
+
+  // hint text style
+  static TextStyle get hintTextStyle => const TextStyle(
+        color: Colors.grey,
+        fontSize: 12,
+      );
 }

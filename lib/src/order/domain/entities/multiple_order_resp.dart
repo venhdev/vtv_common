@@ -11,7 +11,7 @@ class MultipleOrderResp extends Equatable {
   final int totalPayment;
   final int totalDiscount; //
   final int totalShippingFee;
-  final int totalLoyaltyPoint;
+  final int? totalLoyaltyPoint;
   final int discountShop;
   final int discountSystem;
   final List<OrderDetailEntity> orderDetails; //MultiOrderDetail
@@ -36,7 +36,7 @@ class MultipleOrderResp extends Equatable {
   }
 
   @override
-  List<Object> get props {
+  List<Object?> get props {
     return [
       count,
       totalProduct,
@@ -105,7 +105,7 @@ class MultipleOrderResp extends Equatable {
       totalPayment: map['totalPayment'] as int,
       totalDiscount: map['totalDiscount'] as int,
       totalShippingFee: map['totalShippingFee'] as int,
-      totalLoyaltyPoint: map['totalLoyaltyPoint'] as int,
+      totalLoyaltyPoint: map['totalLoyaltyPoint'] as int?,
       discountShop: map['discountShop'] as int,
       discountSystem: map['discountSystem'] as int,
       orderDetails: List<OrderDetailEntity>.from(
