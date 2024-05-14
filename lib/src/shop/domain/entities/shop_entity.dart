@@ -14,8 +14,8 @@ class ShopEntity extends Equatable {
   final String email;
   final String avatar;
   final String description;
-  final String openTime;
-  final String closeTime;
+  final DateTime openTime;
+  final DateTime closeTime;
   final String status;
   final int customerId;
   final String wardCode;
@@ -37,6 +37,8 @@ class ShopEntity extends Equatable {
     required this.customerId,
     required this.wardCode,
   });
+
+  String get fullAddress => '$address, $wardName, $districtName, $provinceName';
   
   @override
   List<Object> get props {
@@ -70,8 +72,8 @@ class ShopEntity extends Equatable {
     String? email,
     String? avatar,
     String? description,
-    String? openTime,
-    String? closeTime,
+    DateTime? openTime,
+    DateTime? closeTime,
     String? status,
     int? customerId,
     String? wardCode,
@@ -127,8 +129,10 @@ class ShopEntity extends Equatable {
       email: map['email'] as String,
       avatar: map['avatar'] as String,
       description: map['description'] as String,
-      openTime: map['openTime'] as String,
-      closeTime: map['closeTime'] as String,
+      // openTime: map['openTime'] as String,
+      openTime: DateTime.parse(map['openTime'] as String),
+      // closeTime: map['closeTime'] as String,
+      closeTime: DateTime.parse(map['closeTime'] as String),
       status: map['status'] as String,
       customerId: map['customerId'] as int,
       wardCode: map['wardCode'] as String,

@@ -4,6 +4,8 @@ import 'package:vtv_common/src/core/presentation/components/wrapper.dart';
 import 'package:vtv_common/src/shop/domain/entities/dto/shop_detail_resp.dart';
 import 'package:vtv_common/src/shop/presentation/components/shop_info.dart';
 
+import '../../../core/utils.dart';
+
 class ShopInfoDetailPage extends StatelessWidget {
   const ShopInfoDetailPage({
     super.key,
@@ -70,13 +72,19 @@ class ShopInfoDetailPage extends StatelessWidget {
           // address
           Wrapper(
             label: const WrapperLabel(labelText: 'Địa chỉ', icon: Icons.location_on),
-            suffixLabel: Text(shopDetail.shop.address),
+            suffixLabel: Text(shopDetail.shop.fullAddress),
           ),
 
           // time open
           Wrapper(
             label: const WrapperLabel(labelText: 'Giờ mở cửa', icon: Icons.access_time),
-            suffixLabel: Text('${shopDetail.shop.openTime} - ${shopDetail.shop.closeTime}'),
+            suffixLabel: Text(StringUtils.convertDateTimeToString(shopDetail.shop.openTime, pattern: 'hh:mm aa')),
+          ),
+
+          // time open
+          Wrapper(
+            label: const WrapperLabel(labelText: 'Giờ đóng cửa', icon: Icons.access_time_filled),
+            suffixLabel: Text(StringUtils.convertDateTimeToString(shopDetail.shop.closeTime, pattern: 'hh:mm aa')),
           ),
 
           if (bottomActionBuilder != null) bottomActionBuilder!,

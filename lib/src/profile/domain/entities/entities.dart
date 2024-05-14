@@ -6,3 +6,4 @@ export 'location/location.dart';
 export 'address_entity.dart';
 export 'loyalty_point_entity.dart';
 export 'loyalty_point_history_entity.dart';
+export 'full_address.dart';
