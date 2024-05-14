@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -5,6 +7,7 @@ import 'package:network_info_plus/network_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
 
+import 'base/debouncer.dart';
 import 'constants/types.dart';
 
 class ValidationUtils {
@@ -312,5 +315,11 @@ class ConversionUtils {
         yield MapEntry('$prefix[$index]$separator${entry.key}', entry.value);
       }
     }
+  }
+}
+
+class FunctionUtils {
+  static Debouncer createDebouncer({required int milliseconds}) {
+    return Debouncer(milliseconds: milliseconds);
   }
 }

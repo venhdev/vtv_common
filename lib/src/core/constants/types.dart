@@ -56,3 +56,5 @@ enum PaymentTypes {
   VNPay,
   Wallet,
 }
+
+enum ActionTypes { add, update, delete, unknown }

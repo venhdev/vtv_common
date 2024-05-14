@@ -51,6 +51,10 @@ class ProductEntity extends Equatable {
     return productVariants.any((element) => element.quantity > 0);
   }
 
+  int get totalStock {
+    return productVariants.map((e) => e.quantity).reduce((value, element) => value + element);
+  }
+
   // select variant
   Map<String, Map<String, Status?>> get getAllVariantAttributes {
     final Map<String, Map<String, Status?>> result = {};

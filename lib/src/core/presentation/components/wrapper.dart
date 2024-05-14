@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 class Wrapper extends StatelessWidget {
   const Wrapper({
     super.key,
+    this.width,
+    this.height,
     this.onPressed,
     this.disabled = false,
     this.child,
@@ -22,6 +24,9 @@ class Wrapper extends StatelessWidget {
   /// disable touch event {onPressed}
   final bool disabled;
 
+  final double? width;
+  final double? height;
+
   final Widget? child;
   final Widget? bottom;
   final WrapperLabel? label;
@@ -38,6 +43,8 @@ class Wrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: width,
+      height: height,
       margin: margin,
       child: InkWell(
         onTap: disabled ? null : onPressed,

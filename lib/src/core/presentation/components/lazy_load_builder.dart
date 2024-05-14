@@ -8,7 +8,7 @@ import '../../constants/typedef.dart';
 
 // OK_BUG rebuild when the parent long list is scrolled >> lost data + rebuild lazy load
 //: DONE create a controller to keep the data + current page
-
+/// call [init] with auto = true to auto load next page when reach the end of the list
 class LazyController<T> extends ChangeNotifier {
   LazyController({
     required this.items,
@@ -47,8 +47,7 @@ class LazyController<T> extends ChangeNotifier {
 
   /// auto load next page when reach the end, default is false
   /// - if true, the [loadNextPage] will be called when the scroll reach the end of the list.
-  /// [scrollController] must be provided,
-  /// and do not pass this controller to any other widget.
+  /// [scrollController] must be provided, and do not pass this controller to any other widget.
   /// - if false, the [loadNextPage] will be called manually.
   bool auto;
 
@@ -89,7 +88,7 @@ class LazyController<T> extends ChangeNotifier {
     }
   }
 
-  // refresh
+  /// clear the current data and load the first page
   FutureOr<void> refresh() {
     currentPage = 0;
     items.clear();
@@ -145,6 +144,11 @@ class LazyController<T> extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateAt(int index, T item) {
+    items[index] = item;
+    notifyListeners();
+  }
+
   @override
   String toString() {
     return 'LazyLoadController(showIndicator: $showLoadingIndicator, useGrid: $useGrid, crossAxisCount: $crossAxisCount, itemLength: ${items.length})';
@@ -156,10 +160,12 @@ class LazyLoadBuilder<T> extends StatefulWidget {
     super.key,
     required this.lazyController,
     required this.itemBuilder,
+    this.separatorBuilder,
   });
 
   final LazyController<T> lazyController;
   final Widget Function(BuildContext context, int index, T data) itemBuilder;
+  final Widget Function(BuildContext context, int index)? separatorBuilder;
 
   @override
   State<LazyLoadBuilder<T>> createState() => _LazyLoadBuilderState<T>();
@@ -188,6 +194,8 @@ class _LazyLoadBuilderState<T> extends State<LazyLoadBuilder<T>> {
 
   @override
   Widget build(BuildContext context) {
+    // assert(widget.separatorBuilder != null || widget.lazyController.useGrid);
+
     log('[LazyLoadBuilder] build with ${widget.lazyController.items.length} items');
     //# empty list
     if (widget.lazyController.items.isEmpty && !widget.lazyController.isLoading) {
@@ -198,7 +206,7 @@ class _LazyLoadBuilderState<T> extends State<LazyLoadBuilder<T>> {
         ),
       );
     }
-    // REVIEW here
+    //! ``Deprecated note``
     //? scrollController passed from parent
     //: 1: Disable the physics of the GridView & shrinkWrap it
     //! 2: Use the parent's scrollController --no longer use internal scrollController
@@ -206,7 +214,9 @@ class _LazyLoadBuilderState<T> extends State<LazyLoadBuilder<T>> {
   }
 
   ListView _buildLazyLoadWithListView() {
-    return ListView.builder(
+    return ListView.separated(
+      // separatorBuilder: (context, index) => separatorBuilder ?? const Divider(height: 1),
+      separatorBuilder: widget.separatorBuilder ?? (context, index) => const SizedBox.shrink(),
       controller: widget.lazyController.auto ? widget.lazyController.scrollController! : null,
       physics: widget.lazyController.auto ? null : const NeverScrollableScrollPhysics(),
       shrinkWrap: widget.lazyController.auto ? false : true,

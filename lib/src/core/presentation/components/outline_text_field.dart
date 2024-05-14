@@ -71,6 +71,7 @@ class OutlineTextField extends StatelessWidget {
     this.onChanged,
     this.onFieldSubmitted,
     this.contentPadding,
+    this.maxLines = 1,
   });
 
   final TextEditingController? controller;
@@ -96,6 +97,7 @@ class OutlineTextField extends StatelessWidget {
   final bool readOnly;
   final VoidCallback? onTap;
   final String? initialValue;
+  final int? maxLines;
   
 
   // style properties
@@ -112,6 +114,7 @@ class OutlineTextField extends StatelessWidget {
           onFieldSubmitted: onFieldSubmitted,
           readOnly: readOnly,
           onTap: onTap,
+          maxLines: maxLines,
           initialValue: initialValue,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: controller,

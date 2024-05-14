@@ -125,7 +125,8 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                       widget.pageController.tapPages.length, //_totalTab,
                       (index) => _buildTapButton(
                         StringUtils.getOrderStatusName(
-                            widget.pageController.tapPages[index]), //(_statusFromIndex(index)),
+                          widget.pageController.tapPages[index],
+                        ), //(_statusFromIndex(index)),
                         listMultiOrder[index].fold(
                           (error) => 0,
                           (ok) => ok.data!.orders.length,

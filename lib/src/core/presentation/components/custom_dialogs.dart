@@ -16,6 +16,7 @@ Future<T?> showDialogToConfirm<T>({
   Color? dismissTextColor,
   Color? confirmTextColor,
   bool barrierDismissible = true,
+  bool hideDismiss = false,
 }) async {
   return await showDialog(
     context: context,
@@ -50,16 +51,18 @@ Future<T?> showDialogToConfirm<T>({
           ButtonBar(
             alignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-                style: TextButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                  backgroundColor: dismissBackgroundColor,
-                ),
-                child: Text(dismissText, style: TextStyle(color: dismissTextColor, fontWeight: FontWeight.bold)),
-              ),
+              hideDismiss
+                  ? SizedBox.shrink()
+                  : TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                        backgroundColor: dismissBackgroundColor,
+                      ),
+                      child: Text(dismissText, style: TextStyle(color: dismissTextColor, fontWeight: FontWeight.bold)),
+                    ),
               TextButton(
                 onPressed: () async {
                   onConfirm?.call();

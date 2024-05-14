@@ -5,9 +5,17 @@ import 'package:flutter/material.dart';
 import '../../utils.dart';
 
 class ImagePickerBox extends StatefulWidget {
-  const ImagePickerBox({super.key, required this.imgUrl, this.onChanged, this.size = 120.0});
+  const ImagePickerBox({
+    super.key,
+    required this.imgUrl,
+    this.onChanged,
+    this.size = 120.0,
+    this.isNetworkImage = false,
+  });
 
   final String? imgUrl;
+  final bool isNetworkImage;
+  /// return local image path, remember to use [File] to get image file
   final ValueChanged<String>? onChanged;
   final double size;
 
@@ -46,7 +54,8 @@ class _ImagePickerBoxState extends State<ImagePickerBox> {
               padding: const EdgeInsets.all(4),
               height: widget.size,
               width: widget.size,
-              child: Image.file(File(_imgUrl!)),
+              // child: Image.file(File(_imgUrl!)),
+              child: widget.isNetworkImage ? Image.network(_imgUrl!) : Image.file(File(_imgUrl!)),
             ),
           )
         : Container(
