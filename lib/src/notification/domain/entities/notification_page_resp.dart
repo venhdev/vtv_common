@@ -4,13 +4,13 @@ import 'dart:convert';
 import '../../../core/base/base_lazy_load_page_resp.dart';
 import 'notification_entity.dart';
 
-class NotificationResp extends IBasePageResp<NotificationEntity> {
+class NotificationPageResp extends IBasePageResp<NotificationEntity> {
   final String status;
   final String message;
   final int code;
   // final List<NotificationEntity> notifications;
 
-  const NotificationResp({
+  const NotificationPageResp({
     required this.status,
     required this.message,
     required this.code,
@@ -35,7 +35,7 @@ class NotificationResp extends IBasePageResp<NotificationEntity> {
     ];
   }
 
-  NotificationResp copyWith({
+  NotificationPageResp copyWith({
     String? status,
     String? message,
     int? code,
@@ -45,7 +45,7 @@ class NotificationResp extends IBasePageResp<NotificationEntity> {
     int? totalPage,
     List<NotificationEntity>? items,
   }) {
-    return NotificationResp(
+    return NotificationPageResp(
       status: status ?? this.status,
       message: message ?? this.message,
       code: code ?? this.code,
@@ -71,8 +71,8 @@ class NotificationResp extends IBasePageResp<NotificationEntity> {
     };
   }
 
-  factory NotificationResp.fromMap(Map<String, dynamic> map) {
-    return NotificationResp(
+  factory NotificationPageResp.fromMap(Map<String, dynamic> map) {
+    return NotificationPageResp(
       status: map['status'] as String,
       message: map['message'] as String,
       code: map['code'] as int,
@@ -90,8 +90,8 @@ class NotificationResp extends IBasePageResp<NotificationEntity> {
 
   String toJson() => json.encode(toMap());
 
-  factory NotificationResp.fromJson(String source) =>
-      NotificationResp.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory NotificationPageResp.fromJson(String source) =>
+      NotificationPageResp.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   bool get stringify => true;

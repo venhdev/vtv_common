@@ -27,6 +27,7 @@ class ShopInfoDetailPage extends StatelessWidget {
         title: const Text('Thông tin cửa hàng'),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ShopInfo(
             shopId: shopDetail.shop.shopId,
@@ -71,8 +72,16 @@ class ShopInfoDetailPage extends StatelessWidget {
 
           // address
           Wrapper(
+            labelCrossAxisAlignment: CrossAxisAlignment.start,
             label: const WrapperLabel(labelText: 'Địa chỉ', icon: Icons.location_on),
-            suffixLabel: Text(shopDetail.shop.fullAddress),
+            suffixLabel: Expanded(
+              child: Text(
+                shopDetail.shop.fullAddress,
+                textAlign: TextAlign.end,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ),
 
           // time open

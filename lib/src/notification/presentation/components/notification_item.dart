@@ -76,75 +76,79 @@ class _NotificationItemState extends State<NotificationItem> {
             child: Container(
               margin: const EdgeInsets.all(4.0),
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: Row(
+              //`` image
+              // SizedBox(
+              //   width: 50,
+              //   height: 50,
+              //   child: const ImageCacheable(
+              //     widget.notification.image,
+              //   ),
+              // ),
+
+              // SizedBox(width: 8),
+              // # title & body
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  //# image
-                  // SizedBox(
-                  //   width: 50,
-                  //   height: 50,
-                  //   child: const ImageCacheable(
-                  //     widget.notification.image,
-                  //   ),
-                  // ),
+                  Row(
+                    children: [
+                      if (!widget.notification.seen) const SizedBox(width: 32),
+                      // Expanded(
+                      //   child: Container(
+                      //     color: Colors.red,
+                      //     child: Text(
+                      //       // notification.title,
+                      //       widget.notification.title,
+                      //       style: const TextStyle(
+                      //         fontWeight: FontWeight.bold,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      const Spacer(),
 
-                  // SizedBox(width: 8),
-
-                  // # title & body
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            if (!widget.notification.seen) const SizedBox(width: 32),
-                            Text(
-                              // notification.title,
-                              widget.notification.title,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-
-                            const Spacer(),
-
-                            // # expand button
-                            // if (widget.notification.body.length > 200)
-                            Icon(showDetail ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
-                          ],
-                        ),
-                        Text(
-                          // notification.body,
-                          // just show 100 characters
-                          // widget.notification.body,
-                          // show only 100 characters
-
-                          widget.notification.body,
-                          maxLines: showDetail ? null : 2,
-                          overflow: showDetail ? null : TextOverflow.ellipsis,
-                        ),
-                        // # time
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              // notification.createAt.toString(),
-                              StringUtils.convertDateTimeToString(
-                                widget.notification.createAt,
-                                pattern: 'dd/MM/yyyy HH:mm',
-                              ),
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
-                            ),
-                            //# mark as read
-                            // if (!widget.notification.seen) _buildMarkAsReadBtn(),
-                          ],
-                        ),
-                      ],
+                      // # expand button
+                      // if (widget.notification.body.length > 200)
+                      Icon(showDetail ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
+                    ],
+                  ),
+                  Text(
+                    // notification.title,
+                    widget.notification.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
                     ),
+                  ),
+                  Text(
+                    // notification.body,
+                    // just show 100 characters
+                    // widget.notification.body,
+                    // show only 100 characters
+
+                    widget.notification.body,
+                    maxLines: showDetail ? null : 2,
+                    overflow: showDetail ? null : TextOverflow.ellipsis,
+                  ),
+                  // # time
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        // notification.createAt.toString(),
+                        StringUtils.convertDateTimeToString(
+                          widget.notification.createAt,
+                          pattern: 'dd/MM/yyyy HH:mm',
+                        ),
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                      //# mark as read
+                      // if (!widget.notification.seen) _buildMarkAsReadBtn(),
+                    ],
                   ),
                 ],
               ),

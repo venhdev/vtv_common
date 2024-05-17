@@ -28,8 +28,8 @@ enum VoucherTypes {
   PERCENTAGE_SYSTEM,
   MONEY_SHOP,
   MONEY_SYSTEM,
-  FIXED_SHOP,
-  SHIPPING,
+  // FIXED_SHOP,
+  // SHIPPING,
 }
 
 enum OrderStatus {

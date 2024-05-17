@@ -22,6 +22,55 @@ class DateTimeUtils {
     final now = DateTime.now();
     return DateTime(now.year, now.month, now.day);
   }
+
+  static Future<DateTime?> showDateTimePicker({
+    required BuildContext context,
+    required DateTime initialDateTime,
+    DateTime? firstDate,
+    DateTime? lastDate,
+    bool pastDatesEnabled = false,
+  }) async {
+    assert((firstDate != null && lastDate != null && firstDate.isBefore(lastDate)) ||
+        (firstDate == null && lastDate == null));
+
+    final now = today();
+    final first = firstDate ?? (pastDatesEnabled ? DateTime(2010) : now);
+    final last = lastDate ?? now.add(const Duration(days: 365 * 10));
+
+    //? make sure initialDateTime is in range [first, last]
+    //? when user choose second time initialDateTime.isAtSameMomentAs(first) 12:00
+    assert(
+        (initialDateTime.isAfter(first) || initialDateTime.isAtSameMomentAs(first)) && initialDateTime.isBefore(last));
+
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDateTime,
+      firstDate: first,
+      lastDate: last,
+    );
+
+    if (!context.mounted) return null;
+
+    if (pickedDate != null) {
+      final pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(initialDateTime),
+      );
+      if (pickedTime != null) {
+        return DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
 }
 
 class StringUtils {
@@ -59,6 +108,62 @@ class StringUtils {
     return DateFormat(pattern).format(date);
   }
 
+  // get remaining time from now to [dateTime]
+  /// {defaultText} will return if [dateTime] is null
+  static String getRemainingTime(
+    DateTime? dateTime, {
+    String defaultText = '',
+    String prefixRemaining = 'Còn lại: ', // Remaining
+    String prefixOverdue = 'Đã qua: ', //Overdue
+    bool showOverdueTime = false, // if this false, return [defaultOverdueText] when [dateTime] is overdue
+    String defaultOverdueText = '',
+    String second = 's',
+    String minute = 'm',
+    String hour = 'h',
+    String day = 'd',
+    String month = 'month',
+    String year = 'y',
+  }) {
+    if (dateTime != null) {
+      Duration duration = dateTime.difference(DateTime.now());
+      if (duration > Duration.zero) {
+        if (duration.inSeconds < 60) {
+          return '$prefixRemaining${duration.inSeconds}$second';
+        } else if (duration.inMinutes < 60) {
+          return '$prefixRemaining${duration.inMinutes}$minute';
+        } else if (duration.inHours < 24) {
+          return '$prefixRemaining${duration.inHours}$hour ${duration.inMinutes.remainder(60)}$minute';
+        } else if (duration.inDays < 30) {
+          return '$prefixRemaining${duration.inDays}$day ${duration.inHours.remainder(24)}$hour';
+        } else if (duration.inDays < 365) {
+          return '$prefixRemaining${duration.inDays ~/ 30}$month ${duration.inDays.remainder(30)}$day';
+        } else {
+          return '$prefixRemaining${duration.inDays ~/ 365}$year'; // so far =))
+        }
+      } else {
+        if (!showOverdueTime) {
+          return defaultOverdueText;
+        }
+        duration = DateTime.now().difference(dateTime); // get negative duration
+        if (duration.inSeconds < 60) {
+          return '$prefixOverdue${duration.inSeconds}$second';
+        } else if (duration.inMinutes < 60) {
+          return '$prefixOverdue${duration.inMinutes}$minute';
+        } else if (duration.inHours < 24) {
+          return '$prefixOverdue${duration.inHours}$hour ${duration.inMinutes.remainder(60)}$minute';
+        } else if (duration.inDays < 30) {
+          return '$prefixOverdue${duration.inDays}$day ${duration.inHours.remainder(24)}$hour';
+        } else if (duration.inDays < 365) {
+          return '$prefixOverdue${duration.inDays ~/ 30}$month ${duration.inDays.remainder(30)}$day';
+        } else {
+          return '$prefixOverdue${duration.inDays ~/ 365}$year'; // so far =))
+        }
+      }
+    } else {
+      return defaultText;
+    }
+  }
+
   static String formatCurrency(int value, {bool showUnit = true, String? unit = 'đ'}) {
     var f = NumberFormat.decimalPattern();
     if (!showUnit) return f.format(value);
@@ -74,45 +179,42 @@ class StringUtils {
       return 'Giảm đến ${formatCurrency(discount)}';
     } else if (type == VoucherTypes.MONEY_SYSTEM.name) {
       return 'Giảm đến ${formatCurrency(discount)}';
-    } else if (type == VoucherTypes.FIXED_SHOP.name) {
-      return 'Giảm đến ${formatCurrency(discount)}';
-    } else if (type == VoucherTypes.SHIPPING.name) {
-      return 'Miễn phí vận chuyển đến ${formatCurrency(discount)}';
     }
+    // else if (type == VoucherTypes.SHIPPING.name) {
+    //   return 'Miễn phí vận chuyển đến ${formatCurrency(discount)}';
+    // }
     return 'Không xác định được loại voucher';
   }
 
   static String getVoucherName(String type, {bool lineBreak = false}) {
     if (type == VoucherTypes.PERCENTAGE_SYSTEM.name || type == VoucherTypes.MONEY_SYSTEM.name) {
       return lineBreak ? 'VTV\nVoucher' : 'VTV Voucher';
-    } else if (type == VoucherTypes.PERCENTAGE_SHOP.name ||
-        type == VoucherTypes.MONEY_SHOP.name ||
-        type == VoucherTypes.FIXED_SHOP.name) {
-      // return 'Shop\nVoucher';
+    } else if (type == VoucherTypes.PERCENTAGE_SHOP.name || type == VoucherTypes.MONEY_SHOP.name) {
       return lineBreak ? 'Shop\nVoucher' : 'Shop Voucher';
-    } else if (type == VoucherTypes.SHIPPING.name) {
-      return lineBreak ? 'Free\nShipping' : 'Free Shipping';
     }
+    //  else if (type == VoucherTypes.SHIPPING.name) {
+    //   return lineBreak ? 'Free\nShipping' : 'Free Shipping';
+    // }
     // throw Exception('Không xác định được loại voucher');
     return 'Không xác định được loại voucher';
   }
 
-  static String getVoucherTypeName(String type) {
-    if (type == VoucherTypes.PERCENTAGE_SYSTEM.name) {
-      return 'Giảm giá theo phần trăm (Hệ thống)';
-    } else if (type == VoucherTypes.PERCENTAGE_SHOP.name) {
-      return 'Giảm giá theo phần trăm (Shop)';
-    } else if (type == VoucherTypes.MONEY_SHOP.name) {
-      return 'Mã giảm theo số tiền cố định (Shop)';
-    } else if (type == VoucherTypes.MONEY_SYSTEM.name) {
-      return 'Mã giảm theo số tiền cố định (Hệ thống)';
-    } else if (type == VoucherTypes.FIXED_SHOP.name) {
-      return 'Mã giảm theo số tiền cố định (Shop)';
-    } else if (type == VoucherTypes.SHIPPING.name) {
-      return 'Miễn phí vận chuyển';
+  static String getVoucherTypeName(VoucherTypes type, [bool showBelongTo = false]) {
+    if (type == VoucherTypes.PERCENTAGE_SYSTEM) {
+      return 'Mã giảm giá theo phần trăm${showBelongTo ? ' của hệ thống' : ''}';
+    } else if (type == VoucherTypes.PERCENTAGE_SHOP) {
+      return 'Mã giảm giá theo phần trăm${showBelongTo ? ' của shop' : ''}';
+    } else if (type == VoucherTypes.MONEY_SHOP) {
+      return 'Mã giảm theo số tiền${showBelongTo ? ' của shop' : ''}';
+    } else if (type == VoucherTypes.MONEY_SYSTEM) {
+      return 'Mã giảm theo số tiền${showBelongTo ? ' của hệ thống' : ''}';
     } else {
       return 'Không xác định được loại voucher';
     }
+
+    //  else if (type == VoucherTypes.SHIPPING.name) {
+    //   return 'Miễn phí vận chuyển';
+    // }
   }
 
   static String getPaymentNameByPaymentTypes(PaymentTypes method) {

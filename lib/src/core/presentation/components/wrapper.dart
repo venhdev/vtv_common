@@ -17,6 +17,7 @@ class Wrapper extends StatelessWidget {
     this.border,
     this.useBoxShadow = true,
     this.crossAxisAlignment = CrossAxisAlignment.start,
+    this.labelCrossAxisAlignment = CrossAxisAlignment.center,
   });
 
   final VoidCallback? onPressed;
@@ -39,6 +40,7 @@ class Wrapper extends StatelessWidget {
   final bool useBoxShadow;
 
   final CrossAxisAlignment crossAxisAlignment;
+  final CrossAxisAlignment labelCrossAxisAlignment;
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +72,7 @@ class Wrapper extends StatelessWidget {
             children: [
               if (label != null || suffixLabel != null)
                 Row(
+                  crossAxisAlignment: labelCrossAxisAlignment,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     label ?? const SizedBox.shrink(),

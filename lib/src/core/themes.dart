@@ -41,4 +41,9 @@ class VTVTheme {
         color: Colors.grey,
         fontSize: 12,
       );
+
+  static TextStyle get hintTextMediumStyle => const TextStyle(
+        color: Colors.grey,
+        fontSize: 13,
+      );
 }

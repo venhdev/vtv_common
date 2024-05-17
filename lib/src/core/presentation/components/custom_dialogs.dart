@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 Future<T?> showDialogToConfirm<T>({
   required BuildContext context,
@@ -120,4 +121,44 @@ Future showDialogToAlert(
       );
     },
   );
+}
+
+/// Be sure to add this line if `PackageInfo.fromPlatform()` is called before runApp()
+/// WidgetsFlutterBinding.ensureInitialized();
+void showCrossPlatformAboutDialog({
+  required BuildContext context,
+  String? logo,
+  List<Widget>? children,
+}) async {
+  try {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    // String appName = packageInfo.appName;
+    // String packageName = packageInfo.packageName;
+    // String version = packageInfo.version;
+    // String buildNumber = packageInfo.buildNumber;
+
+    if (!context.mounted) return;
+    showAboutDialog(
+      context: context,
+      applicationName: packageInfo.appName,
+      applicationVersion: packageInfo.version,
+      applicationIcon: (logo != null)
+          ? Image.asset(
+              logo,
+              width: 50,
+              height: 50,
+            )
+          : const FlutterLogo(),
+      applicationLegalese: '© ${DateTime.now().year} VTV',
+      children: children,
+      // bool barrierDismissible = true,
+      // Color? barrierColor,
+      // String? barrierLabel,
+      // bool useRootNavigator = true,
+      // RouteSettings? routeSettings,
+      // Offset? anchorPoint,
+    );
+  } catch (e) {
+    debugPrint(e.toString());
+  }
 }

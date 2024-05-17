@@ -48,6 +48,9 @@ dependencies:
   async: ^2.11.0
   http_parser:
 
+  # analytics
+  package_info_plus: ^8.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

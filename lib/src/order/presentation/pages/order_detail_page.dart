@@ -334,7 +334,6 @@ class OrderDetailPage extends StatelessWidget {
           return ActionButton.customerCancelOrder(() => onCancelOrderPressed!(orderDetail.order.orderId!));
         case OrderStatus.COMPLETED:
           return customerReviewBtn!(orderDetail.order);
-          // return ActionButton.back(context, onBack: onBack);
         case OrderStatus.CANCEL:
           return ActionButton.customerRePurchase(() => onRePurchasePressed!(orderDetail.order.orderItems));
         case OrderStatus.SHIPPING:
@@ -344,7 +343,6 @@ class OrderDetailPage extends StatelessWidget {
 
         default:
           return ActionButton.back(context, onBack: onBack);
-        // throw UnimplementedError('Not implement for status: $status');
       }
     }
 

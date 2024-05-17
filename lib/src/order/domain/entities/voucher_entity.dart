@@ -3,9 +3,12 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
+import '../../../core/constants/types.dart';
+import '../../../core/utils.dart';
+
 class VoucherEntity extends Equatable {
-  final int voucherId;
-  final String status;
+  final int? voucherId;
+  final Status? status;
   final String code;
   final String name;
   final String description;
@@ -13,12 +16,12 @@ class VoucherEntity extends Equatable {
   final int quantity;
   final DateTime startDate;
   final DateTime endDate;
-  final int quantityUsed;
-  final String type;
+  final int? quantityUsed;
+  final VoucherTypes type;
 
   const VoucherEntity({
-    required this.voucherId,
-    required this.status,
+    this.voucherId,
+    this.status,
     required this.code,
     required this.name,
     required this.description,
@@ -26,12 +29,32 @@ class VoucherEntity extends Equatable {
     required this.quantity,
     required this.startDate,
     required this.endDate,
-    required this.quantityUsed,
+    this.quantityUsed,
     required this.type,
   });
+  // e.g: CUS1-VOUCHER_CODE, ABCDE-VOUCHER-CODE
+  // delete CUS1- prefix
+  String get codeNoPrefix => code.split('-').last;
+
+  factory VoucherEntity.empty([VoucherTypes type = VoucherTypes.MONEY_SHOP]) {
+    final today = DateTimeUtils.today();
+    return VoucherEntity(
+      voucherId: null,
+      status: null,
+      code: '',
+      name: '',
+      description: '',
+      discount: 0,
+      quantity: 0,
+      startDate: today.add(const Duration(days: 1)),
+      endDate: today.add(const Duration(days: 7)),
+      quantityUsed: null,
+      type: type,
+    );
+  }
 
   @override
-  List<Object> get props {
+  List<Object?> get props {
     return [
       voucherId,
       status,
@@ -49,7 +72,7 @@ class VoucherEntity extends Equatable {
 
   VoucherEntity copyWith({
     int? voucherId,
-    String? status,
+    Status? status,
     String? code,
     String? name,
     String? description,
@@ -58,7 +81,7 @@ class VoucherEntity extends Equatable {
     DateTime? startDate,
     DateTime? endDate,
     int? quantityUsed,
-    String? type,
+    VoucherTypes? type,
   }) {
     return VoucherEntity(
       voucherId: voucherId ?? this.voucherId,
@@ -78,23 +101,24 @@ class VoucherEntity extends Equatable {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'voucherId': voucherId,
-      'status': status,
       'code': code,
       'name': name,
       'description': description,
       'discount': discount,
       'quantity': quantity,
-      'startDate': startDate.millisecondsSinceEpoch,
-      'endDate': endDate.millisecondsSinceEpoch,
-      'quantityUsed': quantityUsed,
-      'type': type,
+      'startDate': startDate.toIso8601String(),
+      'endDate': endDate.toIso8601String(),
+      // 'type': type.name,
+      'type': type == VoucherTypes.PERCENTAGE_SHOP ? 'percent' : 'money',
+      // 'status': status,
+      // 'quantityUsed': quantityUsed, //server no need
     };
   }
 
   factory VoucherEntity.fromMap(Map<String, dynamic> map) {
     return VoucherEntity(
-      voucherId: map['voucherId'] as int,
-      status: map['status'] as String,
+      voucherId: map['voucherId'] as int?,
+      status: Status.values.firstWhere((e) => e.name == map['status'] as String),
       code: map['code'] as String,
       name: map['name'] as String,
       description: map['description'] as String,
@@ -103,7 +127,7 @@ class VoucherEntity extends Equatable {
       startDate: DateTime.parse(map['startDate'] as String),
       endDate: DateTime.parse(map['endDate'] as String),
       quantityUsed: map['quantityUsed'] as int,
-      type: map['type'] as String,
+      type: VoucherTypes.values.byName(map['type'] as String),
     );
   }
 

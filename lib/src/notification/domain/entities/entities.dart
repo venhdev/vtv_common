@@ -3,4 +3,4 @@
 
 
 export 'notification_entity.dart';
-export 'notification_resp.dart';
+export 'notification_page_resp.dart';
