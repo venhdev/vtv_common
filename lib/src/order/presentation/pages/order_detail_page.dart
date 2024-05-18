@@ -4,8 +4,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:timelines/timelines.dart';
 
 import '../../../core/constants/types.dart';
-import '../../../core/utils.dart';
+import '../../../core/presentation/components/wrapper.dart';
 import '../../../core/presentation/pages/qr_view_page.dart';
+import '../../../core/utils.dart';
 import '../../../profile/presentation/components/address.dart';
 import '../../domain/entities/order_detail_entity.dart';
 import '../../domain/entities/order_entity.dart';
@@ -13,7 +14,6 @@ import '../../domain/entities/order_item_entity.dart';
 import '../components/action_button.dart';
 import '../components/order_section/order_section.dart';
 import '../components/order_status_badge.dart';
-import '../../../core/presentation/components/wrapper.dart';
 
 // const String _noVoucherMsg = 'Không áp dụng';
 
@@ -75,9 +75,7 @@ class OrderDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chi tiết đơn hàng'),
-      ),
+      appBar: AppBar(title: const Text('Chi tiết đơn hàng')),
       bottomSheet: _buildBottomActionByOrderStatus(context, orderDetail.order.status),
       body: SingleChildScrollView(
         child: Padding(

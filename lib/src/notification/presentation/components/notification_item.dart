@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import '../../../core/utils.dart';
@@ -9,13 +7,15 @@ class NotificationItem extends StatefulWidget {
   const NotificationItem({
     super.key,
     required this.notification,
-    required this.markAsRead,
-    required this.onDismiss,
+    required this.onExpandPressed,
+    required this.onConfirmDismiss,
+    required this.onPressed,
   });
 
   final NotificationEntity notification;
-  final void Function(String id) markAsRead;
-  final Future<bool> Function(String id) onDismiss;
+  final void Function(String notificationId) onExpandPressed;
+  final Future<bool> Function(String id) onConfirmDismiss;
+  final void Function(String notificationId) onPressed;
 
   @override
   State<NotificationItem> createState() => _NotificationItemState();
@@ -23,32 +23,20 @@ class NotificationItem extends StatefulWidget {
 
 class _NotificationItemState extends State<NotificationItem> {
   bool showDetail = false;
-  bool isLongContent = false;
-
-  @override
-  void initState() {
-    super.initState();
-    isLongContent = widget.notification.body.length > 100;
-  }
 
   @override
   Widget build(BuildContext context) {
     return Dismissible(
       key: Key(widget.notification.notificationId),
       direction: DismissDirection.endToStart,
-      onDismissed: (direction) {
-        // log('Dismissed: ${widget.notification.notificationId}');
-        // widget.markAsRead(widget.notification.notificationId);
-        log('Dismissed: ${widget.notification.notificationId}');
-      },
       confirmDismiss: (direction) async {
-        return widget.onDismiss(widget.notification.notificationId);
+        return widget.onConfirmDismiss(widget.notification.notificationId);
       },
       child: Badge(
-        offset: const Offset(8, 8),
+        offset: const Offset(-24, 8),
         backgroundColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
         isLabelVisible: !widget.notification.seen, //_REVIEW: notification.seen default = false
-        alignment: Alignment.topLeft,
+        alignment: Alignment.topRight,
         label: const Text(
           'Mới',
           style: TextStyle(
@@ -57,14 +45,7 @@ class _NotificationItemState extends State<NotificationItem> {
           ),
         ),
         child: InkWell(
-          onTap: () {
-            setState(() {
-              showDetail = !showDetail;
-              if (!widget.notification.seen) {
-                widget.markAsRead(widget.notification.notificationId);
-              }
-            });
-          },
+          onTap: () => widget.onPressed(widget.notification.notificationId),
           child: Ink(
             decoration: BoxDecoration(
               color: !widget.notification.seen
@@ -76,7 +57,8 @@ class _NotificationItemState extends State<NotificationItem> {
             child: Container(
               margin: const EdgeInsets.all(4.0),
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              //`` image
+
+              //* image
               // SizedBox(
               //   width: 50,
               //   height: 50,
@@ -85,70 +67,62 @@ class _NotificationItemState extends State<NotificationItem> {
               //   ),
               // ),
 
-              // SizedBox(width: 8),
-              // # title & body
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      if (!widget.notification.seen) const SizedBox(width: 32),
-                      // Expanded(
-                      //   child: Container(
-                      //     color: Colors.red,
-                      //     child: Text(
-                      //       // notification.title,
-                      //       widget.notification.title,
-                      //       style: const TextStyle(
-                      //         fontWeight: FontWeight.bold,
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                      const Spacer(),
+                  //# title & body
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          widget.notification.title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          widget.notification.body,
+                          maxLines: showDetail ? null : 2,
+                          overflow: showDetail ? null : TextOverflow.ellipsis,
+                        ),
 
-                      // # expand button
-                      // if (widget.notification.body.length > 200)
-                      Icon(showDetail ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
-                    ],
-                  ),
-                  Text(
-                    // notification.title,
-                    widget.notification.title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                        // # time
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              // notification.createAt.toString(),
+                              StringUtils.convertDateTimeToString(
+                                widget.notification.createAt,
+                                pattern: 'dd/MM/yyyy HH:mm',
+                              ),
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                            ),
+                            //# mark as read
+                            // if (!widget.notification.seen) _buildMarkAsReadBtn(),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  Text(
-                    // notification.body,
-                    // just show 100 characters
-                    // widget.notification.body,
-                    // show only 100 characters
 
-                    widget.notification.body,
-                    maxLines: showDetail ? null : 2,
-                    overflow: showDetail ? null : TextOverflow.ellipsis,
-                  ),
-                  // # time
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        // notification.createAt.toString(),
-                        StringUtils.convertDateTimeToString(
-                          widget.notification.createAt,
-                          pattern: 'dd/MM/yyyy HH:mm',
-                        ),
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
-                      ),
-                      //# mark as read
-                      // if (!widget.notification.seen) _buildMarkAsReadBtn(),
-                    ],
+                  //# icon expand
+                  IconButton(
+                    style: IconButton.styleFrom(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                    onPressed: () {
+                      setState(() {
+                        showDetail = !showDetail;
+                        if (!widget.notification.seen) {
+                          widget.onExpandPressed(widget.notification.notificationId);
+                        }
+                      });
+                    },
+                    icon: Icon(showDetail ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
                   ),
                 ],
               ),

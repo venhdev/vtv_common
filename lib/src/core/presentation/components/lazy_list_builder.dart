@@ -132,7 +132,9 @@ class _LazyListBuilderState<T> extends State<LazyListBuilder<T>> {
   }
 }
 
-/// Remember to call `init()` with [auto] set to true for auto load next page when reach the end of the list
+/// Call `init()` with [auto] set to true for auto load next page when reach the end of the list.
+/// 
+/// Use [length] instead of `items.length`
 class LazyListController<T> extends ChangeNotifier {
   LazyListController({
     required this.items,
@@ -223,6 +225,14 @@ class LazyListController<T> extends ChangeNotifier {
   int currentPage;
 
   //# control fields
+  int get length {
+    if (showLoadMoreButton || showLoadingIndicator) {
+      return items.length + 1;
+    } else {
+      return items.length;
+    }
+  }
+
   bool isLoading;
   bool isReachTheEnd;
 

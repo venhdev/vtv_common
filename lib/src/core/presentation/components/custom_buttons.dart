@@ -9,12 +9,14 @@ class IconTextButton extends StatelessWidget {
     required this.label,
     // this.reversePosition = false,
     this.reverseDirection = false,
-    this.style,
+    // this.style,
+    this.decoration,
     this.fontSize,
     this.iconSize,
     this.padding,
     this.iconColor,
-    this.borderRadius,
+    // this.borderRadius,
+    this.buttonStyle,
   });
   // Required parameters
   final IconData? leadingIcon; // Icon now is optional
@@ -24,8 +26,11 @@ class IconTextButton extends StatelessWidget {
 
   // Optional parameters
   // Decorations
-  final ButtonStyle? style;
-  final BorderRadius? borderRadius;
+  // final ButtonStyle? style;
+  /// this should equal to the borderRadius of the Ink widget
+  // final BorderRadius? borderRadius;
+  final Decoration? decoration;
+  final ButtonStyle? buttonStyle;
 
   /// If true, the icon will be placed after the text
   // final bool reversePosition; //! no longer used >> leadingIcon and trailingIcon
@@ -41,94 +46,41 @@ class IconTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onPressed,
-      borderRadius: borderRadius,
-      child: Ink(
-        padding: padding,
-        child: !reverseDirection
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min, // make the button as small as possible
-                children: [
-                  if (leadingIcon != null) ...[
-                    Icon(leadingIcon, size: iconSize, color: iconColor),
-                    const SizedBox(width: 4),
-                  ],
-
-                  Text(label, style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)),
-
-                  if (trailingIcon != null) ...[
-                    const SizedBox(width: 4),
-                    if (trailingIcon != null) Icon(trailingIcon, size: iconSize, color: iconColor),
-                  ]
-                  //*---------------------NO LONGER USE-----------------------*//
-                  // if (!reversePosition) ...[
-                  //   Icon(leadingIcon, size: iconSize, color: iconColor),
-                  //   const SizedBox(width: 4),
-                  //   Text(label,
-                  //       style: TextStyle(
-                  //         fontSize: fontSize,
-                  //         fontWeight: FontWeight.bold,
-                  //       )),
-                  //   if (trailingIcon != null) ...[
-                  //     const SizedBox(width: 4),
-                  //     if (trailingIcon != null) Icon(trailingIcon, size: iconSize, color: iconColor),
-                  //   ]
-                  // ] else ...[
-                  //   if (trailingIcon != null) ...[
-                  //     if (trailingIcon != null) Icon(trailingIcon, size: iconSize, color: iconColor),
-                  //     const SizedBox(width: 4),
-                  //   ],
-                  //   Text(label,
-                  //       style: TextStyle(
-                  //         fontSize: fontSize,
-                  //         fontWeight: FontWeight.bold,
-                  //       )),
-                  //   const SizedBox(width: 4),
-                  //   Icon(leadingIcon, size: iconSize, color: iconColor),
-                  // ]
-                  //*---------------------NO LONGER USE-----------------------*//
+    return TextButton(
+      style: buttonStyle,
+      onPressed: onPressed,
+      child: !reverseDirection
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min, // make the button as small as possible
+              children: [
+                if (leadingIcon != null) ...[
+                  Icon(leadingIcon, size: iconSize, color: iconColor),
+                  const SizedBox(width: 4),
                 ],
-              )
-            : Column(
-                mainAxisSize: MainAxisSize.min, // make the button as small as possible
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if (leadingIcon != null) ...[
-                    Icon(leadingIcon, size: iconSize, color: iconColor),
-                    const SizedBox(height: 4),
-                  ],
-
-                  Text(label, style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)),
-
-                  if (trailingIcon != null) ...[
-                    const SizedBox(height: 4),
-                    if (trailingIcon != null) Icon(trailingIcon, size: iconSize, color: iconColor),
-                  ]
-
-                  //*---------------------NO LONGER USE-----------------------*//
-                  // if (!reversePosition) ...[
-                  //   if (leadingIcon != null) Icon(leadingIcon, size: iconSize, color: iconColor),
-                  //   const SizedBox(width: 4),
-                  //   Text(label,
-                  //       style: TextStyle(
-                  //         fontSize: fontSize,
-                  //         fontWeight: FontWeight.bold,
-                  //       )),
-                  // ] else ...[
-                  //   Text(label,
-                  //       style: TextStyle(
-                  //         fontSize: fontSize,
-                  //         fontWeight: FontWeight.bold,
-                  //       )),
-                  //   const SizedBox(width: 4),
-                  //   if (leadingIcon != null) Icon(leadingIcon, size: iconSize, color: iconColor),
-                  // ]
+                Text(label, style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)),
+                if (trailingIcon != null) ...[
+                  const SizedBox(width: 4),
+                  if (trailingIcon != null) Icon(trailingIcon, size: iconSize, color: iconColor),
+                ]
+              ],
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min, // make the button as small as possible
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (leadingIcon != null) ...[
+                  Icon(leadingIcon, size: iconSize, color: iconColor),
+                  const SizedBox(height: 4),
                 ],
-              ),
-      ),
+                Text(label, style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)),
+                if (trailingIcon != null) ...[
+                  const SizedBox(height: 4),
+                  if (trailingIcon != null) Icon(trailingIcon, size: iconSize, color: iconColor),
+                ]
+              ],
+            ),
     );
   }
 }

@@ -87,4 +87,9 @@ class CategoryEntity extends Equatable {
 
   @override
   bool get stringify => true;
+
+  @override
+  String toString() {
+    return 'CategoryEntity(categoryId: $categoryId, name: $name, image: ${image.isNotEmpty}, description: $description, child: $child, status: $status, parentId: $parentId)';
+  }
 }

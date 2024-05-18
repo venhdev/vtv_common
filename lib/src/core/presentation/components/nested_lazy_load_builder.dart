@@ -8,7 +8,7 @@ import '../../constants/typedef.dart';
 
 // OK_BUG rebuild when the parent long list is scrolled >> lost data + rebuild lazy load
 //: DONE create a controller to keep the data + current page
-
+@Deprecated('Use `LazyListController` instead. This is old version of it.')
 class LazyLoadController<T> extends ChangeNotifier {
   LazyLoadController({
     required this.scrollController,

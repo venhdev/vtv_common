@@ -387,6 +387,18 @@ class NetWorkUtils {
 }
 
 class ConversionUtils {
+  static String? extractUUID(String dataContainUUID) {
+    // Regular expression pattern to match a UUID
+    const uuidPattern = r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}';
+    final regex = RegExp(uuidPattern);
+
+    // Find the first match in the message
+    final match = regex.firstMatch(dataContainUUID);
+
+    // return the matched UUID maybe null
+    return match?.group(0);
+  }
+
   static Iterable<MapEntry<String, Object?>> flattenObjectWithPrefixIndex(
     Map<String, dynamic> objectMap, {
     required int index,

@@ -53,7 +53,7 @@ Future<T?> showDialogToConfirm<T>({
             alignment: MainAxisAlignment.spaceBetween,
             children: [
               hideDismiss
-                  ? SizedBox.shrink()
+                  ? const SizedBox.shrink()
                   : TextButton(
                       onPressed: () {
                         Navigator.of(context).pop(false);
@@ -151,6 +151,10 @@ void showCrossPlatformAboutDialog({
           : const FlutterLogo(),
       applicationLegalese: '© ${DateTime.now().year} VTV',
       children: children,
+      // children: [
+      //   // Text(packageInfo.packageName),
+      //   if (children != null) ...children,
+      // ],
       // bool barrierDismissible = true,
       // Color? barrierColor,
       // String? barrierLabel,
@@ -161,4 +165,25 @@ void showCrossPlatformAboutDialog({
   } catch (e) {
     debugPrint(e.toString());
   }
+}
+
+void showDialogToLoading(BuildContext context, [String message = 'Đang tải']) {
+  // 1. Show a dialog with progress indicator
+  showDialog(
+    context: context,
+    barrierDismissible: false, // Prevent user interaction with the screen
+    builder: (BuildContext context) {
+      return AlertDialog(
+        // title: Text('Loading Data...'),
+        content: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(width: 8.0),
+            Text(message),
+          ],
+        ),
+      );
+    },
+  );
 }
