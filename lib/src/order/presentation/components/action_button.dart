@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class ActionButton extends StatelessWidget {
   const ActionButton({
@@ -9,9 +8,9 @@ class ActionButton extends StatelessWidget {
     required this.backgroundColor,
   });
   //! All Roles
-  factory ActionButton.back(BuildContext context, {VoidCallback? onBack}) => ActionButton(
+  factory ActionButton.back(VoidCallback onBack) => ActionButton(
         label: 'Quay lại',
-        onPressed: onBack ?? () => context.pop(),
+        onPressed: onBack,
         backgroundColor: Colors.grey.shade400,
       );
 
@@ -40,6 +39,29 @@ class ActionButton extends StatelessWidget {
         label: 'Chat',
         onPressed: onChatPressed,
         backgroundColor: Colors.blue.shade300,
+      );
+
+  //! Button for Vendor Roles
+  factory ActionButton.vendorChat(void Function()? onChatPressed) => ActionButton(
+        label: 'Chat',
+        onPressed: onChatPressed,
+        backgroundColor: Colors.grey.shade300,
+      );
+
+  factory ActionButton.vendorAcceptOrder(void Function()? onAcceptPressed) => ActionButton(
+        label: 'Nhận đơn',
+        onPressed: onAcceptPressed,
+        backgroundColor: Colors.blue.shade300,
+      );
+  factory ActionButton.vendorPackedOrder(void Function()? onPackedPressed) => ActionButton(
+        label: 'Đóng gói xong',
+        onPressed: onPackedPressed,
+        backgroundColor: Colors.orange.shade300,
+      );
+  factory ActionButton.vendorAcceptCancelOrder(void Function()? onAcceptCancelPressed) => ActionButton(
+        label: 'Xác nhận hủy',
+        onPressed: onAcceptCancelPressed,
+        backgroundColor: Colors.red.shade300,
       );
 
   final String label;

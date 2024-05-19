@@ -49,7 +49,14 @@ class _NotificationListState extends State<NotificationList> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, AuthState>(
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state.status == AuthStatus.unauthenticated) {
+          widget.lazyListController.clear();
+        } else if (state.status == AuthStatus.authenticated) {
+          widget.lazyListController.init();
+        }
+      },
       builder: (context, state) {
         if (state.status == AuthStatus.unauthenticated) {
           return const Center(

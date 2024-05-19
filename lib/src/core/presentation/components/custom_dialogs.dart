@@ -167,23 +167,75 @@ void showCrossPlatformAboutDialog({
   }
 }
 
-void showDialogToLoading(BuildContext context, [String message = 'Đang tải']) {
-  // 1. Show a dialog with progress indicator
-  showDialog(
+/// - [closeBy] this use for close dialog when dataCallback is done,
+/// the data will be passed to this function base on navigation using in the app:
+///   - when use `GoRouter`, it will be `(context, result) => context.pop(result)`
+///   - when use `Navigator`, it will be `(context, result) => Navigator.of(context).pop(result)`
+Future<T?> showDialogToPerform<T>(
+  BuildContext context, {
+  required Future<T> Function() dataCallback,
+  required void Function(BuildContext context, dynamic result) closeBy,
+  String message = 'Đang tải',
+}) async {
+  final GlobalKey alertDialogKey = GlobalKey();
+  return showDialog<T>(
     context: context,
-    barrierDismissible: false, // Prevent user interaction with the screen
+    barrierDismissible: true, // Prevent user interaction with the screen << back button
     builder: (BuildContext context) {
-      return AlertDialog(
-        // title: Text('Loading Data...'),
-        content: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(width: 8.0),
-            Text(message),
-          ],
-        ),
+      return LoadingAlertDialog<T>(
+        key: alertDialogKey,
+        message: message,
+        dataCallback: dataCallback,
+        closeBy: closeBy,
       );
     },
   );
+}
+
+class LoadingAlertDialog<T> extends StatefulWidget {
+  const LoadingAlertDialog({
+    super.key,
+    required this.message,
+    required this.dataCallback,
+    required this.closeBy,
+  });
+
+  final String message;
+  final Future<T> Function() dataCallback;
+  final void Function(BuildContext context, T result) closeBy;
+
+  @override
+  State<LoadingAlertDialog> createState() => _LoadingAlertDialogState<T>();
+}
+
+class _LoadingAlertDialogState<T> extends State<LoadingAlertDialog> {
+  void invokeCallback() async {
+    widget.dataCallback().then((result) {
+      if (context.mounted) {
+        widget.closeBy(context, result);
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => invokeCallback());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      child: AlertDialog(
+        content: Row(
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(width: 16.0),
+            Text(widget.message),
+          ],
+        ),
+      ),
+    );
+  }
 }

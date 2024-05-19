@@ -18,18 +18,18 @@ import '../components/order_status_badge.dart';
 // const String _noVoucherMsg = 'Không áp dụng';
 
 class OrderDetailPage extends StatelessWidget {
-  const OrderDetailPage({
-    super.key,
-    required this.isVendor,
-    required this.orderDetail,
-    this.onPayPressed,
-    this.onCompleteOrderPressed,
-    this.onCancelOrderPressed,
-    this.onRePurchasePressed,
-    this.customerReviewBtn,
-    this.onOrderItemPressed,
-    this.onBack,
-  });
+  // const OrderDetailPage({
+  //   super.key,
+  //   required this.isVendor,
+  //   required this.orderDetail,
+  //   this.onPayPressed,
+  //   this.onCompleteOrderPressed,
+  //   this.onCancelOrderPressed,
+  //   this.onRePurchasePressed,
+  //   this.customerReviewBtn,
+  //   this.onOrderItemPressed,
+  //   this.onBack,
+  // });
 
   const OrderDetailPage.customer({
     super.key,
@@ -40,14 +40,22 @@ class OrderDetailPage extends StatelessWidget {
     required this.customerReviewBtn,
     required this.onPayPressed,
     this.onOrderItemPressed,
-    this.onBack,
-  }) : isVendor = false;
+    required this.onBack,
+    required this.onRefresh,
+  })  : isVendor = false,
+        onAcceptCancelPressed = null,
+        onAcceptPressed = null,
+        onPackedPressed = null;
 
   const OrderDetailPage.vendor({
     super.key,
     required this.orderDetail,
     this.onOrderItemPressed,
-    this.onBack,
+    required this.onBack,
+    required this.onRefresh,
+    required this.onAcceptCancelPressed,
+    required this.onAcceptPressed,
+    required this.onPackedPressed,
   })  : isVendor = true,
         onCompleteOrderPressed = null,
         onCancelOrderPressed = null,
@@ -61,6 +69,12 @@ class OrderDetailPage extends StatelessWidget {
   final OrderDetailEntity orderDetail;
   final void Function(OrderItemEntity orderItem)? onOrderItemPressed;
   final bool isVendor;
+  final Future<void> Function() onRefresh;
+
+  //! Vendor required properties
+  final Future<void> Function(String orderId)? onAcceptCancelPressed;
+  final Future<void> Function(String orderId)? onAcceptPressed;
+  final Future<void> Function(String orderId)? onPackedPressed;
 
   //! Customer required properties
   final Future<void> Function(String orderId)? onCompleteOrderPressed;
@@ -70,67 +84,70 @@ class OrderDetailPage extends StatelessWidget {
   final Widget Function(OrderEntity order)? customerReviewBtn;
 
   //! Custom (for all role)
-  final void Function()? onBack; // default using context.pop() (GoRouter)
+  final void Function() onBack;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Chi tiết đơn hàng')),
       bottomSheet: _buildBottomActionByOrderStatus(context, orderDetail.order.status),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              //! order status 'mã đơn hàng' + 'ngày đặt hàng' + copy button
-              Wrapper(
-                // backgroundColor: Colors.red.shade100,
-                backgroundColor: ColorUtils.getOrderStatusBackgroundColor(orderDetail.order.status, shade: 100),
-                child: Column(
-                  children: [
-                    // order date + order id
-                    _buildOrderInfo(),
-                    // status
-                    _buildOrderStatus(),
-                  ],
+      body: RefreshIndicator(
+        onRefresh: onRefresh,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                //! order status 'mã đơn hàng' + 'ngày đặt hàng' + copy button
+                Wrapper(
+                  // backgroundColor: Colors.red.shade100,
+                  backgroundColor: ColorUtils.getOrderStatusBackgroundColor(orderDetail.order.status, shade: 100),
+                  child: Column(
+                    children: [
+                      // order date + order id
+                      _buildOrderInfo(),
+                      // status
+                      _buildOrderStatus(),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
+                const SizedBox(height: 8),
 
-              //# summary info: transport + shipping method + order timeline
-              _transportSummary(context),
-              const SizedBox(height: 8),
+                //# summary info: transport + shipping method + order timeline
+                _transportSummary(context),
+                const SizedBox(height: 8),
 
-              //! shop info + list of items
-              OrderSectionShopItems(
-                order: orderDetail.order,
-                hideShopVoucherCode: true,
-                onItemPressed: (item) => onOrderItemPressed?.call(item),
-              ),
-              const SizedBox(height: 8),
+                //! shop info + list of items
+                OrderSectionShopItems(
+                  order: orderDetail.order,
+                  hideShopVoucherCode: true,
+                  onItemPressed: onOrderItemPressed,
+                ),
+                const SizedBox(height: 8),
 
-              //! payment method
-              // _buildPaymentMethod(),
-              OrderSectionPaymentMethod(
-                disabled: true,
-                paymentMethod: orderDetail.order.paymentMethod,
-                paid: orderDetail.order.status != OrderStatus.UNPAID,
-              ),
-              const SizedBox(height: 8),
+                //! payment method
+                // _buildPaymentMethod(),
+                OrderSectionPaymentMethod(
+                  disabled: true,
+                  paymentMethod: orderDetail.order.paymentMethod,
+                  paid: orderDetail.order.status != OrderStatus.UNPAID,
+                ),
+                const SizedBox(height: 8),
 
-              //! total price
-              OrderSectionSingleOrderPayment(order: orderDetail.order),
-              // hideVoucherCode: true,
+                //! total price
+                OrderSectionSingleOrderPayment(order: orderDetail.order),
+                // hideVoucherCode: true,
 
-              //! note
-              if (orderDetail.order.note?.isNotEmpty ?? false) ...[
-                const SizedBox(height: 4),
-                OrderSectionNote(note: orderDetail.order.note!, readOnly: true),
+                //! note
+                if (orderDetail.order.note?.isNotEmpty ?? false) ...[
+                  const SizedBox(height: 4),
+                  OrderSectionNote(note: orderDetail.order.note!, readOnly: true),
+                ],
+
+                const SizedBox(height: 48),
               ],
-
-              const SizedBox(height: 48),
-            ],
+            ),
           ),
         ),
       ),
@@ -325,7 +342,7 @@ class OrderDetailPage extends StatelessWidget {
     Widget buildCustomerActionByStatus(BuildContext context, OrderStatus status) {
       switch (status) {
         case OrderStatus.WAITING:
-          return ActionButton.back(context, onBack: onBack);
+          return ActionButton.back(onBack);
         case OrderStatus.UNPAID:
           return ActionButton.pay(() => onPayPressed!(orderDetail.order.orderId!));
         case OrderStatus.PENDING || OrderStatus.PROCESSING || OrderStatus.PICKUP_PENDING:
@@ -335,12 +352,28 @@ class OrderDetailPage extends StatelessWidget {
         case OrderStatus.CANCEL:
           return ActionButton.customerRePurchase(() => onRePurchasePressed!(orderDetail.order.orderItems));
         case OrderStatus.SHIPPING:
-          return ActionButton.back(context, onBack: onBack);
+          return ActionButton.back(onBack);
         case OrderStatus.DELIVERED:
           return ActionButton.customerCompleteOrder(() => onCompleteOrderPressed!(orderDetail.order.orderId!));
 
         default:
-          return ActionButton.back(context, onBack: onBack);
+          return ActionButton.back(onBack);
+      }
+    }
+
+    Widget buildVendorActionByStatus(BuildContext context, OrderStatus status) {
+      assert(isVendor && onAcceptCancelPressed != null && onAcceptPressed != null && onPackedPressed != null);
+
+      switch (status) {
+        case OrderStatus.WAITING:
+          return ActionButton.vendorAcceptCancelOrder(() => onAcceptCancelPressed!(orderDetail.order.orderId!));
+        case OrderStatus.PENDING:
+          return ActionButton.vendorAcceptOrder(() => onAcceptPressed!(orderDetail.order.orderId!));
+        case OrderStatus.PROCESSING:
+          return ActionButton.vendorPackedOrder(() => onPackedPressed!(orderDetail.order.orderId!));
+
+        default:
+          return ActionButton.back(onBack);
       }
     }
 
@@ -349,7 +382,16 @@ class OrderDetailPage extends StatelessWidget {
       color: Theme.of(context).colorScheme.primaryContainer,
       child: isVendor
           //! Vendor actions
-          ? ActionButton.back(context, onBack: onBack)
+          ? Row(
+              children: [
+                // //# vendor first half
+                // Expanded(child: ActionButton.back(onBack)),
+                //# vendor second half
+                Expanded(
+                  child: buildVendorActionByStatus(context, status),
+                ),
+              ],
+            )
           //! Customer actions
           : Row(
               children: [

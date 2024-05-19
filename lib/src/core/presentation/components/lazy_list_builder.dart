@@ -339,4 +339,9 @@ class LazyListController<T> extends ChangeNotifier {
     items[index] = item;
     notifyListeners();
   }
+
+  void clear() {
+    items.clear();
+    notifyListeners();
+  }
 }

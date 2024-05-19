@@ -13,7 +13,7 @@ class NotificationItem extends StatefulWidget {
   });
 
   final NotificationEntity notification;
-  final void Function(String notificationId) onExpandPressed;
+  final VoidCallback onExpandPressed;
   final Future<bool> Function(String id) onConfirmDismiss;
   final void Function(String notificationId) onPressed;
 
@@ -118,7 +118,7 @@ class _NotificationItemState extends State<NotificationItem> {
                       setState(() {
                         showDetail = !showDetail;
                         if (!widget.notification.seen) {
-                          widget.onExpandPressed(widget.notification.notificationId);
+                          widget.onExpandPressed();
                         }
                       });
                     },

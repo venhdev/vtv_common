@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/presentation/components/custom_widgets.dart';
 import '../../../core/constants/typedef.dart';
 import '../../../core/constants/types.dart';
+import '../../../core/presentation/components/custom_widgets.dart';
 import '../../../core/utils.dart';
 import '../../domain/entities/multi_order_entity.dart';
-import '../../domain/entities/order_detail_entity.dart';
 import '../../domain/entities/order_entity.dart';
 import '../components/order_purchase_item.dart';
-import 'order_detail_page.dart';
 
 class OrderPurchasePage extends StatefulWidget {
   factory OrderPurchasePage.customer({
     required FRespData<MultiOrderEntity> Function(OrderStatus? status) dataCallback,
     required OrderPurchasePageController pageController,
-    required OrderPurchaseItem Function(OrderEntity, void Function(OrderDetailEntity)) customerItemBuilder,
+    required OrderPurchaseItem Function(
+      OrderEntity,
+      VoidCallback,
+      // void Function(OrderDetailEntity),
+    ) customerItemBuilder,
     String appBarTitle = 'Đơn hàng của bạn',
     List<Widget>? actions,
   }) =>
@@ -76,7 +78,8 @@ class OrderPurchasePage extends StatefulWidget {
   /// call [onReceivedCallback] when customer tap received >> reload & navigate to OrderDetailPage
   final OrderPurchaseItem Function(
     OrderEntity order,
-    void Function(OrderDetailEntity completedOrder) onReceivedCallback,
+    VoidCallback onRefresh,
+    // void Function(OrderDetailEntity completedOrder) onReceivedCallback,
   )? customerItemBuilder;
 
   //! Vendor required
@@ -148,26 +151,25 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                             ? _buildCustomerTabBarView(
                                 index: index,
                                 multiOrderResp: listMultiOrder[index],
-                                onReceivedCallback: (completedOrder) {
-                                  // - 1. update order list in [OrderPurchasePage]
-                                  // - 2. navigate to [OrderDetailPage] with new [OrderDetailEntity]
-                                  setState(() {});
-                                  // context.go(OrderDetailPage.path, extra: completedOrder);
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return OrderDetailPage(orderDetail: completedOrder, isVendor: widget.isVendor);
-                                      },
-                                    ),
-                                  );
-                                },
+                                onRefresh: () => setState(() {}),
+                                // onReceivedCallback: (completedOrder) {
+                                //   // - 1. update order list in [OrderPurchasePage]
+                                //   // - 2. navigate to [OrderDetailPage] with new [OrderDetailEntity]
+                                //   setState(() {});
+                                //   // context.go(OrderDetailPage.path, extra: completedOrder);
+                                //   Navigator.of(context).push(
+                                //     MaterialPageRoute(
+                                //       builder: (context) {
+                                //         return OrderDetailPage(orderDetail: completedOrder, isVendor: widget.isVendor);
+                                //       },
+                                //     ),
+                                //   );
+                                // },
                               )
                             : _buildVendorTabBarView(
                                 index: index,
                                 multiOrderResp: listMultiOrder[index],
-                                reloadCallback: () {
-                                  setState(() {}); // just update list
-                                },
+                                onRefresh: () => setState(() {}),
                               )),
                   ),
                 ),
@@ -234,7 +236,8 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
   Widget _buildCustomerTabBarView({
     required int index,
     required RespData<MultiOrderEntity> multiOrderResp,
-    required void Function(OrderDetailEntity completedOrder) onReceivedCallback,
+    required VoidCallback onRefresh,
+    // required void Function(OrderDetailEntity completedOrder) onReceivedCallback,
   }) {
     return multiOrderResp.fold(
       (error) => MessageScreen.error(
@@ -265,7 +268,8 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                 separatorBuilder: (context, index) => const Divider(),
                 itemCount: multiOrder.orders.length,
                 itemBuilder: (context, index) {
-                  return widget.customerItemBuilder!(multiOrder.orders[index], onReceivedCallback);
+                  // return widget.customerItemBuilder!(multiOrder.orders[index], onRefresh, onReceivedCallback);
+                  return widget.customerItemBuilder!(multiOrder.orders[index], onRefresh);
                 },
               ),
             ),
@@ -278,7 +282,7 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
   Widget _buildVendorTabBarView({
     required int index,
     required RespData<MultiOrderEntity> multiOrderResp,
-    required void Function() reloadCallback,
+    required void Function() onRefresh,
   }) {
     return multiOrderResp.fold(
       (error) => MessageScreen.error(
@@ -309,7 +313,7 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                 separatorBuilder: (context, index) => const Divider(),
                 itemCount: multiOrder.orders.length,
                 itemBuilder: (context, index) {
-                  return widget.vendorItemBuilder!(multiOrder.orders[index], reloadCallback);
+                  return widget.vendorItemBuilder!(multiOrder.orders[index], onRefresh);
                 },
               ),
             ),
