@@ -36,7 +36,7 @@ class VoucherEntity extends Equatable {
   // delete CUS1- prefix
   String get codeNoPrefix => code.split('-').last;
 
-  factory VoucherEntity.empty([VoucherTypes type = VoucherTypes.MONEY_SHOP]) {
+  factory VoucherEntity.addInit([VoucherTypes type = VoucherTypes.MONEY_SHOP, int discount = 1000]) {
     final today = DateTimeUtils.today();
     return VoucherEntity(
       voucherId: null,
@@ -44,8 +44,8 @@ class VoucherEntity extends Equatable {
       code: '',
       name: '',
       description: '',
-      discount: 0,
-      quantity: 0,
+      discount: discount,
+      quantity: 10,
       startDate: today.add(const Duration(days: 1)),
       endDate: today.add(const Duration(days: 7)),
       quantityUsed: null,

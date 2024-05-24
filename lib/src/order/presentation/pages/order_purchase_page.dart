@@ -15,7 +15,6 @@ class OrderPurchasePage extends StatefulWidget {
     required OrderPurchaseItem Function(
       OrderEntity,
       VoidCallback,
-      // void Function(OrderDetailEntity),
     ) customerItemBuilder,
     String appBarTitle = 'Đơn hàng của bạn',
     List<Widget>? actions,
@@ -79,7 +78,6 @@ class OrderPurchasePage extends StatefulWidget {
   final OrderPurchaseItem Function(
     OrderEntity order,
     VoidCallback onRefresh,
-    // void Function(OrderDetailEntity completedOrder) onReceivedCallback,
   )? customerItemBuilder;
 
   //! Vendor required
@@ -259,7 +257,7 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                 const SizedBox(width: 4),
                 Text('Tổng số đơn hàng: ${multiOrder.count}'),
                 const Spacer(),
-                Text('Tổng tiền: ${StringUtils.formatCurrency(multiOrder.totalPayment)}'),
+                Text('Tổng tiền: ${ConversionUtils.formatCurrency(multiOrder.totalPayment)}'),
                 const SizedBox(width: 4),
               ],
             ),
@@ -304,7 +302,7 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                 const SizedBox(width: 4),
                 Text('Tổng số đơn hàng: ${multiOrder.count}'),
                 const Spacer(),
-                Text('Tổng tiền: ${StringUtils.formatCurrency(multiOrder.totalPayment)}'),
+                Text('Tổng tiền: ${ConversionUtils.formatCurrency(multiOrder.totalPayment)}'),
                 const SizedBox(width: 4),
               ],
             ),

@@ -46,7 +46,7 @@ class OrderSectionPaymentMethod extends StatelessWidget {
     switch (method) {
       case PaymentTypes.Wallet:
         return Text(
-          ' (số dư ví: ${StringUtils.formatCurrency(balance!)})',
+          ' (số dư ví: ${ConversionUtils.formatCurrency(balance!)})',
           style: _hintStyle,
         );
       default:

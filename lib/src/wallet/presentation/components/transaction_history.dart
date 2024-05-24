@@ -40,7 +40,7 @@ class TransactionHistory extends StatelessWidget {
                     children: [
                       const Text('Số dư hiện tại'),
                       Text(
-                        StringUtils.formatCurrency(ok.data!.balance),
+                        ConversionUtils.formatCurrency(ok.data!.balance),
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -98,7 +98,7 @@ class TransactionHistoryItem extends StatelessWidget {
         style: ListTileStyle.list,
         title: Text(getTransactionTypeName(transaction.type)),
         subtitle: Text(
-            StringUtils.convertDateTimeToString(
+            ConversionUtils.convertDateTimeToString(
               transaction.createAt,
               pattern: 'dd/MM/yyyy hh:mm aa',
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../auth.dart';
+import '../../../core/presentation/components/custom_widgets.dart';
 import '../../../core/presentation/components/lazy_list_builder.dart';
 import '../../domain/entities/notification_entity.dart';
 
@@ -71,11 +72,23 @@ class _NotificationListState extends State<NotificationList> {
             controller: widget.lazyListController.scrollController,
             slivers: [
               _buildSliverAppBar(context),
-              SliverList.separated(
-                itemCount: widget.lazyListController.length,
-                itemBuilder: widget.lazyListController.build,
-                separatorBuilder: widget.separatorBuilder ?? (_, __) => const SizedBox.shrink(),
-              ),
+              if (widget.lazyListController.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: MessageScreen(
+                      message: widget.lazyListController.lastPageMessage,
+                      onPressed: widget.lazyListController.clear,
+                      buttonLabel: 'Tải lại',
+                    ),
+                  ),
+                ),
+              if (widget.lazyListController.isNotEmpty)
+                SliverList.separated(
+                  itemCount: widget.lazyListController.itemCount,
+                  itemBuilder: widget.lazyListController.build,
+                  separatorBuilder: widget.separatorBuilder ?? (_, __) => const SizedBox.shrink(),
+                ),
             ],
           ),
         );

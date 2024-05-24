@@ -162,8 +162,8 @@ class OrderDetailPage extends StatelessWidget {
             // 'Ngày đặt hàng',
             TextSpan(text: 'Ngày đặt hàng:\n', children: [
               TextSpan(
-                text: StringUtils.convertDateTimeToString(
-                  (orderDetail.order.orderDate).toLocal(),
+                text: ConversionUtils.convertDateTimeToString(
+                  (orderDetail.order.orderDate),
                   pattern: 'dd-MM-yyyy hh:mm aa',
                 ),
                 style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
@@ -293,7 +293,7 @@ class OrderDetailPage extends StatelessWidget {
                     Expanded(
                       flex: 1,
                       child: Text(
-                        StringUtils.convertDateTimeToString(
+                        ConversionUtils.convertDateTimeToString(
                           orderDetail.transport!.transportHandles[index].createAt,
                           pattern: 'dd-MM-yyyy\nHH:mm',
                         ),

@@ -4,15 +4,15 @@ import 'package:flutter/foundation.dart';
 
 import 'package:vtv_common/src/home/domain/entities/product_entity.dart';
 
-class CategoryShopEntity {
+class ShopCategoryEntity {
   final int categoryShopId;
   final int shopId;
   final String name;
   final String image;
   final int countProduct;
-  final List<ProductEntity>? products;
+  final List<ProductEntity>? products; // this will null when not get detail
 
-  CategoryShopEntity({
+  ShopCategoryEntity({
     required this.categoryShopId,
     required this.shopId,
     required this.name,
@@ -21,7 +21,7 @@ class CategoryShopEntity {
     required this.products,
   });
 
-  CategoryShopEntity copyWith({
+  ShopCategoryEntity copyWith({
     int? categoryShopId,
     int? shopId,
     String? name,
@@ -29,7 +29,7 @@ class CategoryShopEntity {
     int? countProduct,
     List<ProductEntity>? products,
   }) {
-    return CategoryShopEntity(
+    return ShopCategoryEntity(
       categoryShopId: categoryShopId ?? this.categoryShopId,
       shopId: shopId ?? this.shopId,
       name: name ?? this.name,
@@ -50,18 +50,13 @@ class CategoryShopEntity {
     };
   }
 
-  factory CategoryShopEntity.fromMap(Map<String, dynamic> map) {
-    return CategoryShopEntity(
+  factory ShopCategoryEntity.fromMap(Map<String, dynamic> map) {
+    return ShopCategoryEntity(
       categoryShopId: map['categoryShopId'] as int,
       shopId: map['shopId'] as int,
       name: map['name'] as String,
       image: map['image'] as String,
       countProduct: map['countProduct'] as int,
-      // products: List<ProductEntity>.from(
-      //   (map['productDTOs'] as List).map<ProductEntity>(
-      //     (x) => ProductEntity.fromMap(x as Map<String, dynamic>),
-      //   ),
-      // ),
       products: map['productDTOs'] != null
           ? List<ProductEntity>.from(
               (map['productDTOs'] as List).map(
@@ -74,8 +69,8 @@ class CategoryShopEntity {
 
   String toJson() => json.encode(toMap());
 
-  factory CategoryShopEntity.fromJson(String source) =>
-      CategoryShopEntity.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ShopCategoryEntity.fromJson(String source) =>
+      ShopCategoryEntity.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
@@ -83,7 +78,7 @@ class CategoryShopEntity {
   }
 
   @override
-  bool operator ==(covariant CategoryShopEntity other) {
+  bool operator ==(covariant ShopCategoryEntity other) {
     if (identical(this, other)) return true;
 
     return other.categoryShopId == categoryShopId &&

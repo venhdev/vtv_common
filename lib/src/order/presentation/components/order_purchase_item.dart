@@ -74,7 +74,7 @@ class OrderPurchaseItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('${order.orderItems.length} sản phẩm'),
-                  Text('Tổng thanh toán: ${StringUtils.formatCurrency(order.paymentTotal)}'),
+                  Text('Tổng thanh toán: ${ConversionUtils.formatCurrency(order.paymentTotal)}'),
                 ],
               ),
             ),

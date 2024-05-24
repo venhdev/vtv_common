@@ -32,7 +32,7 @@ class OrderSectionShippingMethod extends StatelessWidget {
                 const Text(
                   'Phí vận chuyển:',
                 ),
-                Text(StringUtils.formatCurrency(_order.shippingFee)),
+                Text(ConversionUtils.formatCurrency(_order.shippingFee)),
               ],
             )
           : null,

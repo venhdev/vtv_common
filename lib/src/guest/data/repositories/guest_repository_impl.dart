@@ -1,5 +1,7 @@
 import 'package:vtv_common/src/core/constants/typedef.dart';
-import 'package:vtv_common/src/shop/domain/entities/category_shop_entity.dart';
+import 'package:vtv_common/src/home/domain/entities/dto/product_detail_resp.dart';
+import 'package:vtv_common/src/home/domain/entities/dto/product_page_resp.dart';
+import 'package:vtv_common/src/shop/domain/entities/shop_category_entity.dart';
 
 import 'package:vtv_common/src/shop/domain/entities/dto/shop_detail_resp.dart';
 
@@ -15,7 +17,7 @@ class GuestRepositoryImpl implements GuestRepository {
 
   @override
   FRespData<int> countShopFollowed(int shopId) async {
-    return handleDataResponseFromDataSource(
+    return await handleDataResponseFromDataSource(
       dataCallback: () => _guestDataSource.countShopFollowed(shopId),
     );
   }
@@ -50,7 +52,7 @@ class GuestRepositoryImpl implements GuestRepository {
 
   @override
   FRespData<String> getFullAddressByWardCode(String wardCode) async {
-    return handleDataResponseFromDataSource(
+    return await handleDataResponseFromDataSource(
       dataCallback: () async {
         final fullAddressResp = await _guestDataSource.getFullAddressByWardCode(wardCode);
         return SuccessResponse(
@@ -65,16 +67,35 @@ class GuestRepositoryImpl implements GuestRepository {
   }
 
   @override
-  FRespData<CategoryShopEntity> getCategoryShopByCategoryShopId(int categoryShopId) async {
-    return handleDataResponseFromDataSource(
+  FRespData<ShopCategoryEntity> getCategoryShopByCategoryShopId(int categoryShopId) async {
+    return await handleDataResponseFromDataSource(
       dataCallback: () async => await _guestDataSource.getCategoryShopByCategoryShopId(categoryShopId),
     );
   }
 
   @override
-  FRespData<List<CategoryShopEntity>> getCategoryShopByShopId(int shopId) async {
-    return handleDataResponseFromDataSource(
+  FRespData<List<ShopCategoryEntity>> getCategoryShopByShopId(int shopId) async {
+    return await handleDataResponseFromDataSource(
       dataCallback: () async => await _guestDataSource.getCategoryShopByShopId(shopId),
     );
+  }
+
+  @override
+  FRespData<ProductPageResp> getProductPageByCategory(int page, int size, categoryId) async {
+    return await handleDataResponseFromDataSource(
+      dataCallback: () async => await _guestDataSource.getProductPageByCategory(page, size, categoryId),
+    );
+  }
+
+  @override
+  FRespData<int> getProductCountFavorite(int productId) {
+    // TODO: implement getProductCountFavorite
+    throw UnimplementedError();
+  }
+
+  @override
+  FRespData<ProductDetailResp> getProductDetailById(int productId) {
+    // TODO: implement getProductDetailById
+    throw UnimplementedError();
   }
 }

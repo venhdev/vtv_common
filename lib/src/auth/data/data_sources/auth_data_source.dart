@@ -59,7 +59,7 @@ class AuthDataSourceImpl implements AuthDataSource {
       'password': password,
       'fcmToken': fcmToken,
     };
-    final url = baseUri(path: kAPIAuthLoginURL);
+    final url = uriBuilder(path: kAPIAuthLoginURL);
     log(url.toString());
 
     // send request
@@ -97,7 +97,7 @@ class AuthDataSourceImpl implements AuthDataSource {
       'fcmToken': _fcmManager.currentFCMToken,
     };
 
-    final url = baseUri(path: kAPIAuthLogoutURL);
+    final url = uriBuilder(path: kAPIAuthLogoutURL);
     // send request
     final response = await _client.post(
       url,
@@ -110,7 +110,7 @@ class AuthDataSourceImpl implements AuthDataSource {
   @override
   Future<SuccessResponse<String>> getNewAccessToken(String refreshToken) async {
     // send request
-    final url = baseUri(path: kAPIAuthRefreshTokenURL);
+    final url = uriBuilder(path: kAPIAuthRefreshTokenURL);
 
     final response = await _client.post(
       url,
@@ -141,7 +141,7 @@ class AuthDataSourceImpl implements AuthDataSource {
   Future<SuccessResponse> register(RegisterParams registerParams) async {
     final body = registerParams.toJson();
 
-    final url = baseUri(path: kAPIAuthRegisterURL);
+    final url = uriBuilder(path: kAPIAuthRegisterURL);
 
     // send request
     final response = await _client.post(
@@ -154,7 +154,7 @@ class AuthDataSourceImpl implements AuthDataSource {
 
   @override
   Future<SuccessResponse> sendOTPForResetPasswordViaUsername(String username) async {
-    final url = baseUri(
+    final url = uriBuilder(
       path: kAPICustomerForgotPasswordURL,
       queryParameters: {'username': username},
     );
@@ -179,7 +179,7 @@ class AuthDataSourceImpl implements AuthDataSource {
       'newPassword': newPassword,
     };
 
-    final url = baseUri(path: kAPICustomerResetPasswordURL);
+    final url = uriBuilder(path: kAPICustomerResetPasswordURL);
 
     // send request
     final response = await _client.patch(
@@ -203,7 +203,7 @@ class AuthDataSourceImpl implements AuthDataSource {
       'newPassword': newPassword,
     };
 
-    final url = baseUri(path: kAPICustomerChangePasswordURL);
+    final url = uriBuilder(path: kAPICustomerChangePasswordURL);
 
     // send request
     final response = await _client.patch(
@@ -217,7 +217,7 @@ class AuthDataSourceImpl implements AuthDataSource {
 
   @override
   Future<SuccessResponse<UserInfoEntity>> editUserProfile({required UserInfoEntity newInfo}) async {
-    final url = baseUri(path: kAPICustomerProfileURL);
+    final url = uriBuilder(path: kAPICustomerProfileURL);
     // send request
     final response = await _client.put(
       url,
@@ -250,7 +250,7 @@ class AuthDataSourceImpl implements AuthDataSource {
 
   @override
   Future<SuccessResponse<AuthEntity>> getUserProfile() async {
-    final url = baseUri(path: kAPICustomerProfileURL);
+    final url = uriBuilder(path: kAPICustomerProfileURL);
     // send request
     final response = await _client.get(
       url,
@@ -280,7 +280,7 @@ class AuthDataSourceImpl implements AuthDataSource {
 
   @override
   Future<SuccessResponse<Object?>> activeCustomerAccount(String username, String otp) async {
-    final url = baseUri(path: kAPICustomerActiveAccountURL);
+    final url = uriBuilder(path: kAPICustomerActiveAccountURL);
 
     final dio.Response response = await _dio.postUri(
       url,
@@ -295,7 +295,7 @@ class AuthDataSourceImpl implements AuthDataSource {
 
   @override
   Future<SuccessResponse<Object?>> sendMailForActiveAccount(String username) async {
-    final url = baseUri(
+    final url = uriBuilder(
       path: kAPICustomerSendEmailActiveAccountURL,
       queryParameters: {'username': username},
     );

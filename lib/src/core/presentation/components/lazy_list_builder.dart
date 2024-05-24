@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 
 import '../../base/base_lazy_load_page_resp.dart';
 import '../../constants/typedef.dart';
+import '../../themes.dart';
+
+const int _defaultPageSize = 10;
 
 class LazyListBuilder<T> extends StatefulWidget {
   const LazyListBuilder({
@@ -26,7 +29,7 @@ class _LazyListBuilderState<T> extends State<LazyListBuilder<T>> {
   //> scrollController dispose handled by parent
   @override
   void initState() {
-    log('[LazyLoadBuilder] initState()');
+    log('[LazyListBuilder] initState()');
     super.initState();
     // listen to the changes of the lazy controller
     widget.lazyController.addListener(() {
@@ -38,7 +41,7 @@ class _LazyListBuilderState<T> extends State<LazyListBuilder<T>> {
 
   @override
   void dispose() {
-    log('[LazyLoadBuilder] dispose()');
+    log('[LazyListBuilder] dispose()');
     widget.lazyController.removeListener(() {});
     super.dispose();
   }
@@ -47,15 +50,16 @@ class _LazyListBuilderState<T> extends State<LazyListBuilder<T>> {
   Widget build(BuildContext context) {
     // assert(widget.separatorBuilder != null || widget.lazyController.useGrid);
 
-    log('[LazyLoadBuilder] build with ${widget.lazyController.items.length} items');
+    log('[LazyListBuilder] build with ${widget.lazyController.items.length} items');
     //# empty list
     if (widget.lazyController.items.isEmpty && !widget.lazyController.isLoading) {
-      return Center(
-        child: Text(
-          widget.lazyController.lastPageMessage,
-          style: const TextStyle(color: Colors.grey, fontSize: 12),
-        ),
-      );
+      return widget.lazyController.emptyBuilder ??
+          Center(
+            child: Text(
+              widget.lazyController.lastPageMessage,
+              style: VTVTheme.hintTextStyle,
+            ),
+          );
     }
     //! ``Deprecated note``
     //? scrollController passed from parent
@@ -90,6 +94,7 @@ class _LazyListBuilderState<T> extends State<LazyListBuilder<T>> {
       physics: widget.lazyController.auto ? null : const NeverScrollableScrollPhysics(),
       shrinkWrap: widget.lazyController.auto ? false : true,
       padding: EdgeInsets.zero,
+      reverse: widget.lazyController.reverse,
       itemCount: widget.lazyController.showLoadingIndicator || widget.lazyController.showLoadMoreButton
           ? widget.lazyController.items.length + 1
           : widget.lazyController.items.length,
@@ -111,6 +116,7 @@ class _LazyListBuilderState<T> extends State<LazyListBuilder<T>> {
       physics: widget.lazyController.auto ? null : const NeverScrollableScrollPhysics(),
       shrinkWrap: widget.lazyController.auto ? false : true,
       padding: EdgeInsets.zero,
+      reverse: widget.lazyController.reverse,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: widget.lazyController.crossAxisCount,
         crossAxisSpacing: 8,
@@ -133,13 +139,15 @@ class _LazyListBuilderState<T> extends State<LazyListBuilder<T>> {
 }
 
 /// Call `init()` with [auto] set to true for auto load next page when reach the end of the list.
-/// 
-/// Use [length] instead of `items.length`
+///
+/// Use [itemCount] instead of `items.length`
 class LazyListController<T> extends ChangeNotifier {
   LazyListController({
     required this.items,
     required this.paginatedData,
+    this.size = _defaultPageSize,
     this.itemBuilder,
+    this.emptyBuilder,
     this.scrollController,
     this.auto = false,
     this.useGrid = true,
@@ -150,13 +158,14 @@ class LazyListController<T> extends ChangeNotifier {
     this.lastPageMessage = 'Đã đến cuối trang',
     this.loadMoreButtonLabel = 'Xem thêm',
     this.loadMoreButtonStyle,
+    this.reverse = false,
   })  : currentPage = 0,
         isLoading = false,
         isReachTheEnd = false,
         assert(useGrid && crossAxisCount > 0 || !useGrid),
         assert(!auto || auto && scrollController != null);
 
-  //> sliver version
+  //> sliver version: only need this controller passed SliverList in CustomScrollView
   // SliverList.separated(
   //   itemCount: _lazyListController.items.length,
   //   itemBuilder: _lazyListController.build,
@@ -165,21 +174,169 @@ class LazyListController<T> extends ChangeNotifier {
   LazyListController.sliver({
     required this.items,
     required this.paginatedData,
+    this.size = _defaultPageSize,
     this.itemBuilder,
+    this.emptyBuilder,
     this.scrollController,
-    this.showPageIndicator = false,
     this.showLoadingIndicator = false,
     this.showLoadMoreButton = false,
     this.lastPageMessage = 'Đã đến cuối trang',
     this.loadMoreButtonLabel = 'Xem thêm',
     this.loadMoreButtonStyle,
+    this.crossAxisCount = 2,
+    this.useGrid = true,
+    this.reverse = false,
   })  : currentPage = 0,
-        crossAxisCount = 2,
+        showPageIndicator = false,
         auto = false,
-        useGrid = true,
         isLoading = false,
         isReachTheEnd = false;
 
+  /// when use [build] method, this method will be invoked to build the item
+  final Widget Function(BuildContext context, int index, T data)? itemBuilder;
+  final Widget? emptyBuilder;
+
+  //# required fields
+  final FRespData<IBasePageResp<T>> Function(int page, int size) paginatedData;
+  final ScrollController? scrollController;
+  List<T> items;
+  int currentPage;
+  final int size;
+
+  //# control fields
+  int get itemCount {
+    if (showLoadMoreButton || showLoadingIndicator) {
+      return items.length + 1;
+    } else {
+      return items.length;
+    }
+  }
+
+  bool get isEmpty => items.isEmpty;
+  bool get isNotEmpty => items.isNotEmpty;
+
+  bool isLoading;
+  bool isReachTheEnd;
+
+  /// auto load next page when reach the end, default is false
+  /// - if true, the [loadNextPage] will be called when the scroll reach the end of the list.
+  /// [scrollController] must be provided, and do not pass this controller to any other widget.
+  /// - if false, the [loadNextPage] will be called manually.
+  final bool auto;
+
+  //# style fields
+  final bool reverse;
+
+  /// Message to show when the list is empty (reach the end of the list or no data)
+  final String lastPageMessage;
+
+  /// Show loading indicator when loading more items (default is false)
+  final bool showLoadingIndicator; //> use with auto load is true
+
+  /// Show load more button when loading more items (default is false)
+  final bool showLoadMoreButton; //> use with auto load is false
+
+  /// Show bottom page indicator to indicate the current page (default is false)
+  final bool showPageIndicator; //TODO: --not implement yet
+
+  /// Use GridView or ListView (default is GridView)
+  final bool useGrid;
+  final int crossAxisCount; // only for GridView
+
+  final String loadMoreButtonLabel;
+  final TextStyle? loadMoreButtonStyle;
+
+  //# methods
+  void init([VoidCallback? onInit]) {
+    currentPage = 0;
+    items.clear();
+    loadNextPage().then((_) {
+      onInit?.call();
+    });
+
+    if (auto) {
+      log('[LazyListController] auto load');
+      // remove all listeners before add new one
+      scrollController!.removeListener(() {});
+      scrollController!.addListener(() {
+        if (scrollController!.position.pixels == scrollController!.position.maxScrollExtent) {
+          log('[LazyListController] auto load - Reach the end of the list, load next page (auto: $auto)');
+          loadNextPage();
+        }
+      });
+    }
+  }
+
+  /// clear the current data and load the first page
+  FutureOr<void> refresh() {
+    currentPage = 0;
+    items.clear();
+    isReachTheEnd = false;
+    notifyListeners();
+    loadNextPage();
+  }
+
+  Future<void> loadNextPage() async {
+    if (isReachTheEnd) {
+      log('[LazyListController] Already reach the end at page $currentPage, no call API anymore');
+      return;
+    }
+
+    if (!isLoading) {
+      isLoading = true;
+      notifyListeners();
+
+      final dataEither = await paginatedData(currentPage + 1, size);
+      dataEither.fold(
+        (error) {
+          // Fluttertoast.showToast(msg: '${error.message}');
+          log('[LazyListController] Error: ${error.message}');
+        },
+        (dataResp) {
+          final newItems = dataResp.data!.items;
+          if (newItems.isEmpty) {
+            log('[LazyListController] Reach the end at page $currentPage');
+            isReachTheEnd = true;
+          } else {
+            currentPage++;
+            isReachTheEnd = false;
+          }
+          log('[LazyListController] Load ${newItems.length} items at page $currentPage ');
+          items.addAll(newItems);
+        },
+      );
+
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void addAll(List<T> newItems) {
+    items.addAll(newItems);
+    notifyListeners();
+  }
+
+  void insertAt(int index, T item) {
+    items.insert(index, item);
+    notifyListeners();
+  }
+
+  void removeAt(int index) {
+    items.removeAt(index);
+    notifyListeners();
+  }
+
+  void updateAt(int index, T item) {
+    items[index] = item;
+    notifyListeners();
+  }
+
+  void clear() {
+    items.clear();
+    notifyListeners();
+  }
+
+  //!! UI
   // load more button getter
   Widget get loadMoreButton => ElevatedButton(
         onPressed: loadNextPage,
@@ -213,135 +370,5 @@ class LazyListController<T> extends ChangeNotifier {
     } else {
       return itemBuilder!(context, index, this.items[index]);
     }
-  }
-
-  /// when use [build] method, this method will be invoked to build the item
-  Widget Function(BuildContext context, int index, T data)? itemBuilder;
-
-  //# required fields
-  final FRespData<IBasePageResp<T>> Function(int page) paginatedData;
-  final ScrollController? scrollController;
-  List<T> items;
-  int currentPage;
-
-  //# control fields
-  int get length {
-    if (showLoadMoreButton || showLoadingIndicator) {
-      return items.length + 1;
-    } else {
-      return items.length;
-    }
-  }
-
-  bool isLoading;
-  bool isReachTheEnd;
-
-  /// auto load next page when reach the end, default is false
-  /// - if true, the [loadNextPage] will be called when the scroll reach the end of the list.
-  /// [scrollController] must be provided, and do not pass this controller to any other widget.
-  /// - if false, the [loadNextPage] will be called manually.
-  bool auto;
-
-  //# style fields
-  /// Message to show when the list is empty (reach the end of the list or no data)
-  final String lastPageMessage;
-
-  /// Show loading indicator when loading more items (default is false)
-  final bool showLoadingIndicator; //> use with auto load is true
-
-  /// Show load more button when loading more items (default is false)
-  final bool showLoadMoreButton; //> use with auto load is false
-
-  /// Show bottom page indicator to indicate the current page (default is false)
-  final bool showPageIndicator; // to-do: --not implement yet
-
-  /// Use GridView or ListView (default is GridView)
-  final bool useGrid;
-  final int crossAxisCount; // only for GridView
-
-  final String loadMoreButtonLabel;
-  final TextStyle? loadMoreButtonStyle;
-
-  //# methods
-  void init() {
-    currentPage = 0;
-    items.clear();
-    loadNextPage();
-
-    if (auto) {
-      log('[LazyListController] auto load');
-      scrollController!.addListener(() {
-        if (scrollController!.position.pixels == scrollController!.position.maxScrollExtent) {
-          log('[LazyListController] auto load - Reach the end of the list, load next page (auto: $auto)');
-          loadNextPage();
-        }
-      });
-    }
-  }
-
-  /// clear the current data and load the first page
-  FutureOr<void> refresh() {
-    currentPage = 0;
-    items.clear();
-    isReachTheEnd = false;
-    notifyListeners();
-    loadNextPage();
-  }
-
-  // load next page
-  Future<void> loadNextPage() async {
-    if (isReachTheEnd) {
-      log('[LazyListController] Already reach the end at page $currentPage, no call API anymore');
-      return;
-    }
-
-    if (!isLoading) {
-      isLoading = true;
-      notifyListeners();
-
-      final dataEither = await paginatedData(currentPage + 1);
-      dataEither.fold(
-        (error) {
-          // Fluttertoast.showToast(msg: '${error.message}');
-          log('[LazyListController] Error: ${error.message}');
-        },
-        (dataResp) {
-          final newItems = dataResp.data!.items;
-          if (newItems.isEmpty) {
-            log('[LazyListController] Reach the end at page $currentPage');
-            isReachTheEnd = true;
-          } else {
-            currentPage++;
-            isReachTheEnd = false;
-          }
-          log('[LazyListController] Load ${newItems.length} items at page $currentPage ');
-          items.addAll(newItems);
-        },
-      );
-
-      isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  //add
-  void addItems(List<T> newItems) {
-    items.addAll(newItems);
-    notifyListeners();
-  }
-
-  void removeAt(int index) {
-    items.removeAt(index);
-    notifyListeners();
-  }
-
-  void updateAt(int index, T item) {
-    items[index] = item;
-    notifyListeners();
-  }
-
-  void clear() {
-    items.clear();
-    notifyListeners();
   }
 }

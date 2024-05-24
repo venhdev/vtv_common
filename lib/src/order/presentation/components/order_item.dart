@@ -65,7 +65,7 @@ class OrderItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      StringUtils.formatCurrency(item.productVariant.price),
+                      ConversionUtils.formatCurrency(item.productVariant.price),
                       style: const TextStyle(
                         fontWeight: FontWeight.w500,
                       ),

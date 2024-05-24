@@ -3,8 +3,10 @@ import 'package:dio/dio.dart';
 import '../../../core/constants/api.dart';
 import '../../../core/network/network.dart';
 import '../../../home/domain/entities/category_entity.dart';
+import '../../../home/domain/entities/dto/product_detail_resp.dart';
+import '../../../home/domain/entities/dto/product_page_resp.dart';
 import '../../../profile/domain/entities/entities.dart';
-import '../../../shop/domain/entities/category_shop_entity.dart';
+import '../../../shop/domain/entities/shop_category_entity.dart';
 import '../../../shop/domain/entities/dto/shop_detail_resp.dart';
 
 abstract class GuestDataSource {
@@ -12,26 +14,26 @@ abstract class GuestDataSource {
   Future<SuccessResponse<int>> countShopFollowed(int shopId);
   Future<SuccessResponse<ShopDetailResp>> getShopDetailById(int shopId);
 
-  //! location: ward-controller, province-controller, district-controller, ward-controller
+  //# location: ward-controller, province-controller, district-controller, ward-controller
   Future<SuccessResponse<List<ProvinceEntity>>> getProvinces();
   Future<SuccessResponse<List<DistrictEntity>>> getDistrictsByProvinceCode(String provinceCode);
   Future<SuccessResponse<List<WardEntity>>> getWardsByDistrictCode(String districtCode);
   Future<SuccessResponse<FullAddressResp>> getFullAddressByWardCode(String wardCode);
 
   //# category-shop-guest-controller
-  Future<SuccessResponse<List<CategoryShopEntity>>> getCategoryShopByShopId(int shopId);
-  Future<SuccessResponse<CategoryShopEntity>> getCategoryShopByCategoryShopId(int categoryShopId);
+  Future<SuccessResponse<List<ShopCategoryEntity>>> getCategoryShopByShopId(int shopId);
+  Future<SuccessResponse<ShopCategoryEntity>> getCategoryShopByCategoryShopId(int categoryShopId);
 
   //# category-controller
-  // GET
-  // /api/category/all-parent
-  // const String kAPIAllCategoryParentURL = '/category/all-parent'; // GET
   Future<SuccessResponse<List<CategoryEntity>>> getAllParentCategory();
-
-  // GET
-  // /api/category/all-category/by-parent/{categoryId}
-  // const String kAPIAllCategoryByParentURL = '/category/all-category/by-parent'; // GET /{categoryId}
   Future<SuccessResponse<List<CategoryEntity>>> getAllCategoryByParent(int categoryId);
+
+  //# product-controller
+  Future<SuccessResponse<ProductDetailResp>> getProductDetailById(int productId);
+  Future<SuccessResponse<int>> getProductCountFavorite(int productId);
+
+  //# product-page-controller
+  Future<SuccessResponse<ProductPageResp>> getProductPageByCategory(int page, int size, int categoryId);
 }
 
 class GuestDataSourceImpl implements GuestDataSource {
@@ -42,7 +44,7 @@ class GuestDataSourceImpl implements GuestDataSource {
   @override
   Future<SuccessResponse<int>> countShopFollowed(int shopId) async {
     // OK:REVIEW why need accessToken here?
-    final url = baseUri(path: '$kAPIShopCountFollowedURL/$shopId');
+    final url = uriBuilder(path: '$kAPIShopCountFollowedURL/$shopId');
     final response = await _dio.getUri(
       url,
     );
@@ -56,7 +58,7 @@ class GuestDataSourceImpl implements GuestDataSource {
 
   @override
   Future<SuccessResponse<ShopDetailResp>> getShopDetailById(int shopId) async {
-    final url = baseUri(path: '$kAPIShopURL/$shopId');
+    final url = uriBuilder(path: '$kAPIShopURL/$shopId');
 
     final response = await _dio.getUri(url);
 
@@ -69,7 +71,7 @@ class GuestDataSourceImpl implements GuestDataSource {
 
   @override
   Future<SuccessResponse<List<ProvinceEntity>>> getProvinces() async {
-    final url = baseUri(path: kAPILocationProvinceGetAllURL);
+    final url = uriBuilder(path: kAPILocationProvinceGetAllURL);
     final response = await _dio.getUri(
       url,
     );
@@ -87,7 +89,7 @@ class GuestDataSourceImpl implements GuestDataSource {
 
   @override
   Future<SuccessResponse<FullAddressResp>> getFullAddressByWardCode(String wardCode) async {
-    final url = baseUri(path: '$kAPILocationWardFullAddressURL/$wardCode');
+    final url = uriBuilder(path: '$kAPILocationWardFullAddressURL/$wardCode');
     final response = await _dio.getUri(
       url,
     );
@@ -101,7 +103,7 @@ class GuestDataSourceImpl implements GuestDataSource {
 
   @override
   Future<SuccessResponse<List<WardEntity>>> getWardsByDistrictCode(String districtCode) async {
-    final url = baseUri(path: '$kAPILocationWardGetAllByDistrictCodeURL/$districtCode');
+    final url = uriBuilder(path: '$kAPILocationWardGetAllByDistrictCodeURL/$districtCode');
     final response = await _dio.getUri(
       url,
     );
@@ -119,7 +121,7 @@ class GuestDataSourceImpl implements GuestDataSource {
 
   @override
   Future<SuccessResponse<List<DistrictEntity>>> getDistrictsByProvinceCode(String provinceCode) async {
-    final url = baseUri(path: '$kAPILocationDistrictGetAllByProvinceCodeURL/$provinceCode');
+    final url = uriBuilder(path: '$kAPILocationDistrictGetAllByProvinceCodeURL/$provinceCode');
     final response = await _dio.getUri(
       url,
     );
@@ -136,30 +138,30 @@ class GuestDataSourceImpl implements GuestDataSource {
   }
 
   @override
-  Future<SuccessResponse<CategoryShopEntity>> getCategoryShopByCategoryShopId(int categoryShopId) async {
-    final url = baseUri(path: '$kAPICategoryShopByCategoryShopIdURL/$categoryShopId');
+  Future<SuccessResponse<ShopCategoryEntity>> getCategoryShopByCategoryShopId(int categoryShopId) async {
+    final url = uriBuilder(path: '$kAPICategoryShopByCategoryShopIdURL/$categoryShopId');
 
     final response = await _dio.getUri(url);
 
-    return handleDioResponse<CategoryShopEntity, Map<String, dynamic>>(
+    return handleDioResponse<ShopCategoryEntity, Map<String, dynamic>>(
       response,
       url,
-      parse: (jsonMap) => CategoryShopEntity.fromMap(jsonMap),
+      parse: (jsonMap) => ShopCategoryEntity.fromMap(jsonMap['categoryShopDTO']),
     );
   }
 
   @override
-  Future<SuccessResponse<List<CategoryShopEntity>>> getCategoryShopByShopId(int shopId) async {
-    final url = baseUri(path: '$kAPICategoryShopByShopIdURL/$shopId');
+  Future<SuccessResponse<List<ShopCategoryEntity>>> getCategoryShopByShopId(int shopId) async {
+    final url = uriBuilder(path: '$kAPICategoryShopByShopIdURL/$shopId');
 
     final response = await _dio.getUri(url);
 
-    return handleDioResponse<List<CategoryShopEntity>, Map<String, dynamic>>(
+    return handleDioResponse<List<ShopCategoryEntity>, Map<String, dynamic>>(
       response,
       url,
       parse: (jsonMap) => (jsonMap['categoryShopDTOs'] as List<dynamic>)
           .map(
-            (categoryShop) => CategoryShopEntity.fromMap(categoryShop),
+            (categoryShop) => ShopCategoryEntity.fromMap(categoryShop),
           )
           .toList(),
     );
@@ -167,7 +169,7 @@ class GuestDataSourceImpl implements GuestDataSource {
 
   @override
   Future<SuccessResponse<List<CategoryEntity>>> getAllCategoryByParent(int categoryId) async {
-    final url = baseUri(path: '$kAPIAllCategoryByParentURL/$categoryId');
+    final url = uriBuilder(path: '$kAPIAllCategoryByParentURL/$categoryId');
 
     final response = await _dio.getUri(url);
 
@@ -184,7 +186,7 @@ class GuestDataSourceImpl implements GuestDataSource {
 
   @override
   Future<SuccessResponse<List<CategoryEntity>>> getAllParentCategory() async {
-    final url = baseUri(path: kAPIAllCategoryParentURL);
+    final url = uriBuilder(path: kAPIAllCategoryParentURL);
 
     final response = await _dio.getUri(url);
 
@@ -196,6 +198,52 @@ class GuestDataSourceImpl implements GuestDataSource {
             (category) => CategoryEntity.fromMap(category),
           )
           .toList(),
+    );
+  }
+
+  @override
+  Future<SuccessResponse<ProductDetailResp>> getProductDetailById(int productId) async {
+    final url = uriBuilder(path: '$kAPIProductDetailURL/$productId');
+    final response = await _dio.getUri(url);
+
+    return handleDioResponse<ProductDetailResp, Map<String, dynamic>>(
+      response,
+      url,
+      parse: (jsonMap) => ProductDetailResp.fromMap(jsonMap),
+    );
+  }
+
+  @override
+  Future<SuccessResponse<int>> getProductCountFavorite(int productId) async {
+    final url = uriBuilder(path: '$kAPIProductCountFavoriteURL/$productId');
+
+    final response = await _dio.getUri(
+      url,
+    );
+
+    return handleDioResponse<int, int>(
+      response,
+      url,
+      parse: (count) => count,
+    );
+  }
+
+  @override
+  Future<SuccessResponse<ProductPageResp>> getProductPageByCategory(int page, int size, int categoryId) async {
+    final url = uriBuilder(
+      path: kAPIProductPageCategoryURL,
+      pathVariables: {'categoryId': categoryId.toString()},
+      queryParameters: {
+        'page': page,
+        'size': size,
+      }.map((key, value) => MapEntry(key, value.toString())),
+    );
+    final response = await _dio.getUri(url);
+
+    return handleDioResponse<ProductPageResp, Map<String, dynamic>>(
+      response,
+      url,
+      parse: (jsonMap) => ProductPageResp.fromMap(jsonMap),
     );
   }
 }

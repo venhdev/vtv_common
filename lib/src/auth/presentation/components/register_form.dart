@@ -133,7 +133,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     );
 
                     if (pickedDate != null) {
-                      _dobController.text = StringUtils.convertDateTimeToString(
+                      _dobController.text = ConversionUtils.convertDateTimeToString(
                         pickedDate,
                         pattern: 'dd/MM/yyyy',
                       );

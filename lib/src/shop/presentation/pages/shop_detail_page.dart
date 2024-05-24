@@ -6,8 +6,8 @@ import 'package:vtv_common/src/shop/presentation/components/shop_info.dart';
 
 import '../../../core/utils.dart';
 
-class ShopInfoDetailPage extends StatelessWidget {
-  const ShopInfoDetailPage({
+class ShopDetailPage extends StatelessWidget {
+  const ShopDetailPage({
     super.key,
     required this.shopDetail,
     this.bottomActionBuilder,
@@ -87,13 +87,13 @@ class ShopInfoDetailPage extends StatelessWidget {
           // time open
           Wrapper(
             label: const WrapperLabel(labelText: 'Giờ mở cửa', icon: Icons.access_time),
-            suffixLabel: Text(StringUtils.convertDateTimeToString(shopDetail.shop.openTime, pattern: 'hh:mm aa')),
+            suffixLabel: Text(ConversionUtils.convertDateTimeToString(shopDetail.shop.openTime, pattern: 'hh:mm aa')),
           ),
 
           // time open
           Wrapper(
             label: const WrapperLabel(labelText: 'Giờ đóng cửa', icon: Icons.access_time_filled),
-            suffixLabel: Text(StringUtils.convertDateTimeToString(shopDetail.shop.closeTime, pattern: 'hh:mm aa')),
+            suffixLabel: Text(ConversionUtils.convertDateTimeToString(shopDetail.shop.closeTime, pattern: 'hh:mm aa')),
           ),
 
           if (bottomActionBuilder != null) bottomActionBuilder!,

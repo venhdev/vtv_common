@@ -39,6 +39,7 @@ dependencies:
   dartz: ^0.10.1
   equatable: ^2.0.5
   jwt_decoder:
+  collection: ^1.18.0
 
   # network
   http: ^1.2.0
@@ -47,6 +48,9 @@ dependencies:
   network_info_plus: ^5.0.3
   async: ^2.11.0
   http_parser:
+
+  # others
+  stomp_dart_client: ^2.0.0
 
   # analytics
   package_info_plus: ^8.0.0

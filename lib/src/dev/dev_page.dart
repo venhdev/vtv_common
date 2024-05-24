@@ -73,7 +73,7 @@ class _DevPageState extends State<DevPage> {
             _buildRoles(),
             _buildDomain(),
             const Divider(),
-            _buildToken(),
+            _buildAccessToken(),
             const Divider(),
             _buildFCM(),
             // const Divider(),
@@ -166,13 +166,29 @@ class _DevPageState extends State<DevPage> {
             Clipboard.setData(ClipboardData(text: fcmToken ?? 'null'));
             Fluttertoast.showToast(msg: 'Copied to clipboard FCM token');
           },
-          child: Text('FCM token: $fcmToken'),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  const Text('FCM token:'),
+                  IconButton(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: fcmToken ?? 'null'));
+                      Fluttertoast.showToast(msg: 'Copied to clipboard FCM token');
+                    },
+                    icon: const Icon(Icons.copy),
+                  ),
+                ],
+              ),
+              SelectableText('$fcmToken'),
+            ],
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildToken() {
+  Widget _buildAccessToken() {
     return Column(
       children: [
         const SizedBox(height: 20),
@@ -181,7 +197,23 @@ class _DevPageState extends State<DevPage> {
             Clipboard.setData(ClipboardData(text: accessToken));
             Fluttertoast.showToast(msg: 'Copied to clipboard access token');
           },
-          child: Text('accessToken: $accessToken'),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  const Text('accessToken:'),
+                  IconButton(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: accessToken));
+                      Fluttertoast.showToast(msg: 'Copied to clipboard accessToken');
+                    },
+                    icon: const Icon(Icons.copy),
+                  ),
+                ],
+              ),
+              SelectableText(accessToken),
+            ],
+          ),
         ),
         ElevatedButton(
           onPressed: () async {

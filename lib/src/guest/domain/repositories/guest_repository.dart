@@ -1,6 +1,8 @@
 import '../../../core/constants/typedef.dart';
+import '../../../home/domain/entities/dto/product_detail_resp.dart';
+import '../../../home/domain/entities/dto/product_page_resp.dart';
 import '../../../profile/domain/domain.dart';
-import '../../../shop/domain/entities/category_shop_entity.dart';
+import '../../../shop/domain/entities/shop_category_entity.dart';
 import '../../../shop/domain/entities/dto/shop_detail_resp.dart';
 
 abstract class GuestRepository {
@@ -15,6 +17,14 @@ abstract class GuestRepository {
   FRespData<String> getFullAddressByWardCode(String wardCode);
 
   //# category-shop-guest-controller
-  FRespData<List<CategoryShopEntity>> getCategoryShopByShopId(int shopId);
-  FRespData<CategoryShopEntity> getCategoryShopByCategoryShopId(int categoryShopId);
+  FRespData<List<ShopCategoryEntity>> getCategoryShopByShopId(int shopId);
+  FRespData<ShopCategoryEntity> getCategoryShopByCategoryShopId(int categoryShopId);
+
+  //# product-controller
+  // FRespData<ProductPageResp> getProductsByCategory(int page, int size, int categoryId); //>> product-page-controller
+  FRespData<ProductDetailResp> getProductDetailById(int productId);
+  FRespData<int> getProductCountFavorite(int productId);
+
+  //# product-page-controller
+  FRespData<ProductPageResp> getProductPageByCategory(int page, int size, int categoryId);
 }

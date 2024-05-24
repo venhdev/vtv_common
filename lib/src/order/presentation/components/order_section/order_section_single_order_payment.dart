@@ -28,24 +28,24 @@ class OrderSectionSingleOrderPayment extends StatelessWidget {
           ),
           PaymentSummaryItem(
             label: 'Tổng tiền hàng:',
-            price: StringUtils.formatCurrency(_order.totalPrice),
+            price: ConversionUtils.formatCurrency(_order.totalPrice),
           ),
           PaymentSummaryItem(
             label: 'Phí vận chuyển:',
-            price: StringUtils.formatCurrency(_order.shippingFee),
+            price: ConversionUtils.formatCurrency(_order.shippingFee),
           ),
 
           // if (_placeOrderWithCartParam.systemVoucherCode != null)
           if (_order.discountSystem != 0)
             PaymentSummaryItem(
               label: 'Giảm giá hệ thống:',
-              price: StringUtils.formatCurrency(_order.discountSystem),
+              price: ConversionUtils.formatCurrency(_order.discountSystem),
             ),
           // if (_placeOrderWithCartParam.shopVoucherCode != null)
           if (_order.discountShop != 0)
             PaymentSummaryItem(
               label: 'Giảm giá cửa hàng:',
-              price: StringUtils.formatCurrency(_order.discountShop),
+              price: ConversionUtils.formatCurrency(_order.discountShop),
             ),
 
           //? not null means using loyalty point
@@ -53,7 +53,7 @@ class OrderSectionSingleOrderPayment extends StatelessWidget {
             //? maybe negative point >> no need to add '-' sign
             PaymentSummaryItem(
               label: 'Sử dụng điểm tích lũy:',
-              price: StringUtils.formatCurrency(_order.loyaltyPointHistory!.point),
+              price: ConversionUtils.formatCurrency(_order.loyaltyPointHistory!.point),
             ),
           ],
 
@@ -61,7 +61,7 @@ class OrderSectionSingleOrderPayment extends StatelessWidget {
           const Divider(thickness: 0.2, height: 4),
           PaymentSummaryItem(
             label: 'Tổng số tiền:',
-            price: StringUtils.formatCurrency(_order.paymentTotal),
+            price: ConversionUtils.formatCurrency(_order.paymentTotal),
             priceStyle: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ],

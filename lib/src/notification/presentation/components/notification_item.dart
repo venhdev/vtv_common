@@ -47,13 +47,14 @@ class _NotificationItemState extends State<NotificationItem> {
         child: InkWell(
           onTap: () => widget.onPressed(widget.notification.notificationId),
           child: Ink(
-            decoration: BoxDecoration(
-              color: !widget.notification.seen
-                  ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.1)
-                  : Colors.white,
-              border: Border.all(color: Colors.grey.shade200),
-              borderRadius: BorderRadius.circular(4.0),
-            ),
+            // decoration: BoxDecoration(
+            //   //! will got some issue when user expand the item
+            //   // color: !widget.notification.seen
+            //   //     ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.1)
+            //   //     : Colors.white,
+            //   border: Border.all(color: Colors.grey.shade200),
+            //   borderRadius: BorderRadius.circular(4.0),
+            // ),
             child: Container(
               margin: const EdgeInsets.all(4.0),
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -94,7 +95,7 @@ class _NotificationItemState extends State<NotificationItem> {
                           children: [
                             Text(
                               // notification.createAt.toString(),
-                              StringUtils.convertDateTimeToString(
+                              ConversionUtils.convertDateTimeToString(
                                 widget.notification.createAt,
                                 pattern: 'dd/MM/yyyy HH:mm',
                               ),

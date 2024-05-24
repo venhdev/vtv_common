@@ -1,30 +1,25 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 class MessageScreen extends StatelessWidget {
   const MessageScreen({
     super.key,
     required this.message,
-    this.enableBack = true,
     this.textStyle,
     this.icon,
-    this.text = 'Thử lại',
+    this.buttonLabel = 'Thử lại',
     this.onPressed,
   });
   factory MessageScreen.error([String? message, Icon? icon, void Function()? onPressed]) => MessageScreen(
         message: message ?? 'Lỗi không xác định',
-        enableBack: false,
         icon: icon ?? const Icon(Icons.error),
         textStyle: const TextStyle(color: Colors.red),
         onPressed: onPressed,
       );
 
   final String message;
-  final bool enableBack;
   final TextStyle? textStyle;
   final Icon? icon;
-  final String text;
+  final String buttonLabel;
   final void Function()? onPressed;
 
   @override
@@ -33,20 +28,19 @@ class MessageScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          //# icon
           if (icon != null) icon!,
-          GestureDetector(
-            child: Text(
-              message,
-              style: textStyle,
-            ),
-            onLongPress: () => log(message), // for testing
-          ),
+          
+          //# message
+          Text(message, style: textStyle),
+
+          //# button
           if (onPressed != null) ...[
             ElevatedButton(
               onPressed: () {
                 onPressed!();
               },
-              child: Text(text),
+              child: Text(buttonLabel),
             ),
           ]
         ],

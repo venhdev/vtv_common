@@ -34,7 +34,7 @@ class DateTimeUtils {
         (firstDate == null && lastDate == null));
 
     final now = today();
-    final first = firstDate ?? (pastDatesEnabled ? DateTime(2010) : now);
+    final first = firstDate ?? (pastDatesEnabled ? DateTime(2000) : now);
     final last = lastDate ?? now.add(const Duration(days: 365 * 10));
 
     //? make sure initialDateTime is in range [first, last]
@@ -70,42 +70,6 @@ class DateTimeUtils {
     } else {
       return null;
     }
-  }
-}
-
-class StringUtils {
-  /// N/A: Not Available, Not Applicable, or No Answer
-  static String get na => 'N/A';
-
-  /// - Change [pattern] to change the format
-  /// - [useTextValue] is used to convert date to text value like 'Today', 'Yesterday', 'Tomorrow', 'x days ago', 'x days later'
-  static String convertDateTimeToString(
-    DateTime date, {
-    String pattern = 'dd-MM-yyyy',
-    bool useTextValue = false,
-  }) {
-    if (useTextValue) {
-      // just get day, month, year
-      final now = DateTimeUtils.today();
-      DateTime today = DateTime(now.year, now.month, now.day);
-      DateTime tomorrow = today.add(const Duration(days: 1));
-      DateTime yesterday = today.subtract(const Duration(days: 1));
-      if (date == today) {
-        return 'Hôm nay';
-      } else if (date == tomorrow) {
-        return 'Ngày mai';
-      } else if (date == yesterday) {
-        return 'Hôm qua';
-      } else if (date.isAfter(today)) {
-        final remaining = date.difference(today).inDays; // get remaining days
-        return '$remaining ngày nữa';
-      } else if (date.isBefore(today)) {
-        final passed = today.difference(date).inDays; // get passed days
-        return '$passed ngày trước';
-      }
-    }
-
-    return DateFormat(pattern).format(date);
   }
 
   // get remaining time from now to [dateTime]
@@ -163,12 +127,11 @@ class StringUtils {
       return defaultText;
     }
   }
+}
 
-  static String formatCurrency(int value, {bool showUnit = true, String? unit = 'đ'}) {
-    var f = NumberFormat.decimalPattern();
-    if (!showUnit) return f.format(value);
-    return '${f.format(value)}$unit';
-  }
+class StringUtils {
+  /// N/A: Not Available, Not Applicable, or No Answer
+  static String get na => 'N/A';
 
   static String getVoucherDiscount({required String type, required int discount}) {
     if (type == VoucherTypes.PERCENTAGE_SYSTEM.name) {
@@ -176,9 +139,9 @@ class StringUtils {
     } else if (type == VoucherTypes.PERCENTAGE_SHOP.name) {
       return 'Giảm $discount%';
     } else if (type == VoucherTypes.MONEY_SHOP.name) {
-      return 'Giảm đến ${formatCurrency(discount)}';
+      return 'Giảm đến ${ConversionUtils.formatCurrency(discount)}';
     } else if (type == VoucherTypes.MONEY_SYSTEM.name) {
-      return 'Giảm đến ${formatCurrency(discount)}';
+      return 'Giảm đến ${ConversionUtils.formatCurrency(discount)}';
     }
     // else if (type == VoucherTypes.SHIPPING.name) {
     //   return 'Miễn phí vận chuyển đến ${formatCurrency(discount)}';
@@ -387,6 +350,49 @@ class NetWorkUtils {
 }
 
 class ConversionUtils {
+  static String formatCurrency(int value, {bool showUnit = true, String? unit = 'đ'}) {
+    var f = NumberFormat.decimalPattern();
+    if (!showUnit) return f.format(value);
+    return '${f.format(value)}$unit';
+  }
+
+  static String thousandSeparator(int value) {
+    // var dotSeparator = NumberFormat.decimalPattern('vi_VN');
+    var f = NumberFormat('###,##0');
+    return f.format(value);
+  }
+
+  /// - Change [pattern] to change the format
+  /// - [useTextValue] is used to convert date to text value like 'Today', 'Yesterday', 'Tomorrow', 'x days ago', 'x days later'
+  static String convertDateTimeToString(
+    DateTime date, {
+    String pattern = 'dd-MM-yyyy',
+    bool useTextValue = false,
+  }) {
+    if (useTextValue) {
+      // just get day, month, year
+      final now = DateTimeUtils.today();
+      DateTime today = DateTime(now.year, now.month, now.day);
+      DateTime tomorrow = today.add(const Duration(days: 1));
+      DateTime yesterday = today.subtract(const Duration(days: 1));
+      if (date == today) {
+        return 'Hôm nay';
+      } else if (date == tomorrow) {
+        return 'Ngày mai';
+      } else if (date == yesterday) {
+        return 'Hôm qua';
+      } else if (date.isAfter(today)) {
+        final remaining = date.difference(today).inDays; // get remaining days
+        return '$remaining ngày nữa';
+      } else if (date.isBefore(today)) {
+        final passed = today.difference(date).inDays; // get passed days
+        return '$passed ngày trước';
+      }
+    }
+
+    return DateFormat(pattern).format(date);
+  }
+
   static String? extractUUID(String dataContainUUID) {
     // Regular expression pattern to match a UUID
     const uuidPattern = r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}';
@@ -435,5 +441,63 @@ class ConversionUtils {
 class FunctionUtils {
   static Debouncer createDebouncer({required int milliseconds}) {
     return Debouncer(milliseconds: milliseconds);
+  }
+}
+
+class BuilderUtils {
+  static Uri uri({
+    required String path,
+    Map<String, String>? queryParameters,
+    Map<String, String>? pathVariables,
+    String? scheme,
+    String? prefix,
+    String? host,
+    int? port,
+  }) {
+    //> Handle 2 pattern in pathVariables >> :key or {key}
+    if (pathVariables != null) {
+      assert(path.contains(':') || path.contains(RegExp(r'{.*}')),
+          'Not valid pathVariables in path: $path, it should be :key or {key}');
+
+      assert(!(path.contains(':') && path.contains(RegExp(r'{.*}'))),
+          'Not valid pathVariables in path: $path, it should use only one pattern');
+
+      pathVariables.forEach((key, value) {
+        if (path.contains(':$key')) {
+          path = path.replaceAll(':$key', value);
+        } else if (path.contains('{$key}')) {
+          path = path.replaceAll('{$key}', value);
+        }
+      });
+    }
+
+    path = path.startsWith('/') ? path : '/$path';
+    return Uri(
+      scheme: scheme,
+      host: host,
+      port: port,
+      path: path,
+      queryParameters: queryParameters,
+    );
+  }
+
+  static String uriPath({
+    required String path,
+    Map<String, String>? queryParameters,
+    Map<String, String>? pathVariables,
+    String? scheme,
+    String? prefix,
+    String? host,
+    int? port,
+  }) {
+    return uri(
+      path: path,
+      queryParameters: queryParameters,
+      pathVariables: pathVariables,
+      scheme: scheme,
+      prefix: prefix,
+      host: host,
+      port: port,
+    ).toString();
   }
 }

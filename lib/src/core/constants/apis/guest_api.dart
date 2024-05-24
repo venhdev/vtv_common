@@ -23,7 +23,7 @@ const String kAPIProductDetailURL = '/product/detail'; // GET /{productId}
 const String kAPIProductCountFavoriteURL = '/product/count-favorite'; // GET /{productId}
 
 //# product-page-controller
-const String kAPIProductPageCategoryURL = '/product/page/category'; // GET /{categoryId}
+const String kAPIProductPageCategoryURL = '/product/page/category/:categoryId'; // GET /{categoryId}
 const String kAPIProductPageShopURL = '/product/page/shop'; // GET /{shopId}
 
 //# category-shop-guest-controller

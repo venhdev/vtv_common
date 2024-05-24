@@ -60,10 +60,20 @@ SuccessResponse handleDioResponseNoData(dio.Response response, Uri url) {
   }
 }
 
-/// use to handle http Response contain data from API
+/// Use to handle http Response contain data from API
 /// - [T] is the type of data that will be returned wrapped in [SuccessResponse] (the expected data type).
 /// - [R] is the type of data returned from the API's response body, Dio automatically decodes the response body to this type.
 /// (typically `Map<String, dynamic>`). You need to pass a function that will parse this data to the expected data type [T].
+///
+/// Set [hasData] to false when the response body doesn't contain data, so the [parse] function is not required. it will return [SuccessResponse] with code, status, message.
+///
+/// ! REMEMBER: [parse] is a function that will parse the data from the API's response body to the expected data type [T].
+/// [R] is response body, so it's typically need to access the data inside: e.g. data['userDTO'].
+/// Then the parse function will be like this:
+///   - [T] is an `Object` use `(jsonMap) => YourEntity.fromMap(jsonMap['json_key'])`
+///   - [T] is `List<Object>` use `(jsonMap) => (jsonMap['json_key'] as List).map((e) => YourEntity.fromMap(e)).toList()`
+///
+/// "json_key" is the key of the data you want to parse from the response body match with the expected data type [T]. eg: 'userDTO', 'categoryShopDTOs'.
 SuccessResponse<T> handleDioResponse<T, R>(
   dio.Response response,
   Uri url, {
