@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,6 +18,30 @@ class ValidationUtils {
 }
 
 class DateTimeUtils {
+  static DateTime firstDateOfMonth(DateTime date) {
+    return DateTime(date.year, date.month, 1);
+  }
+
+  static DateTime lastDateOfMonth(DateTime date) {
+    return DateTime(date.year, date.month + 1, 0);
+  }
+
+  /// Parse [dateTime] to local time zone (if needed)
+  /// - If [dateTime] is null, return null
+  /// - If [dateTime] is not null, parse it to local time zone
+  ///
+  /// ! REMEMBER: this function will now throw any exception.
+  static DateTime? tryParseLocal(String? dateTime) {
+    if (dateTime == null) return null;
+    final parsed = DateTime.tryParse(dateTime);
+
+    if (parsed != null) {
+      return parsed.toLocal();
+    } else {
+      return null;
+    }
+  }
+
   /// only get date part of DateTime (remove time part). e.g: 2021-10-10 12:00:00 -> 2021-10-10 00:00:00
   static DateTime today() {
     final now = DateTime.now();
@@ -350,6 +375,13 @@ class NetWorkUtils {
 }
 
 class ConversionUtils {
+  String roundDouble(double value) {
+    String valueString = value.toStringAsFixed(0);
+
+    return valueString;
+  }
+
+
   static String formatCurrency(int value, {bool showUnit = true, String? unit = 'đ'}) {
     var f = NumberFormat.decimalPattern();
     if (!showUnit) return f.format(value);

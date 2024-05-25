@@ -74,7 +74,7 @@ class LazyLoadController<T> extends ChangeNotifier {
     return 'LazyLoadController: items.length=${items.length}, currentPage=$currentPage, shouldFetchData: $_shouldFetchData';
   }
 }
-
+@Deprecated('Use `LazyListBuilder` instead. This is old version of it.')
 class NestedLazyLoadBuilder<T> extends StatefulWidget {
   //? no longer use internal scrollController >> cause unexpected rebuild
   const NestedLazyLoadBuilder({
