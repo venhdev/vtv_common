@@ -23,6 +23,7 @@ class ShopInfo extends StatelessWidget {
     this.showViewShopBtn = false,
     this.showFollowedCount = false,
     this.trailing,
+    this.bottom,
     this.showShopDetail = false,
     this.onViewPressed,
     this.onChatPressed,
@@ -65,8 +66,9 @@ class ShopInfo extends StatelessWidget {
   final bool showFollowedCount;
   final bool showShopDetail;
 
-  // others
-  final Widget? trailing; //REVIEW maybe delete this
+  // others (optional)
+  final Widget? trailing;
+  final Widget? bottom;
 
   final void Function()? onPressed; // GoRouter.of(context).push('${ShopPage.path}/${shop.shopId}');
   final void Function()? onViewPressed;
@@ -105,7 +107,10 @@ class ShopInfo extends StatelessWidget {
               //# more info (only available when ShopDetail is provided)
               if (showShopDetail && shopDetail != null) ...[
                 _shopMoreInfo(),
-              ]
+              ],
+
+              //# bottom view
+              if (bottom != null) bottom!,
             ],
           ),
         ),

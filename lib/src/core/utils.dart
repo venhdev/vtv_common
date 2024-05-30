@@ -1,18 +1,17 @@
 import 'dart:async';
-import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:network_info_plus/network_info_plus.dart';
-import 'package:dio/dio.dart';
-import 'package:http_parser/http_parser.dart';
 
 import 'base/debouncer.dart';
 import 'constants/types.dart';
 
 const _defaultSeparator = '.';
-const _defaultHundredAbbreviation = ''; // hundred
+const _defaultHundredAbbreviation = 'đ'; // hundred
 const _defaultThousandAbbreviation = 'K'; // thousand
 const _defaultMillionAbbreviation = 'M'; // million
 const _defaultBillionAbbreviation = 'B'; // billion
@@ -514,7 +513,7 @@ class ConversionUtils {
     assert(valueString.isNotEmpty, 'value must not be empty');
 
     final int length = valueString.length;
-    if (length < 4) return valueString;
+    if (length < 4) return valueString + suffix(length);
 
     return mainValue(valueString, length) + subValue(valueString, fraction, separator, extra) + suffix(length);
   }

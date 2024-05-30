@@ -44,7 +44,6 @@ class AuthCubit extends Cubit<AuthState> {
           final resultCheck = await _checkAndGetTokenIfNeededUC(authEntity.accessToken);
 
           resultCheck.fold(
-            // get new access token failed
             (failure) => emit(AuthState.authenticated(authEntity, message: failure.message)),
             (newAccessToken) {
               log('new access token (null if old token still valid): $newAccessToken');

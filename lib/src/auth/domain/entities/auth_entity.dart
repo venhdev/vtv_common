@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
+import '../../../core/constants/types.dart';
 import 'user_info_entity.dart';
 
 class AuthEntity extends Equatable {
@@ -14,6 +15,10 @@ class AuthEntity extends Equatable {
     required this.refreshToken,
     required this.userInfo,
   });
+
+  bool get isVendor => userInfo.roles!.contains(Role.VENDOR);
+  bool get isDeliver => userInfo.roles!.contains(Role.DELIVER);
+  bool get isProvider => userInfo.roles!.contains(Role.PROVIDER);
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{

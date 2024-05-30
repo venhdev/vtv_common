@@ -1,10 +1,24 @@
 // ignore_for_file: constant_identifier_names
-
 enum Role {
   CUSTOMER,
-  ADMIN,
   VENDOR,
+  ADMIN,
+  PROVIDER,
   DELIVER,
+  MANAGER,
+  MANAGERCUSTOMER,
+  MANAGERVENDOR,
+  MANAGERSHIPPING,
+  DELIVER_MANAGER
+}
+
+enum TypeWorks {
+  SHIPPER,
+  PROVIDER,
+  MANAGER,
+  WAREHOUSE,
+  TRANSIT,
+  PICKUP,
 }
 
 enum Status {

@@ -11,14 +11,12 @@ class ShopDetailPage extends StatelessWidget {
     super.key,
     required this.shopDetail,
     this.bottomActionBuilder,
-    this.showViewReviewBtn = false,
   });
 
   final ShopDetailResp shopDetail;
   final Widget? bottomActionBuilder;
 
   // custom show
-  final bool showViewReviewBtn;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +45,6 @@ class ShopDetailPage extends StatelessWidget {
                   showRatingBar: true,
                   showRatingText: false,
                 ),
-                if (showViewReviewBtn) const Text('(Xem đánh giá)', style: TextStyle(color: Colors.blue)),
               ],
             ),
           ),

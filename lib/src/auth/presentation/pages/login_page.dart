@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/presentation/components/outline_text_field.dart';
+import '../bloc/auth_cubit.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({
@@ -10,6 +12,7 @@ class LoginPage extends StatefulWidget {
     this.onRegisterPressed,
     this.onForgotPasswordPressed,
     this.showTitle = true,
+    this.formTitle = 'VTV',
   });
 
   final Future<void> Function(String username, String password)? onLoginPressed; // only call when validate success
@@ -18,8 +21,9 @@ class LoginPage extends StatefulWidget {
 
   /// only call when auth status changed and page is mounted
 
-  // ui
+  // ui - style
   final bool showTitle;
+  final String formTitle;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -29,8 +33,6 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  bool _loading = false;
 
   @override
   void dispose() {
@@ -71,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    "VTV",
+                    widget.formTitle,
                     style: GoogleFonts.ribeye(
                       fontSize: 36,
                       fontWeight: FontWeight.w400,
@@ -148,43 +150,37 @@ class _LoginPageState extends State<LoginPage> {
     return SizedBox(
       width: double.infinity,
       height: 48,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+      child: BlocBuilder<AuthCubit, AuthState>(builder: (context, state) {
+        return ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           ),
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-        ),
-        onPressed: () async {
-          if (_formKey.currentState!.validate()) {
-            setState(() {
-              _loading = true;
-            });
-            await widget.onLoginPressed?.call(
-              _usernameController.text,
-              _passwordController.text,
-            );
-            if (mounted) {
-              setState(() {
-                _loading = false;
-              });
+          onPressed: () async {
+            if (_formKey.currentState!.validate()) {
+              await widget.onLoginPressed?.call(
+                _usernameController.text,
+                _passwordController.text,
+              );
             }
-          }
-        },
-        child: _loading
-            ? const Text(
-                'Đang tải...',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.black54),
-              )
-            : const Text(
-                'Đăng nhập',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+          },
+          child: state.status == AuthStatus.authenticating
+              ? const Text(
+                  'Đang đăng nhập...',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black54),
+                )
+              : const Text(
+                  'Đăng nhập',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-      ),
+        );
+      }),
     );
   }
 }

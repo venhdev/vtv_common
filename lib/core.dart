@@ -10,3 +10,4 @@ export 'src/core/notification/notification.dart';
 export 'src/core/presentation/presentation.dart';
 export 'src/core/themes.dart';
 export 'src/core/utils.dart';
+export 'src/core/extension/extension.dart';

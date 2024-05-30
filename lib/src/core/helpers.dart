@@ -9,16 +9,39 @@ import '../auth/domain/entities/auth_entity.dart';
 import '../auth/domain/entities/user_info_entity.dart';
 import 'constants/types.dart';
 import 'error/exceptions.dart';
+import 'dart:async';
+import 'dart:developer';
 
 class UiHelper {
-  BuildContext context;
   UiHelper(this.context);
+
+  BuildContext context;
+  OverlayEntry? _entry;
+  Timer? _timer;
 
   bool isDarkMode() {
     return Theme.of(context).brightness == Brightness.dark;
   }
+  //TODO change to dark/light mode with provider
 
-  //TODO change to dark/light mode using provider
+  void show(String text, Duration? duration, WidgetBuilder builder) {
+    _dismiss();
+    _entry = OverlayEntry(builder: builder);
+    Overlay.of(context).insert(_entry!);
+
+    _timer = Timer(duration ?? const Duration(seconds: 2), _dismiss);
+  }
+
+  void _dismiss() {
+    try {
+      _timer?.cancel();
+      _timer = null;
+      _entry?.remove();
+      _entry = null;
+    } catch (e) {
+      log('ToastService._dismiss: $e');
+    }
+  }
 }
 
 class SecureStorageHelper {
@@ -187,7 +210,6 @@ class LocalNotificationHelper {
   //   return await _flutterLocalNotificationsPlugin.getActiveNotifications();
   // }
 
-  // final String kDefaultNotificationChannelId = 'default_notification';
   LocalNotificationHelper(this._flutterLocalNotificationsPlugin);
 
   // get instance of flutter_local_notifications
@@ -195,25 +217,35 @@ class LocalNotificationHelper {
 
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
 
-  Future<void> init() async {
-    InitializationSettings initializationSettings = const InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-      // iOS: DarwinInitializationSettings(),
-    );
-    await _flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-    );
+  Future<void> createAndroidNotificationChannel(AndroidNotificationChannel channel) async {
+    await _flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
   }
 
-  /// Default Notification Details >> single notification
-  static const NotificationDetails defaultNotificationDetails = NotificationDetails(
-    android: AndroidNotificationDetails(
-      'DEFAULT_NOTIFICATION_CHANNEL_ID',
-      'Default Notification Channel',
-      importance: Importance.max,
-      priority: Priority.high,
-    ),
-  );
+  /// - [onDidReceiveBackgroundNotificationResponse] callback need to be annotated with `@pragma('vm:entry-point')` annotation to ensure they are not stripped out by the Dart compiler.
+  Future<bool?> initializePluginAndHandler({
+    // ic_launcher, ic_notification
+    AndroidInitializationSettings android = const AndroidInitializationSettings('@mipmap/ic_launcher'),
+    DarwinInitializationSettings? iOS,
+    DarwinInitializationSettings? macOS,
+    LinuxInitializationSettings? linux,
+    void Function(NotificationResponse notification)? onDidReceiveNotificationResponse,
+    void Function(NotificationResponse notification)? onDidReceiveBackgroundNotificationResponse,
+  }) async {
+    InitializationSettings initializationSettings = InitializationSettings(
+      android: android,
+      iOS: iOS, // DarwinInitializationSettings(),
+      macOS: macOS,
+      linux: linux,
+    );
+
+    return await _flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: onDidReceiveNotificationResponse,
+      onDidReceiveBackgroundNotificationResponse: onDidReceiveBackgroundNotificationResponse,
+    );
+  }
 
   // Display a default notification
   Future<void> showNotification({
@@ -221,17 +253,42 @@ class LocalNotificationHelper {
     required String title,
     required String body,
     String? payload,
+    NotificationDetails? notificationChannel = NotificationChannels.highImportanceChannel,
   }) async {
     await _flutterLocalNotificationsPlugin
         .show(
           id,
           title,
           body,
-          defaultNotificationDetails,
+          notificationChannel,
           payload: payload,
         )
         .onError(
           (error, stackTrace) => Fluttertoast.showToast(msg: error.toString()),
         );
   }
+}
+
+class NotificationChannels {
+  /// Default Channel
+  static const NotificationDetails defaultImportanceChannel = NotificationDetails(
+    android: AndroidNotificationDetails(
+      'default_importance_channel',
+      'Default Notification Channel',
+      importance: Importance.defaultImportance,
+      priority: Priority.defaultPriority,
+      // sound: RawResourceAndroidNotificationSound('notification'),
+    ),
+  );
+
+  /// High Importance Channel
+  static const NotificationDetails highImportanceChannel = NotificationDetails(
+    android: AndroidNotificationDetails(
+      'high_importance_channel',
+      'High Importance Notification Channel',
+      importance: Importance.max,
+      priority: Priority.high,
+      // sound: RawResourceAndroidNotificationSound('notification'),
+    ),
+  );
 }

@@ -109,9 +109,9 @@ class AuthRepositoryImpl implements AuthRepository {
   /// Tells whether a token is expired.
   ///
   /// Returns false if the token is valid, true if it is expired.
-  //!!! The package function {isExpired} returns true if the token is expired, false if it is valid. So, the return value is reversed.
   ///
   /// When some error occurs, it returns a [Failure].
+  //! The package function {isExpired} returns true if the token is expired, false if it is valid. So, the return value is reversed when compared with its describe.
   @override
   FResult<bool> isExpiredToken(String accessToken) async {
     try {
