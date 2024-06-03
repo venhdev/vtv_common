@@ -19,7 +19,8 @@ class ShopEntity extends Equatable {
   final String status;
   final int customerId;
   final String wardCode;
-  
+  final String shopUsername;
+
   const ShopEntity({
     required this.shopId,
     required this.name,
@@ -36,10 +37,11 @@ class ShopEntity extends Equatable {
     required this.status,
     required this.customerId,
     required this.wardCode,
+    required this.shopUsername,
   });
 
   String get fullAddress => '$address, $wardName, $districtName, $provinceName';
-  
+
   @override
   List<Object> get props {
     return [
@@ -58,43 +60,8 @@ class ShopEntity extends Equatable {
       status,
       customerId,
       wardCode,
+      shopUsername,
     ];
-  }
-
-  ShopEntity copyWith({
-    int? shopId,
-    String? name,
-    String? address,
-    String? provinceName,
-    String? districtName,
-    String? wardName,
-    String? phone,
-    String? email,
-    String? avatar,
-    String? description,
-    DateTime? openTime,
-    DateTime? closeTime,
-    String? status,
-    int? customerId,
-    String? wardCode,
-  }) {
-    return ShopEntity(
-      shopId: shopId ?? this.shopId,
-      name: name ?? this.name,
-      address: address ?? this.address,
-      provinceName: provinceName ?? this.provinceName,
-      districtName: districtName ?? this.districtName,
-      wardName: wardName ?? this.wardName,
-      phone: phone ?? this.phone,
-      email: email ?? this.email,
-      avatar: avatar ?? this.avatar,
-      description: description ?? this.description,
-      openTime: openTime ?? this.openTime,
-      closeTime: closeTime ?? this.closeTime,
-      status: status ?? this.status,
-      customerId: customerId ?? this.customerId,
-      wardCode: wardCode ?? this.wardCode,
-    );
   }
 
   Map<String, dynamic> toMap() {
@@ -136,6 +103,7 @@ class ShopEntity extends Equatable {
       status: map['status'] as String,
       customerId: map['customerId'] as int,
       wardCode: map['wardCode'] as String,
+      shopUsername: map['shopUsername'] as String,
     );
   }
 

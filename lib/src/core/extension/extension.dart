@@ -9,6 +9,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import '../helpers.dart';
 
 extension LocalNotificationHelperOnRemoteMessage on LocalNotificationHelper {
+  /// Manually show FCM when app is in foreground,
+  /// all information in [RemoteMessage] will be delivered to local notification as payload
   Future<void> showRemoteMessageNotification(RemoteMessage message) async {
     showNotification(
       id: Random().nextInt(1000),
@@ -22,4 +24,6 @@ extension LocalNotificationHelperOnRemoteMessage on LocalNotificationHelper {
 extension RemoteMessageSerialization on RemoteMessage {
   String toJson() => jsonEncode(toMap());
   static RemoteMessage fromJson(String source) => RemoteMessage.fromMap(jsonDecode(source));
+
+  String? get type => data['type'];
 }

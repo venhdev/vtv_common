@@ -5,60 +5,59 @@ enum AuthStatus {
   unknown,
   authenticating,
   authenticated,
-  unauthenticated,
+  unauthenticated, //guest
+}
+
+enum AuthRedirect {
+  loginSuccess,
+  logoutSuccess,
+  registerSuccess,
+  changePasswordSuccess,
+  updateProfileSuccess,
 }
 
 class AuthState extends Equatable {
   const AuthState._({
-    this.code,
     this.status = AuthStatus.unknown,
     this.auth,
     this.message,
-    this.redirectTo,
   });
 
   const AuthState.unknown() : this._();
   const AuthState.authenticating() : this._(status: AuthStatus.authenticating);
-
-  const AuthState.authenticated(AuthEntity auth,
-      {String? message, int? code, String? redirectTo})
+  const AuthState.authenticated(AuthEntity auth, {String? message})
       : this._(
           status: AuthStatus.authenticated,
           auth: auth,
           message: message,
-          code: code,
-          redirectTo: redirectTo,
         );
-
-  const AuthState.unauthenticated(
-      {String? message, int? code, String? redirectTo})
+  const AuthState.unauthenticated({String? message})
       : this._(
           status: AuthStatus.unauthenticated,
           message: message,
           auth: null,
-          code: code,
-          redirectTo: redirectTo,
         );
 
-  const AuthState.error({String? message, int? code})
+  const AuthState.error({String? message})
       : this._(
           status: AuthStatus.unauthenticated,
           message: message,
           auth: null,
-          code: code,
         );
 
   final AuthStatus status;
   final AuthEntity? auth;
   final String? message;
-  final int? code;
 
-  /// Redirect to a specific page (when code = 200)
-  final String? redirectTo;
+  bool get isAuthenticated => status == AuthStatus.authenticated;
+  String? get currentUsername => auth?.userInfo.username;
+  bool get isVendor => auth?.userInfo.roles!.contains(Role.VENDOR) ?? false;
+  bool get isDeliver => auth?.userInfo.roles!.contains(Role.DELIVER) ?? false;
+  bool get isProvider => auth?.userInfo.roles!.contains(Role.PROVIDER) ?? false;
+  bool get isManager => auth?.userInfo.roles!.contains(Role.MANAGER) ?? false;
 
   @override
   List<Object?> get props => [
-        code,
         status,
         auth,
         message,
@@ -68,15 +67,11 @@ class AuthState extends Equatable {
     AuthStatus? status,
     AuthEntity? auth,
     String? message,
-    int? code,
-    String? redirectTo,
   }) {
     return AuthState._(
       status: status ?? this.status,
       auth: auth ?? this.auth,
       message: message ?? this.message,
-      code: code ?? this.code,
-      redirectTo: redirectTo ?? this.redirectTo,
     );
   }
 }

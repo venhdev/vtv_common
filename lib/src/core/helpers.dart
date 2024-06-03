@@ -12,6 +12,8 @@ import 'error/exceptions.dart';
 import 'dart:async';
 import 'dart:developer';
 
+import 'utils.dart';
+
 class UiHelper {
   UiHelper(this.context);
 
@@ -24,12 +26,16 @@ class UiHelper {
   }
   //TODO change to dark/light mode with provider
 
-  void show(String text, Duration? duration, WidgetBuilder builder) {
+  void show({required WidgetBuilder builder, Duration? duration}) {
     _dismiss();
     _entry = OverlayEntry(builder: builder);
-    Overlay.of(context).insert(_entry!);
+    Overlay.of(context, rootOverlay: true).insert(_entry!);
 
-    _timer = Timer(duration ?? const Duration(seconds: 2), _dismiss);
+    if (duration != null) {
+      // _timer = Timer(duration ?? const Duration(seconds: 2), _dismiss);
+      final debouncer = FactoryContainer.createDebouncer(milliseconds: 2000);
+      debouncer.run(_dismiss);
+    }
   }
 
   void _dismiss() {
@@ -39,7 +45,7 @@ class UiHelper {
       _entry?.remove();
       _entry = null;
     } catch (e) {
-      log('ToastService._dismiss: $e');
+      log('[UiHelper] _dismiss error: $e');
     }
   }
 }

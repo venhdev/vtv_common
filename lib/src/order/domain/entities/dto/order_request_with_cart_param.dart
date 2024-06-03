@@ -10,7 +10,7 @@ class OrderRequestWithCartParam {
   final String? systemVoucherCode;
   final String? shopVoucherCode;
   final bool useLoyaltyPoint;
-  final PaymentTypes paymentMethod;
+  final PaymentType paymentMethod;
   final String shippingMethod;
   String note;
   final List<String?> cartIds;
@@ -31,7 +31,7 @@ class OrderRequestWithCartParam {
     String? systemVoucherCode,
     String? shopVoucherCode,
     bool? useLoyaltyPoint,
-    PaymentTypes? paymentMethod,
+    PaymentType? paymentMethod,
     String? shippingMethod,
     String? note,
     List<String>? cartIds,

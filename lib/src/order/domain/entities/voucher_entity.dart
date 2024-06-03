@@ -17,7 +17,7 @@ class VoucherEntity extends Equatable {
   final DateTime startDate;
   final DateTime endDate;
   final int? quantityUsed;
-  final VoucherTypes type;
+  final VoucherType type;
 
   const VoucherEntity({
     this.voucherId,
@@ -36,7 +36,7 @@ class VoucherEntity extends Equatable {
   // delete CUS1- prefix
   String get codeNoPrefix => code.split('-').last;
 
-  factory VoucherEntity.addInit([VoucherTypes type = VoucherTypes.MONEY_SHOP, int discount = 1000]) {
+  factory VoucherEntity.addInit([VoucherType type = VoucherType.MONEY_SHOP, int discount = 1000]) {
     final today = DateTimeUtils.today();
     return VoucherEntity(
       voucherId: null,
@@ -81,7 +81,7 @@ class VoucherEntity extends Equatable {
     DateTime? startDate,
     DateTime? endDate,
     int? quantityUsed,
-    VoucherTypes? type,
+    VoucherType? type,
   }) {
     return VoucherEntity(
       voucherId: voucherId ?? this.voucherId,
@@ -109,7 +109,7 @@ class VoucherEntity extends Equatable {
       'startDate': startDate.toIso8601String(),
       'endDate': endDate.toIso8601String(),
       // 'type': type.name,
-      'type': type == VoucherTypes.PERCENTAGE_SHOP ? 'percent' : 'money',
+      'type': type == VoucherType.PERCENTAGE_SHOP ? 'percent' : 'money',
       // 'status': status,
       // 'quantityUsed': quantityUsed, //server no need
     };
@@ -127,7 +127,7 @@ class VoucherEntity extends Equatable {
       startDate: DateTime.parse(map['startDate'] as String),
       endDate: DateTime.parse(map['endDate'] as String),
       quantityUsed: map['quantityUsed'] as int,
-      type: VoucherTypes.values.byName(map['type'] as String),
+      type: VoucherType.values.byName(map['type'] as String),
     );
   }
 

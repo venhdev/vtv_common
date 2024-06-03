@@ -1,6 +1,7 @@
 import 'package:vtv_common/src/core/constants/typedef.dart';
 import 'package:vtv_common/src/home/domain/entities/dto/product_detail_resp.dart';
 import 'package:vtv_common/src/home/domain/entities/dto/product_page_resp.dart';
+import 'package:vtv_common/src/order/domain/entities/shipping_entity.dart';
 import 'package:vtv_common/src/shop/domain/entities/shop_category_entity.dart';
 
 import 'package:vtv_common/src/shop/domain/entities/dto/shop_detail_resp.dart';
@@ -88,14 +89,32 @@ class GuestRepositoryImpl implements GuestRepository {
   }
 
   @override
-  FRespData<int> getProductCountFavorite(int productId) {
-    // TODO: implement getProductCountFavorite
-    throw UnimplementedError();
+  FRespData<int> getProductCountFavorite(int productId) async {
+    return await handleDataResponseFromDataSource(
+      dataCallback: () async => _guestDataSource.getProductCountFavorite(productId),
+    );
   }
 
   @override
-  FRespData<ProductDetailResp> getProductDetailById(int productId) {
-    // TODO: implement getProductDetailById
-    throw UnimplementedError();
+  FRespData<ProductDetailResp> getProductDetailById(int productId) async {
+    return await handleDataResponseFromDataSource(
+      dataCallback: () async => _guestDataSource.getProductDetailById(productId),
+    );
+  }
+
+  @override
+  FRespData<ShippingEntity> getCalculateShipping(
+      String wardCodeCustomer, String wardCodeShop, String shippingProvider) async {
+    return await handleDataResponseFromDataSource(
+      dataCallback: () async =>
+          await _guestDataSource.getCalculateShipping(wardCodeCustomer, wardCodeShop, shippingProvider),
+    );
+  }
+
+  @override
+  FRespData<List<ShippingEntity>> getTransportProviders(String wardCodeCustomer, String wardCodeShop) async {
+    return await handleDataResponseFromDataSource(
+      dataCallback: () async => await _guestDataSource.getTransportProviders(wardCodeCustomer, wardCodeShop),
+    );
   }
 }

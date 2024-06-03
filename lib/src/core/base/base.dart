@@ -5,3 +5,4 @@
 export 'base_lazy_load_page_resp.dart';
 export 'base_response.dart';
 export 'base_usecase.dart';
+export 'base_redirect.dart';

@@ -34,3 +34,6 @@ typedef FRespEither = Future<RespEither>;
 ///
 /// - Notes: [FRespEither] when response contains no data
 typedef FRespData<T> = Future<RespData<T>>;
+
+typedef VoidCallback = void Function();
+typedef ValueSelected<T> = void Function(T value);

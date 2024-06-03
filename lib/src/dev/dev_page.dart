@@ -239,9 +239,7 @@ class _DevPageState extends State<DevPage> {
           ),
         ElevatedButton(
           onPressed: () async {
-            // final result = await sl<CheckTokenUC>().call(accessToken);
-            await sl<AuthCubit>().onStarted();
-            // Fluttertoast.showToast(msg: 'result: $result');
+            sl<AuthCubit>().onStarted();
             final currentToken = getCurrentToken();
             if (mounted && currentToken != null) {
               setState(() {
@@ -249,10 +247,10 @@ class _DevPageState extends State<DevPage> {
               });
             }
             if (newAccessToken == currentToken) {
-              Fluttertoast.showToast(msg: 'SAME TOKEN');
+              Fluttertoast.showToast(msg: 'no refresh token needed');
             }
           },
-          child: const Text('Check and get new access token'),
+          child: const Text('Force check refresh token'),
         ),
       ],
     );

@@ -4,7 +4,7 @@ class ChatRoomEntity {
   final String roomChatId;
   final String senderUsername;
   final String receiverUsername;
-  final String lastMessage;
+  final String? lastMessage;
   final DateTime lastDate;
   final bool senderDelete;
   final bool receiverDelete;
@@ -23,8 +23,13 @@ class ChatRoomEntity {
     required this.receiverSeen,
   });
 
+  /// because current logged is one of the sender or receiver
+  /// so we can get the other one by comparing with [currentLoggedInUsername]
+  /// - eg: sender: 'customer', receiver: 'vendor', currentLoggedInUsername: 'customer'
+  ///   - then the recipient is 'vendor'
+  /// - eg: sender: 'customer', receiver: 'vendor', currentLoggedInUsername: 'vendor'
+  ///   -  then the recipient is 'customer'
   String getRecipientForChat(String currentLoggedInUsername) {
-    //! because currentLoggedInUsername is one of the sender or receiver
     return currentLoggedInUsername == senderUsername ? receiverUsername : senderUsername;
   }
 
@@ -54,7 +59,7 @@ class ChatRoomEntity {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'romChatId': roomChatId,
+      'roomChatId': roomChatId,
       'senderUsername': senderUsername,
       'receiverUsername': receiverUsername,
       'lastMessage': lastMessage,
@@ -68,10 +73,10 @@ class ChatRoomEntity {
 
   factory ChatRoomEntity.fromMap(Map<String, dynamic> map) {
     return ChatRoomEntity(
-      roomChatId: map['romChatId'] as String,
+      roomChatId: map['roomChatId'] as String,
       senderUsername: map['senderUsername'] as String,
       receiverUsername: map['receiverUsername'] as String,
-      lastMessage: map['lastMessage'] as String,
+      lastMessage: map['lastMessage'] as String?,
       lastDate: DateTime.parse(map['lastDate'] as String),
       senderDelete: map['senderDelete'] as bool,
       receiverDelete: map['receiverDelete'] as bool,
@@ -86,7 +91,7 @@ class ChatRoomEntity {
 
   @override
   String toString() {
-    return 'RoomChatEntity(romChatId: $roomChatId, senderUsername: $senderUsername, receiverUsername: $receiverUsername, lastMessage: $lastMessage, lastDate: $lastDate, senderDelete: $senderDelete, receiverDelete: $receiverDelete, senderSeen: $senderSeen, receiverSeen: $receiverSeen)';
+    return 'RoomChatEntity(roomChatId: $roomChatId, senderUsername: $senderUsername, receiverUsername: $receiverUsername, lastMessage: $lastMessage, lastDate: $lastDate, senderDelete: $senderDelete, receiverDelete: $receiverDelete, senderSeen: $senderSeen, receiverSeen: $receiverSeen)';
   }
 
   @override

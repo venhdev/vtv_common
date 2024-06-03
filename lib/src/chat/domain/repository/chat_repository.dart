@@ -1,11 +1,11 @@
 import 'package:vtv_common/core.dart';
 
-import '../entities/resp/chat_page_resp.dart';
-import '../entities/resp/room_chat_page_resp.dart';
+import '../../../../chat.dart';
 
 abstract class ChatRepository {
   //# room-chat-controller
-  FRespData<RoomChatPageResp> getPageRoomChat(int page, int size);
+  FRespData<ChatRoomPageResp> getPaginatedChatRoom(int page, int size);
+  FRespData<ChatRoomEntity> getOrCreateChatRoom(String recipientUsername);
   //# message-controller
-  FRespData<MessagePageResp> getPageChatMessageByRoomId(int page, int size, String roomChatId);
+  FRespData<MessagePageResp> getPaginatedChatMessageByRoomId(int page, int size, String roomChatId);
 }

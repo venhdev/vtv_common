@@ -49,14 +49,14 @@ class UserInfoEntity extends Equatable {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      if (customerId != null) 'customerId': customerId,
-      if (username != null) 'username': username,
-      if (fullName != null) 'fullName': fullName,
-      if (gender != null) 'gender': gender,
-      if (email != null) 'email': email,
-      if (birthday != null) 'birthday': birthday!.toIso8601String(),
-      if (status != null) 'status': status!.name,
-      if (roles != null) 'roles': roles!.map((e) => e.name).toList(),
+      'customerId': customerId,
+      'username': username,
+      'fullName': fullName,
+      'gender': gender,
+      'email': email,
+      'birthday': birthday?.toIso8601String(),
+      'status': status?.name,
+      'roles': roles?.map((e) => e.name).toList(),
     };
   }
 

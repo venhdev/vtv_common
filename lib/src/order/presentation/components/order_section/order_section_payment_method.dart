@@ -12,23 +12,25 @@ class OrderSectionPaymentMethod extends StatelessWidget {
     super.key,
     required this.paymentMethod,
     this.balance,
+    this.totalPayment,
     this.onChanged,
     this.disabled = false,
     this.paid = false,
     this.suffixLabelText,
   });
 
-  final PaymentTypes paymentMethod;
+  final PaymentType paymentMethod;
   final int? balance;
-  final ValueChanged<PaymentTypes>? onChanged;
+  final int? totalPayment;
+  final ValueChanged<PaymentType>? onChanged;
 
   // style
-  final bool disabled; // --whether this is used in order detail page
+  final bool disabled; // --whether this is used in order detail page just for displaying
   final bool paid; // --whether this order status is UNPAID
   final String? suffixLabelText;
 
-  Widget paymentHint(PaymentTypes method) {
-    if (!PaymentTypes.values.contains(method)) return const SizedBox.shrink();
+  Widget paymentHint(PaymentType method) {
+    if (!PaymentType.values.contains(method)) return const SizedBox.shrink();
 
     return Text(
       StringUtils.getPaymentNameByPaymentTypes(method),
@@ -36,15 +38,15 @@ class OrderSectionPaymentMethod extends StatelessWidget {
     );
   }
 
-  Widget paymentInfo(PaymentTypes method) {
-    if (!PaymentTypes.values.contains(method)) return const SizedBox.shrink();
+  Widget paymentInfo(PaymentType method) {
+    if (!PaymentType.values.contains(method)) return const SizedBox.shrink();
 
-    if (disabled && method != PaymentTypes.COD) {
+    if (disabled && method != PaymentType.COD) {
       return Text(paid ? 'Đã thanh toán' : 'Chưa thanh toán', style: _hintStyle);
     }
 
     switch (method) {
-      case PaymentTypes.Wallet:
+      case PaymentType.Wallet:
         return Text(
           ' (số dư ví: ${ConversionUtils.formatCurrency(balance!)})',
           style: _hintStyle,
@@ -54,78 +56,85 @@ class OrderSectionPaymentMethod extends StatelessWidget {
     }
   }
 
-  IconData paymentIcon(PaymentTypes method) {
+  IconData paymentIcon(PaymentType method) {
     switch (method) {
-      case PaymentTypes.COD:
+      case PaymentType.COD:
         return Icons.money;
-      case PaymentTypes.Wallet:
+      case PaymentType.Wallet:
         return Icons.account_balance_wallet;
-      case PaymentTypes.VNPay:
+      case PaymentType.VNPay:
         return Icons.credit_card;
       default:
         return Icons.payment;
     }
   }
 
-  Color paymentColor(PaymentTypes method) {
+  Color paymentColor(PaymentType method) {
     switch (method) {
-      case PaymentTypes.COD:
+      case PaymentType.COD:
         return Colors.green;
-      case PaymentTypes.Wallet:
+      case PaymentType.Wallet:
         return Colors.blue;
-      case PaymentTypes.VNPay:
+      case PaymentType.VNPay:
         return Colors.orange;
       default:
         return Colors.grey;
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Wrapper(
-      disabled: disabled,
-      useBoxShadow: false,
-      border: Border.all(color: Colors.grey.shade300),
-      onPressed: () async {
-        final method = await showDialog<PaymentTypes>(
-          context: context,
-          builder: (context) => OptionsDialog<PaymentTypes>(
-            title: 'Phương thức thanh toán',
-            options: PaymentTypes.values.map((e) => e).toList(),
-            optionBuilder: (context, value) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  void selectPaymentMethod(BuildContext context) async {
+    bool walletNotEnough = balance! < totalPayment!;
+
+    final method = await showDialog<PaymentType>(
+      context: context,
+      builder: (context) => OptionsDialog<PaymentType>(
+        title: 'Chọn phương thức thanh toán',
+        options: PaymentType.values.map((e) => e).toList(),
+        disableOptions: [
+          if (walletNotEnough) PaymentType.Wallet,
+        ],
+        optionBuilder: (context, value, disabled) {
+          return Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: (disabled) ? Colors.red.shade50 : Colors.transparent,
+              border: Border.all(color: value == paymentMethod ? Colors.green : Colors.transparent),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Icon(paymentIcon(value), color: paymentColor(value)),
-                        const SizedBox(width: 2),
-                        Text(StringUtils.getPaymentNameByPaymentTypes(value)),
-                        const SizedBox(width: 2),
-                      ],
-                    ),
-                    if (value == paymentMethod)
-                      const Expanded(
-                        child: Text(
-                          '(Đang dùng)',
-                          style: _hintStyle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+                    Icon(paymentIcon(value), color: paymentColor(value)),
+                    const SizedBox(width: 2),
+                    Text(StringUtils.getPaymentNameByPaymentTypes(value)),
+                    const SizedBox(width: 2),
                   ],
                 ),
-              );
-            },
-          ),
-        );
+                paymentInfo(value),
+              ],
+            ),
+          );
+        },
+      ),
+    );
 
-        if (method != null && onChanged != null) {
-          onChanged!(method);
-        }
-      },
+    if (method != null && onChanged != null) {
+      onChanged!(method);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    assert(disabled || (balance != null && totalPayment != null));
+
+    return Wrapper(
+      disabled: disabled,
+      backgroundColor: Colors.white,
+      useBoxShadow: false,
+      border: Border.all(color: Colors.grey.shade300),
+      onPressed: () => selectPaymentMethod(context),
       label: const WrapperLabel(
         icon: Icons.payment,
         labelText: 'Phương thức thanh toán',

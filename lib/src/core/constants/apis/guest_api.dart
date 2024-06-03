@@ -35,7 +35,7 @@ const String kAPICategoryShopByCategoryShopIdURL = '/category-shop/category-shop
 const String kAPIShopCountFollowedURL = '/shop/count-followed'; // GET /{shopId}
 const String kAPIShopURL = '/shop'; // GET /{shopId} >? why not add /detail
 
-//! //*---------------------Location APIs (Guest)-----------------------*//
+//! //*---------------------Location-Shipping APIs (Guest)-----------------------*//
 // province-controller
 const String kAPILocationProvinceGetAllURL = '/location/province/get-all'; // GET
 // district-controller
@@ -44,6 +44,10 @@ const String kAPILocationDistrictGetAllByProvinceCodeURL =
 // ward-controller
 const String kAPILocationWardGetAllByDistrictCodeURL = '/location/ward/get-all-by-district-code'; // GET /{districtCode}
 const String kAPILocationWardFullAddressURL = '/location/ward/full-address'; // GET /{wardCode}
+
+//# shipping-controller
+const String kAPIShippingTransportProvidersURL = '/shipping/transport-providers'; // GET
+const String kAPIShippingCalculateShippingURL = '/shipping/calculate-shipping'; // GET
 
 //! //*---------------------Other APIs (Guest)-----------------------*//
 //# category-controller

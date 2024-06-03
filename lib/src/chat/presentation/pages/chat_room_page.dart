@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vtv_common/core.dart';
 
-import '../../domain/entities/room_chat_entity.dart';
+import '../../domain/entities/chat_room_entity.dart';
 
 class ChatRoomPage extends StatelessWidget {
   const ChatRoomPage({super.key, required this.lazyListController, this.title = 'Trò chuyện'});
@@ -16,7 +16,7 @@ class ChatRoomPage extends StatelessWidget {
         title: Text(title),
       ),
       body: LazyListBuilder(
-        lazyController: lazyListController,
+        lazyListController: lazyListController,
         itemBuilder: (context, index, _) => lazyListController.build(context, index),
       ),
     );

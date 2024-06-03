@@ -3,5 +3,5 @@
 
 export 'dto/dto.dart';
 export 'resp/resp.dart';
-export 'room_chat_entity.dart';
+export 'chat_room_entity.dart';
 export 'message_entity.dart';

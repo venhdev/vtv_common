@@ -1,6 +1,7 @@
 import '../../../core/constants/typedef.dart';
 import '../../../home/domain/entities/dto/product_detail_resp.dart';
 import '../../../home/domain/entities/dto/product_page_resp.dart';
+import '../../../order/domain/entities/shipping_entity.dart';
 import '../../../profile/domain/domain.dart';
 import '../../../shop/domain/entities/shop_category_entity.dart';
 import '../../../shop/domain/entities/dto/shop_detail_resp.dart';
@@ -18,6 +19,8 @@ abstract class GuestRepository {
 
   //# category-shop-guest-controller
   FRespData<List<ShopCategoryEntity>> getCategoryShopByShopId(int shopId);
+
+  /// contains product list in this category shop
   FRespData<ShopCategoryEntity> getCategoryShopByCategoryShopId(int categoryShopId);
 
   //# product-controller
@@ -27,4 +30,8 @@ abstract class GuestRepository {
 
   //# product-page-controller
   FRespData<ProductPageResp> getProductPageByCategory(int page, int size, int categoryId);
+
+  //# shipping-controller
+  FRespData<List<ShippingEntity>> getTransportProviders(String wardCodeCustomer, String wardCodeShop);
+  FRespData<ShippingEntity> getCalculateShipping(String wardCodeCustomer, String wardCodeShop, String shippingProvider);
 }

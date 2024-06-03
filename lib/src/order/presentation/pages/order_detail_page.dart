@@ -6,6 +6,7 @@ import 'package:timelines/timelines.dart';
 import '../../../core/constants/types.dart';
 import '../../../core/presentation/components/wrapper.dart';
 import '../../../core/presentation/pages/qr_view_page.dart';
+import '../../../core/themes.dart';
 import '../../../core/utils.dart';
 import '../../../profile/presentation/components/address.dart';
 import '../../domain/entities/order_detail_entity.dart';
@@ -39,9 +40,10 @@ class OrderDetailPage extends StatelessWidget {
     required this.onRePurchasePressed,
     required this.customerReviewBtn,
     required this.onPayPressed,
-    this.onOrderItemPressed,
     required this.onBack,
     required this.onRefresh,
+    required this.onChatPressed,
+    this.onOrderItemPressed,
   })  : isVendor = false,
         onAcceptCancelPressed = null,
         onAcceptPressed = null,
@@ -61,6 +63,7 @@ class OrderDetailPage extends StatelessWidget {
         onCancelOrderPressed = null,
         onRePurchasePressed = null,
         customerReviewBtn = null,
+        onChatPressed = null,
         onPayPressed = null;
 
   // static const String routeName = 'order-detail';
@@ -80,6 +83,7 @@ class OrderDetailPage extends StatelessWidget {
   final Future<void> Function(String orderId)? onCompleteOrderPressed;
   final Future<void> Function(String orderId)? onCancelOrderPressed;
   final Future<void> Function(String orderId)? onPayPressed;
+  final Future<void> Function()? onChatPressed;
   final Future<void> Function(List<OrderItemEntity> orderItems)? onRePurchasePressed;
   final Widget Function(OrderEntity order)? customerReviewBtn;
 
@@ -101,7 +105,6 @@ class OrderDetailPage extends StatelessWidget {
               children: [
                 //! order status 'mã đơn hàng' + 'ngày đặt hàng' + copy button
                 Wrapper(
-                  // backgroundColor: Colors.red.shade100,
                   backgroundColor: ColorUtils.getOrderStatusBackgroundColor(orderDetail.order.status, shade: 100),
                   child: Column(
                     children: [
@@ -156,10 +159,10 @@ class OrderDetailPage extends StatelessWidget {
 
   Row _buildOrderInfo() {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Text.rich(
-            // 'Ngày đặt hàng',
             TextSpan(text: 'Ngày đặt hàng:\n', children: [
               TextSpan(
                 text: ConversionUtils.convertDateTimeToString(
@@ -173,31 +176,28 @@ class OrderDetailPage extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Expanded(
-                child: Text.rich(
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  TextSpan(
-                    text: 'Mã đơn hàng: ',
-                    style: const TextStyle(fontSize: 12),
-                    children: [
-                      TextSpan(
-                        text: orderDetail.order.orderId.toString(),
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
+              // order id
+              Text.rich(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                TextSpan(
+                  text: 'Mã đơn hàng: ',
+                  style: const TextStyle(fontSize: 12),
+                  children: [
+                    TextSpan(
+                      text: orderDetail.order.orderId.toString(),
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
               ),
-              // Icon(Icons.copy),
+              // copy button
               IconButton(
+                style: VTVTheme.shrinkButton,
                 icon: const Icon(Icons.copy),
-                style: IconButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: orderDetail.order.orderId.toString()));
                   Fluttertoast.showToast(msg: 'Đã sao chép mã đơn hàng');
@@ -210,12 +210,26 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 
+  // Icon(Icons.copy),
+  // IconButton(
+  //   icon: const Icon(Icons.copy),
+  //   style: IconButton.styleFrom(
+  //     padding: EdgeInsets.zero,
+  //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+  //   ),
+  //   onPressed: () {
+  //     Clipboard.setData(ClipboardData(text: orderDetail.order.orderId.toString()));
+  //     Fluttertoast.showToast(msg: 'Đã sao chép mã đơn hàng');
+  //   },
+  // ),
+
   Widget _transportSummary(BuildContext context) {
     return Wrapper(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Expanded(
                 child: Text(
@@ -226,47 +240,52 @@ class OrderDetailPage extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: Row(
+                child: Column(
                   children: [
-                    Expanded(
-                      child: Text.rich(
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        TextSpan(
-                          text: 'Mã vận đơn: ',
-                          style: const TextStyle(fontSize: 12),
-                          children: [
-                            TextSpan(
-                              text: orderDetail.transport!.transportId,
-                              style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                              ),
+                    Text.rich(
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      TextSpan(
+                        text: 'Mã vận đơn: ',
+                        style: const TextStyle(fontSize: 12),
+                        children: [
+                          TextSpan(
+                            text: orderDetail.transport!.transportId,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                    //btn copy
-                    IconButton(
-                      icon: const Icon(Icons.copy),
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: orderDetail.transport!.transportId));
-                        Fluttertoast.showToast(msg: 'Đã sao chép mã vận đơn');
-                      },
-                    ),
-                    // btn show qr code
-                    IconButton(
-                      icon: const Icon(Icons.qr_code),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return QrViewPage(data: orderDetail.transport!.transportId);
-                            },
-                          ),
-                        );
-                      },
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        // btn show qr code
+                        IconButton(
+                          style: VTVTheme.shrinkButton,
+                          icon: const Icon(Icons.qr_code),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return QrViewPage(data: orderDetail.transport!.transportId);
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                        //btn copy
+                        IconButton(
+                          style: VTVTheme.shrinkButton,
+                          icon: const Icon(Icons.copy),
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: orderDetail.transport!.transportId));
+                            Fluttertoast.showToast(msg: 'Đã sao chép mã vận đơn');
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -274,7 +293,8 @@ class OrderDetailPage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 2),
-          OrderSectionShippingMethod(order: orderDetail.order, showShippingFee: false),
+          OrderSectionShippingMethod(
+              orderShippingMethod: orderDetail.order.shippingMethod, orderShippingFee: orderDetail.order.shippingFee),
           const SizedBox(height: 4),
           Address(address: orderDetail.order.address, color: Colors.white, suffixIcon: null),
           Timeline.tileBuilder(
@@ -399,7 +419,7 @@ class OrderDetailPage extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      Expanded(flex: 1, child: ActionButton.customerChat(null)),
+                      Expanded(flex: 1, child: ActionButton.customerChat(onChatPressed)),
                       if (status == OrderStatus.COMPLETED)
                         Expanded(
                             flex: 2,

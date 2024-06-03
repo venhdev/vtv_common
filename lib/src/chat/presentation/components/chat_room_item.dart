@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vtv_common/auth.dart';
 
-import '../../domain/entities/room_chat_entity.dart';
+import '../../domain/entities/chat_room_entity.dart';
 
 class ChatRoomItem extends StatelessWidget {
   const ChatRoomItem({
@@ -23,7 +23,7 @@ class ChatRoomItem extends StatelessWidget {
             ? room.senderUsername
             : room.receiverUsername,
       ),
-      subtitle: Text(room.lastMessage),
+      subtitle: Text(room.lastMessage ?? ''),
     );
   }
 }

@@ -8,19 +8,24 @@ class MessageScreen extends StatelessWidget {
     this.icon,
     this.buttonLabel = 'Thử lại',
     this.onPressed,
+    this.onIconLongPressed,
   });
-  factory MessageScreen.error([String? message, Icon? icon, void Function()? onPressed]) => MessageScreen(
+  factory MessageScreen.error([
+    String? message,
+    Icon? icon,
+  ]) =>
+      MessageScreen(
         message: message ?? 'Lỗi không xác định',
         icon: icon ?? const Icon(Icons.error),
         textStyle: const TextStyle(color: Colors.red),
-        onPressed: onPressed,
       );
 
   final String message;
   final TextStyle? textStyle;
-  final Icon? icon;
+  final Widget? icon;
   final String buttonLabel;
   final void Function()? onPressed;
+  final VoidCallback? onIconLongPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +34,12 @@ class MessageScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           //# icon
-          if (icon != null) icon!,
-          
+          if (icon != null)
+            GestureDetector(
+              onLongPress: onIconLongPressed,
+              child: icon!,
+            ),
+
           //# message
           Text(message, style: textStyle),
 

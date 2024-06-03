@@ -34,8 +34,6 @@ class SendMessageRequest {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'content': content,
-      // 'date': date.toIso8601String(),
-      // 'senderUsername': senderUsername,
       'receiverUsername': receiverUsername,
       'roomChatId': roomChatId,
     };

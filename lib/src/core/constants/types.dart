@@ -12,7 +12,7 @@ enum Role {
   DELIVER_MANAGER
 }
 
-enum TypeWorks {
+enum TypeWork {
   SHIPPER,
   PROVIDER,
   MANAGER,
@@ -29,7 +29,7 @@ enum Status {
   LOCKED,
 }
 
-class SortTypes {
+class SortType {
   static const String bestSelling = 'best-selling';
   static const String newest = 'newest';
   static const String priceAsc = 'price-asc';
@@ -37,7 +37,7 @@ class SortTypes {
   static const String random = 'random';
 }
 
-enum VoucherTypes {
+enum VoucherType {
   PERCENTAGE_SHOP,
   PERCENTAGE_SYSTEM,
   MONEY_SHOP,
@@ -65,10 +65,15 @@ enum OrderStatus {
   WAREHOUSE,
 }
 
-enum PaymentTypes {
+enum PaymentType {
   COD,
   VNPay,
   Wallet,
 }
 
-enum ActionTypes { add, update, delete, unknown }
+enum ActionType { add, update, delete, unknown }
+
+enum NotificationType {
+  ORDER,
+  NEW_MESSAGE,
+}

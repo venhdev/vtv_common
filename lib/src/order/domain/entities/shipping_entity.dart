@@ -3,13 +3,15 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
+import '../../../core/utils.dart';
+
 class ShippingEntity extends Equatable {
   final int transportProviderId;
   final String transportProviderFullName;
   final String transportProviderShortName;
   final int shippingCost;
-  final String estimatedDeliveryTime;
-  final String timestamp;
+  final DateTime estimatedDeliveryTime;
+  final DateTime timestamp;
 
   const ShippingEntity({
     required this.transportProviderId,
@@ -25,8 +27,8 @@ class ShippingEntity extends Equatable {
     String? transportProviderFullName,
     String? transportProviderShortName,
     int? shippingCost,
-    String? estimatedDeliveryTime,
-    String? timestamp,
+    DateTime? estimatedDeliveryTime,
+    DateTime? timestamp,
   }) {
     return ShippingEntity(
       transportProviderId: transportProviderId ?? this.transportProviderId,
@@ -44,8 +46,8 @@ class ShippingEntity extends Equatable {
       'transportProviderFullName': transportProviderFullName,
       'transportProviderShortName': transportProviderShortName,
       'shippingCost': shippingCost,
-      'estimatedDeliveryTime': estimatedDeliveryTime,
-      'timestamp': timestamp,
+      'estimatedDeliveryTime': estimatedDeliveryTime.toIso8601String(),
+      'timestamp': timestamp.toIso8601String(),
     };
   }
 
@@ -55,15 +57,14 @@ class ShippingEntity extends Equatable {
       transportProviderFullName: map['transportProviderFullName'] as String,
       transportProviderShortName: map['transportProviderShortName'] as String,
       shippingCost: map['shippingCost'] as int,
-      estimatedDeliveryTime: map['estimatedDeliveryTime'] as String,
-      timestamp: map['timestamp'] as String,
+      estimatedDeliveryTime: DateTimeUtils.tryParseLocal(map['estimatedDeliveryTime'] as String)!,
+      timestamp: DateTimeUtils.tryParseLocal(map['timestamp'] as String)!,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory ShippingEntity.fromJson(String source) =>
-      ShippingEntity.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ShippingEntity.fromJson(String source) => ShippingEntity.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   bool get stringify => true;

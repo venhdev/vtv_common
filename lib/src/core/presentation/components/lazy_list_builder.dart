@@ -12,14 +12,16 @@ const int _defaultPageSize = 10;
 class LazyListBuilder<T> extends StatefulWidget {
   const LazyListBuilder({
     super.key,
-    required this.lazyController,
+    required this.lazyListController,
     required this.itemBuilder,
     this.separatorBuilder,
+    this.padding,
   });
 
-  final LazyListController<T> lazyController;
+  final LazyListController<T> lazyListController;
   final Widget Function(BuildContext context, int index, T data) itemBuilder;
   final Widget Function(BuildContext context, int index)? separatorBuilder;
+  final EdgeInsets? padding;
 
   @override
   State<LazyListBuilder<T>> createState() => _LazyListBuilderState<T>();
@@ -29,10 +31,10 @@ class _LazyListBuilderState<T> extends State<LazyListBuilder<T>> {
   //> scrollController dispose handled by parent
   @override
   void initState() {
-    log('[LazyListBuilder] initState()');
+    log('[LazyListBuilder] initState() --${widget.lazyListController.debugLabel ?? 'no label'}--');
     super.initState();
     // listen to the changes of the lazy controller
-    widget.lazyController.addListener(() {
+    widget.lazyListController.addListener(() {
       if (mounted) {
         setState(() {});
       }
@@ -41,8 +43,8 @@ class _LazyListBuilderState<T> extends State<LazyListBuilder<T>> {
 
   @override
   void dispose() {
-    log('[LazyListBuilder] dispose()');
-    widget.lazyController.removeListener(() {});
+    log('[LazyListBuilder] dispose() --${widget.lazyListController.debugLabel ?? 'no label'}--');
+    widget.lazyListController.removeListener(() {});
     super.dispose();
   }
 
@@ -50,14 +52,14 @@ class _LazyListBuilderState<T> extends State<LazyListBuilder<T>> {
   Widget build(BuildContext context) {
     // assert(widget.separatorBuilder != null || widget.lazyController.useGrid);
 
-    log('[LazyListBuilder] build with ${widget.lazyController.items.length} items');
+    log('[LazyListBuilder] build with ${widget.lazyListController.items.length} items');
     //# empty list
-    if (widget.lazyController.items.isEmpty && !widget.lazyController.isLoading) {
-      return widget.lazyController.emptyBuilder ??
+    if (widget.lazyListController.items.isEmpty && !widget.lazyListController.isLoading) {
+      return widget.lazyListController.emptyBuilder ??
           Center(
             child: Text(
-              widget.lazyController.lastPageMessage,
-              style: VTVTheme.hintTextStyle,
+              widget.lazyListController.lastPageMessage,
+              style: VTVTheme.hintText12,
             ),
           );
     }
@@ -65,73 +67,77 @@ class _LazyListBuilderState<T> extends State<LazyListBuilder<T>> {
     //? scrollController passed from parent
     //: 1: Disable the physics of the GridView & shrinkWrap it
     //! 2: Use the parent's scrollController --no longer use internal scrollController
-    return widget.lazyController.useGrid ? _buildLazyLoadWithGridView() : _buildLazyLoadWithListView();
+    return widget.lazyListController.useGrid ? _buildLazyLoadWithGridView() : _buildLazyLoadWithListView();
   }
 
   //> only build when [showLoadingIndicator || showLoadMoreButton] is true >> length itemCount + 1
   Widget _buildWhenScrollToEnd() {
     return Center(
-        child: widget.lazyController.isLoading
-            ? widget.lazyController.showLoadingIndicator || widget.lazyController.showLoadMoreButton
+        child: widget.lazyListController.isLoading
+            ? widget.lazyListController.showLoadingIndicator || widget.lazyListController.showLoadMoreButton
                 ? const CircularProgressIndicator()
                 : Container() //show nothing when loading
-            : widget.lazyController.isReachTheEnd //# if reach the end of the list
-                ? Text(widget.lazyController.lastPageMessage)
-                : widget.lazyController.showLoadMoreButton
+            : widget.lazyListController.isReachTheEnd //# if reach the end of the list
+                ? Text(widget.lazyListController.lastPageMessage)
+                : widget.lazyListController.showLoadMoreButton
                     ? ElevatedButton(
-                        onPressed: () => widget.lazyController.loadNextPage(),
-                        child: Text(widget.lazyController.loadMoreButtonLabel,
-                            style: widget.lazyController.loadMoreButtonStyle),
+                        onPressed: () => widget.lazyListController.loadNextPage(),
+                        child: Text(widget.lazyListController.loadMoreButtonLabel,
+                            style: widget.lazyListController.loadMoreButtonStyle),
                       )
                     : Container() // show nothing in case of not loading && not reach the end && not show load more button (rare case)
         );
   }
 
   ListView _buildLazyLoadWithListView() {
+    final canScroll = widget.lazyListController.auto || widget.lazyListController.scrollable;
     return ListView.separated(
       separatorBuilder: widget.separatorBuilder ?? (context, index) => const SizedBox.shrink(),
-      controller: widget.lazyController.auto ? widget.lazyController.scrollController! : null,
-      physics: widget.lazyController.auto ? null : const NeverScrollableScrollPhysics(),
-      shrinkWrap: widget.lazyController.auto ? false : true,
-      padding: EdgeInsets.zero,
-      reverse: widget.lazyController.reverse,
-      itemCount: widget.lazyController.showLoadingIndicator || widget.lazyController.showLoadMoreButton
-          ? widget.lazyController.items.length + 1
-          : widget.lazyController.items.length,
+      controller: canScroll ? widget.lazyListController.scrollController! : null,
+      physics: canScroll ? null : const NeverScrollableScrollPhysics(),
+      shrinkWrap: canScroll ? false : true,
+      padding: widget.padding ?? EdgeInsets.zero,
+      reverse: widget.lazyListController.reverse,
+      scrollDirection: widget.lazyListController.scrollDirection,
+      itemCount: widget.lazyListController.showLoadingIndicator || widget.lazyListController.showLoadMoreButton
+          ? widget.lazyListController.items.length + 1
+          : widget.lazyListController.items.length,
       itemBuilder: (context, index) {
-        if (widget.lazyController.items.isEmpty && widget.lazyController.isLoading) {
+        if (widget.lazyListController.items.isEmpty && widget.lazyListController.isLoading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (index == widget.lazyController.items.length) {
+        } else if (index == widget.lazyListController.items.length) {
           return _buildWhenScrollToEnd();
         } else {
-          return widget.itemBuilder(context, index, widget.lazyController.items[index]);
+          return widget.itemBuilder(context, index, widget.lazyListController.items[index]);
         }
       },
     );
   }
 
   Widget _buildLazyLoadWithGridView() {
+    final canScroll = widget.lazyListController.auto || widget.lazyListController.scrollable;
     return GridView.builder(
-      controller: widget.lazyController.auto ? widget.lazyController.scrollController! : null,
-      physics: widget.lazyController.auto ? null : const NeverScrollableScrollPhysics(),
-      shrinkWrap: widget.lazyController.auto ? false : true,
-      padding: EdgeInsets.zero,
-      reverse: widget.lazyController.reverse,
+      controller: canScroll ? widget.lazyListController.scrollController! : null,
+      physics: canScroll ? null : const NeverScrollableScrollPhysics(),
+      shrinkWrap: canScroll ? false : true,
+      padding: widget.padding ?? EdgeInsets.zero,
+      reverse: widget.lazyListController.reverse,
+      scrollDirection: widget.lazyListController.scrollDirection,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: widget.lazyController.crossAxisCount,
+        crossAxisCount: widget.lazyListController.crossAxisCount,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
       ),
-      itemCount: widget.lazyController.showLoadingIndicator || widget.lazyController.showLoadMoreButton
-          ? widget.lazyController.items.length + 1
-          : widget.lazyController.items.length,
+      itemCount: widget.lazyListController.showLoadingIndicator || widget.lazyListController.showLoadMoreButton
+          ? widget.lazyListController.items.length + 1
+          : widget.lazyListController.items.length,
       itemBuilder: (context, index) {
-        if (widget.lazyController.items.isEmpty && widget.lazyController.isLoading) {
+        if (widget.lazyListController.items.isEmpty && widget.lazyListController.isLoading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (index == widget.lazyController.items.length) {
+        } else if (index == widget.lazyListController.items.length) {
           return _buildWhenScrollToEnd();
         } else {
-          return widget.itemBuilder(context, index, widget.lazyController.items[index]);
+          return widget.itemBuilder(context, index, widget.lazyListController.items[index]);
         }
       },
     );
@@ -159,9 +165,13 @@ class LazyListController<T> extends ChangeNotifier {
     this.loadMoreButtonLabel = 'Xem thêm',
     this.loadMoreButtonStyle,
     this.reverse = false,
+    this.scrollDirection = Axis.vertical,
+    this.callBackBeforeLoadNextPage,
+    this.scrollable = false,
   })  : currentPage = 0,
         isLoading = false,
         isReachTheEnd = false,
+        debugLabel = null,
         assert(useGrid && crossAxisCount > 0 || !useGrid),
         assert(!auto || auto && scrollController != null);
 
@@ -186,18 +196,47 @@ class LazyListController<T> extends ChangeNotifier {
     this.crossAxisCount = 2,
     this.useGrid = true,
     this.reverse = false,
+    this.scrollDirection = Axis.vertical,
+    this.callBackBeforeLoadNextPage,
+    this.scrollable = false,
   })  : currentPage = 0,
         showPageIndicator = false,
         auto = false,
         isLoading = false,
-        isReachTheEnd = false;
+        isReachTheEnd = false,
+        debugLabel = null;
+
+  LazyListController.static({
+    required this.items,
+    this.itemBuilder,
+    this.emptyBuilder,
+    this.lastPageMessage = 'Đã đến cuối trang',
+    this.crossAxisCount = 2,
+    this.useGrid = true,
+    this.reverse = false,
+    this.scrollable = false,
+    this.scrollController,
+    this.scrollDirection = Axis.vertical,
+  })  : currentPage = 0,
+        showLoadMoreButton = false,
+        showLoadingIndicator = false,
+        loadMoreButtonLabel = '',
+        callBackBeforeLoadNextPage = null,
+        loadMoreButtonStyle = null,
+        size = _defaultPageSize,
+        paginatedData = null,
+        showPageIndicator = false,
+        auto = false,
+        isLoading = false,
+        isReachTheEnd = false,
+        debugLabel = null;
 
   /// when use [build] method, this method will be invoked to build the item
   final Widget Function(BuildContext context, int index, T data)? itemBuilder;
   final Widget? emptyBuilder;
 
   //# required fields
-  final FRespData<IBasePageResp<T>> Function(int page, int size) paginatedData;
+  final FRespData<IBasePageResp<T>> Function(int page, int size)? paginatedData;
   final ScrollController? scrollController;
   List<T> items;
   int currentPage;
@@ -223,9 +262,11 @@ class LazyListController<T> extends ChangeNotifier {
   /// [scrollController] must be provided, and do not pass this controller to any other widget.
   /// - if false, the [loadNextPage] will be called manually.
   final bool auto;
+  final bool scrollable;
 
   //# style fields
   final bool reverse;
+  final Axis scrollDirection;
 
   /// Message to show when the list is empty (reach the end of the list or no data)
   final String lastPageMessage;
@@ -245,13 +286,22 @@ class LazyListController<T> extends ChangeNotifier {
 
   final String loadMoreButtonLabel;
   final TextStyle? loadMoreButtonStyle;
+  final Future<void> Function()? callBackBeforeLoadNextPage;
+
+  //# debug
+  String? debugLabel;
+  void setDebugLabel(String label) {
+    debugLabel = label;
+  }
 
   //# methods
-  void init([VoidCallback? onInit]) {
-    currentPage = 0;
-    items.clear();
+  void init({VoidCallback? onInitCompleted, bool clear = true}) {
+    if (clear) {
+      currentPage = 0;
+      items.clear();
+    }
     loadNextPage().then((_) {
-      onInit?.call();
+      onInitCompleted?.call();
     });
 
     if (auto) {
@@ -283,10 +333,17 @@ class LazyListController<T> extends ChangeNotifier {
     }
 
     if (!isLoading) {
+      if (paginatedData == null) {
+        log('[LazyListController] paginatedData is null, use other constructor (not static) to use loadNextPage() method');
+        return;
+      }
       isLoading = true;
       notifyListeners();
 
-      final dataEither = await paginatedData(currentPage + 1, size);
+      //> callback before load next page
+      await callBackBeforeLoadNextPage?.call();
+
+      final dataEither = await paginatedData!(currentPage + 1, size);
       dataEither.fold(
         (error) {
           // Fluttertoast.showToast(msg: '${error.message}');

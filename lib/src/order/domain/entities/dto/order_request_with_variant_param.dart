@@ -9,7 +9,7 @@ class OrderRequestWithVariantParam extends Equatable {
   final String? systemVoucherCode;
   final String? shopVoucherCode;
   final bool useLoyaltyPoint;
-  final PaymentTypes paymentMethod;
+  final PaymentType paymentMethod;
   final String shippingMethod;
   final String note;
   final Map<String, int> variantIds; // key: variantId, value: quantity
@@ -44,7 +44,7 @@ class OrderRequestWithVariantParam extends Equatable {
     String? systemVoucherCode,
     String? shopVoucherCode,
     bool? useLoyaltyPoint,
-    PaymentTypes? paymentMethod,
+    PaymentType? paymentMethod,
     String? shippingMethod,
     String? note,
     Map<String, int>? variantIds,

@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/base/base.dart';
 import '../../../core/constants/constant_messages.dart';
+import '../../../core/constants/types.dart';
 import '../../domain/entities/auth_entity.dart';
 import '../../domain/entities/dto/register_params.dart';
 import '../../domain/entities/user_info_entity.dart';
@@ -20,6 +23,7 @@ class AuthCubit extends Cubit<AuthState> {
     this._loginWithUsernameAndPasswordUC,
     this._logoutUC,
     this._checkAndGetTokenIfNeededUC,
+    this._redirect,
   ) : super(const AuthState.unknown()) {
     onStarted;
     loginWithUsernameAndPassword;
@@ -29,12 +33,13 @@ class AuthCubit extends Cubit<AuthState> {
     editUserProfile;
   }
 
+  final BaseRedirect _redirect;
   final AuthRepository _authRepository;
   final LoginWithUsernameAndPasswordUC _loginWithUsernameAndPasswordUC;
   final LogoutUC _logoutUC;
   final CheckTokenUC _checkAndGetTokenIfNeededUC;
 
-  Future<void> onStarted() async {
+  FutureOr<void> onStarted() async {
     emit(const AuthState.authenticating());
     await _authRepository.retrieveAuth().then((resultEither) {
       resultEither.fold(
@@ -47,9 +52,8 @@ class AuthCubit extends Cubit<AuthState> {
             (failure) => emit(AuthState.authenticated(authEntity, message: failure.message)),
             (newAccessToken) {
               log('new access token (null if old token still valid): $newAccessToken');
-              log('prev auth token: ${authEntity.accessToken}');
               final newAuth = authEntity.copyWith(accessToken: newAccessToken);
-              log('new auth token: ${newAuth.accessToken}');
+
               // save to local storage
               _authRepository.cacheAuth(newAuth);
               emit(AuthState.authenticated(newAuth));
@@ -60,7 +64,7 @@ class AuthCubit extends Cubit<AuthState> {
     });
   }
 
-  Future<void> loginWithUsernameAndPassword({required String username, required String password}) async {
+  void loginWithUsernameAndPassword({required String username, required String password}) async {
     emit(const AuthState.authenticating());
 
     await _loginWithUsernameAndPasswordUC(
@@ -69,69 +73,55 @@ class AuthCubit extends Cubit<AuthState> {
         password: password,
       ),
     ).then((respEither) {
-      respEither.fold(
-        (failure) => emit(AuthState.error(code: failure.code, message: failure.message)),
-        (ok) => emit(
-          AuthState.authenticated(ok.data!, message: kMsgLoggedInSuccessfully, code: 200, redirectTo: '/home'),
-        ),
-      );
+      respEither.fold((failure) => emit(AuthState.error(message: failure.message)), (ok) {
+        emit(AuthState.authenticated(ok.data!, message: kMsgLoggedInSuccessfully));
+        _redirect.go(AuthRedirect.loginSuccess);
+      });
     });
   }
 
-  Future<void> logout(String refreshToken) async {
+  void logout(String refreshToken) async {
     emit(const AuthState.authenticating());
     await _logoutUC(refreshToken).then((respEither) {
-      respEither.fold(
-        (error) => emit(AuthState.error(code: error.code, message: error.message)),
-        (ok) => emit(AuthState.unauthenticated(
-          message: ok.message,
-          code: ok.code,
-        )),
-      );
+      respEither.fold((error) => emit(AuthState.error(message: error.message)), (ok) {
+        emit(AuthState.unauthenticated(message: ok.message));
+        _redirect.go(AuthRedirect.logoutSuccess);
+      });
     });
   }
 
-  Future<void> register(RegisterParams params) async {
+  void register(RegisterParams params) async {
     emit(const AuthState.authenticating());
     await _authRepository.register(params).then((resultEither) {
-      resultEither.fold(
-        (error) => emit(AuthState.error(code: error.code, message: error.message)),
-        (ok) => emit(AuthState.unauthenticated(
-          message: ok.message,
-          code: ok.code,
-          // redirectTo: '/user/login',
-        )),
-      );
+      resultEither.fold((error) => emit(AuthState.error(message: error.message)), (ok) {
+        emit(AuthState.unauthenticated(message: ok.message)); //user must login after register
+        _redirect.go(AuthRedirect.registerSuccess);
+      });
     });
   }
 
-  Future<void> changePassword({required String oldPassword, required String newPassword}) async {
+  void changePassword({required String oldPassword, required String newPassword}) async {
     // using 'state' to get the previous state (should be authenticated)
     final previousState = state;
     emit(const AuthState.authenticating());
     await _authRepository.changePassword(oldPassword, newPassword).then((resultEither) {
       //? even user change password success or not, keep the user authenticated
-      resultEither.fold(
-        (error) => emit(previousState.copyWith(message: error.message, code: error.code)),
-        (ok) => emit(previousState.copyWith(message: ok.message, code: ok.code, redirectTo: '/user')),
-      );
+      resultEither.fold((error) => emit(previousState.copyWith(message: error.message)), (ok) {
+        emit(previousState.copyWith(message: ok.message));
+        _redirect.go(AuthRedirect.changePasswordSuccess);
+      });
     });
   }
 
-  Future<void> editUserProfile({required UserInfoEntity newInfo}) async {
+  void editUserProfile({required UserInfoEntity newInfo}) async {
     // using 'state' to get the previous state (should be authenticated)
     final previousState = state;
     emit(const AuthState.authenticating());
     await _authRepository.editUserProfile(newInfo).then((resultEither) {
-      resultEither.fold(
-        (error) => emit(previousState.copyWith(message: error.message, code: error.code)),
-        (ok) => emit(AuthState.authenticated(
-          previousState.auth!.copyWith(userInfo: ok.data), // copy with new user info
-          message: ok.message,
-          code: ok.code,
-          // redirectTo: '/user',
-        )),
-      );
+      resultEither.fold((error) => emit(previousState.copyWith(message: error.message)), (ok) {
+        emit(AuthState.authenticated(previousState.auth!.copyWith(userInfo: ok.data), message: ok.message));
+        _redirect.go(AuthRedirect.updateProfileSuccess);
+      });
     });
   }
 }

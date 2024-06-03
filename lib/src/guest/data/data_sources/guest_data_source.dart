@@ -5,6 +5,7 @@ import '../../../core/network/network.dart';
 import '../../../home/domain/entities/category_entity.dart';
 import '../../../home/domain/entities/dto/product_detail_resp.dart';
 import '../../../home/domain/entities/dto/product_page_resp.dart';
+import '../../../order/domain/entities/shipping_entity.dart';
 import '../../../profile/domain/entities/entities.dart';
 import '../../../shop/domain/entities/shop_category_entity.dart';
 import '../../../shop/domain/entities/dto/shop_detail_resp.dart';
@@ -34,6 +35,10 @@ abstract class GuestDataSource {
 
   //# product-page-controller
   Future<SuccessResponse<ProductPageResp>> getProductPageByCategory(int page, int size, int categoryId);
+
+  Future<SuccessResponse<ShippingEntity>> getCalculateShipping(
+      String wardCodeCustomer, String wardCodeShop, String shippingProvider);
+  Future<SuccessResponse<List<ShippingEntity>>> getTransportProviders(String wardCodeCustomer, String wardCodeShop);
 }
 
 class GuestDataSourceImpl implements GuestDataSource {
@@ -244,6 +249,51 @@ class GuestDataSourceImpl implements GuestDataSource {
       response,
       url,
       parse: (jsonMap) => ProductPageResp.fromMap(jsonMap),
+    );
+  }
+
+  @override
+  Future<SuccessResponse<ShippingEntity>> getCalculateShipping(
+      String wardCodeCustomer, String wardCodeShop, String shippingProvider) async {
+    final url = uriBuilder(
+      path: kAPIShippingCalculateShippingURL,
+      queryParameters: {
+        'wardCodeCustomer': wardCodeCustomer,
+        'wardCodeShop': wardCodeShop,
+        'shippingProvider': shippingProvider,
+      },
+    );
+
+    final response = await _dio.getUri(url);
+
+    return handleDioResponse<ShippingEntity, Map<String, dynamic>>(
+      response,
+      url,
+      parse: (jsonMap) => ShippingEntity.fromMap(jsonMap['shippingDTO']),
+    );
+  }
+
+  @override
+  Future<SuccessResponse<List<ShippingEntity>>> getTransportProviders(
+      String wardCodeCustomer, String wardCodeShop) async {
+    final url = uriBuilder(
+      path: kAPIShippingTransportProvidersURL,
+      queryParameters: {
+        'wardCodeCustomer': wardCodeCustomer,
+        'wardCodeShop': wardCodeShop,
+      },
+    );
+
+    final response = await _dio.getUri(url);
+
+    return handleDioResponse<List<ShippingEntity>, Map<String, dynamic>>(
+      response,
+      url,
+      parse: (jsonMap) => (jsonMap['shippingDTOs'] as List<dynamic>)
+          .map(
+            (shipping) => ShippingEntity.fromMap(shipping),
+          )
+          .toList(),
     );
   }
 }

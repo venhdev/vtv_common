@@ -39,7 +39,7 @@ class Address extends StatelessWidget {
     return InkWell(
       onTap: onTap == null ? null : () => onTap!(),
       borderRadius: BorderRadius.circular(12),
-      overlayColor: MaterialStateProperty.all(Colors.orange.withOpacity(0.2)),
+      overlayColor: WidgetStateProperty.all(Colors.orange.withOpacity(0.2)),
       child: Container(
         decoration: decoration ??
             BoxDecoration(

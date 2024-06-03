@@ -4,10 +4,10 @@ import 'package:collection/collection.dart';
 
 import 'package:vtv_common/core.dart';
 
-import '../room_chat_entity.dart';
+import '../chat_room_entity.dart';
 
-class RoomChatPageResp extends IBasePageResp<ChatRoomEntity> {
-  const RoomChatPageResp({
+class ChatRoomPageResp extends IBasePageResp<ChatRoomEntity> {
+  const ChatRoomPageResp({
     required super.items,
     super.count,
     super.page,
@@ -15,14 +15,14 @@ class RoomChatPageResp extends IBasePageResp<ChatRoomEntity> {
     super.totalPage,
   });
 
-  RoomChatPageResp copyWith({
+  ChatRoomPageResp copyWith({
     List<ChatRoomEntity>? items,
     int? count,
     int? page,
     int? size,
     int? totalPage,
   }) {
-    return RoomChatPageResp(
+    return ChatRoomPageResp(
       items: items ?? this.items,
       count: count ?? this.count,
       page: page ?? this.page,
@@ -41,8 +41,8 @@ class RoomChatPageResp extends IBasePageResp<ChatRoomEntity> {
     };
   }
 
-  factory RoomChatPageResp.fromMap(Map<String, dynamic> map) {
-    return RoomChatPageResp(
+  factory ChatRoomPageResp.fromMap(Map<String, dynamic> map) {
+    return ChatRoomPageResp(
       items: List<ChatRoomEntity>.from(
         (map['roomChatDTOs'] as List).map<ChatRoomEntity>(
           (x) => ChatRoomEntity.fromMap(x as Map<String, dynamic>),
@@ -57,8 +57,8 @@ class RoomChatPageResp extends IBasePageResp<ChatRoomEntity> {
 
   String toJson() => json.encode(toMap());
 
-  factory RoomChatPageResp.fromJson(String source) =>
-      RoomChatPageResp.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ChatRoomPageResp.fromJson(String source) =>
+      ChatRoomPageResp.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
@@ -66,7 +66,7 @@ class RoomChatPageResp extends IBasePageResp<ChatRoomEntity> {
   }
 
   @override
-  bool operator ==(covariant RoomChatPageResp other) {
+  bool operator ==(covariant ChatRoomPageResp other) {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 

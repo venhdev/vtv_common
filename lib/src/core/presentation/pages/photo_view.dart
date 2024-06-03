@@ -40,7 +40,7 @@ class PhotoViewPage extends StatelessWidget {
               icon: const Icon(Icons.close),
               color: Colors.white,
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.black38),
+                backgroundColor: WidgetStateProperty.all(Colors.black38),
               ),
               onPressed: () {
                 Navigator.pop(context);

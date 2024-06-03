@@ -51,6 +51,7 @@ dependencies:
 
   # others
   stomp_dart_client: ^2.0.0
+  logger:
 
   # analytics
   package_info_plus: ^8.0.0

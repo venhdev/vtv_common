@@ -30,31 +30,33 @@ class ShopDetailResp extends Equatable {
     ];
   }
 
-  ShopDetailResp copyWith({
-    ShopEntity? shop,
-    int? countFollowed,
-    int? countProduct,
-    int? countCategoryShop,
-    double? averageRatingShop,
-  }) {
-    return ShopDetailResp(
-      shop: shop ?? this.shop,
-      countFollowed: countFollowed ?? this.countFollowed,
-      countProduct: countProduct ?? this.countProduct,
-      countCategoryShop: countCategoryShop ?? this.countCategoryShop,
-      averageRatingShop: averageRatingShop ?? this.averageRatingShop,
-    );
-  }
+  // ShopDetailResp copyWith({
+  //   ShopEntity? shop,
+  //   int? countFollowed,
+  //   int? countProduct,
+  //   int? countCategoryShop,
+  //   double? averageRatingShop,
+  //   String? shopUsername,
+  // }) {
+  //   return ShopDetailResp(
+  //     shop: shop ?? this.shop,
+  //     countFollowed: countFollowed ?? this.countFollowed,
+  //     countProduct: countProduct ?? this.countProduct,
+  //     countCategoryShop: countCategoryShop ?? this.countCategoryShop,
+  //     averageRatingShop: averageRatingShop ?? this.averageRatingShop,
+  //     shopUsername: shopUsername ?? this.shopUsername,
+  //   );
+  // }
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'shop': shop.toMap(),
-      'countFollowed': countFollowed,
-      'countProduct': countProduct,
-      'countCategoryShop': countCategoryShop,
-      'averageRatingShop': averageRatingShop,
-    };
-  }
+  // Map<String, dynamic> toMap() {
+  //   return <String, dynamic>{
+  //     'shop': shop.toMap(),
+  //     'countFollowed': countFollowed,
+  //     'countProduct': countProduct,
+  //     'countCategoryShop': countCategoryShop,
+  //     'averageRatingShop': averageRatingShop,
+  //   };
+  // }
 
   factory ShopDetailResp.fromMap(Map<String, dynamic> map) {
     return ShopDetailResp(
@@ -66,7 +68,7 @@ class ShopDetailResp extends Equatable {
     );
   }
 
-  String toJson() => json.encode(toMap());
+  // String toJson() => json.encode(toMap());
 
   factory ShopDetailResp.fromJson(String source) => ShopDetailResp.fromMap(json.decode(source) as Map<String, dynamic>);
 

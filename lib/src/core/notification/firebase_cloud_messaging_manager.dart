@@ -24,6 +24,17 @@ class FirebaseCloudMessagingManager {
   get I => _firebaseMessaging;
   String? currentFCMToken;
 
+  /// Use this method to get the initial message when the app is opened from a terminated state.
+  /// Called this in the main function or the first screen of the app.
+  /// To handle navigation, consider placing this in `addPostFrameCallback`.
+  Future<void> runWhenContainInitialMessage(void Function(RemoteMessage remoteMessage) callback) async {
+    await _firebaseMessaging.getInitialMessage().then((remoteMessage) {
+      if (remoteMessage != null) {
+        callback(remoteMessage);
+      }
+    });
+  }
+
   Future<void> requestPermission({
     bool alert = true,
     bool badge = true,
@@ -69,12 +80,12 @@ class FirebaseCloudMessagingManager {
   /// Do not use any other package or method to show notification, if you do so, the notification will be shown twice.
   ///
   /// `@pragma('vm:entry-point') Future<void> _fcmBackgroundMessageHandler(RemoteMessage message) async {}`
-  /// - [onTapMessageOpenedApp] callback will be called when the user pressed the notification when app has opened from a background state (not terminated). For terminated state, use [onTapMessageTerminatedApp].
-  Future<void> listenToIncomingMessageAndHandleTap({
+  /// - [onTapMessageOpenedApp] callback will be called when the user pressed the notification when app has opened from a background state (not terminated). If your app is opened via a notification whilst the app is terminated, see [FirebaseMessaging.getInitialMessage]. Or use [runWhenContainInitialMessage] to run the callback.
+  Future<void> listen({
     void Function(RemoteMessage? remoteMessage)? onForegroundMessageReceived,
     Future<void> Function(RemoteMessage remoteMessage)? onBackgroundMessageReceived = _logBackgroundMessageHandler,
     void Function(RemoteMessage? remoteMessage)? onTapMessageOpenedApp,
-    void Function(RemoteMessage? remoteMessage)? onTapMessageTerminatedApp,
+    // void Function(RemoteMessage? remoteMessage)? onTapMessageTerminatedApp,
   }) async {
     // foreground message handler
     FirebaseMessaging.onMessage.listen(onForegroundMessageReceived);
@@ -84,7 +95,7 @@ class FirebaseCloudMessagingManager {
     // pressed notification on background state (not terminated).
     FirebaseMessaging.onMessageOpenedApp.listen(onTapMessageOpenedApp);
     // pressed notification on terminated state.
-    if (onTapMessageTerminatedApp != null) _firebaseMessaging.getInitialMessage().then(onTapMessageTerminatedApp);
+    // if (onTapMessageTerminatedApp != null) _firebaseMessaging.getInitialMessage().then(onTapMessageTerminatedApp);
 
     log('[FirebaseCloudMessagingManager::listenIncomingMessage] completed');
   }

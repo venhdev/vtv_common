@@ -17,6 +17,12 @@ const _defaultMillionAbbreviation = 'M'; // million
 const _defaultBillionAbbreviation = 'B'; // billion
 const _defaultTrillionAbbreviation = 'T'; // trillion
 
+class FactoryContainer {
+  static Debouncer createDebouncer({required int milliseconds}) {
+    return Debouncer(milliseconds: milliseconds);
+  }
+}
+
 class ValidationUtils {
   static bool isValidEmail(String email) {
     return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
@@ -165,13 +171,13 @@ class StringUtils {
   static String get na => 'N/A';
 
   static String getVoucherDiscount({required String type, required int discount}) {
-    if (type == VoucherTypes.PERCENTAGE_SYSTEM.name) {
+    if (type == VoucherType.PERCENTAGE_SYSTEM.name) {
       return 'Giảm $discount%';
-    } else if (type == VoucherTypes.PERCENTAGE_SHOP.name) {
+    } else if (type == VoucherType.PERCENTAGE_SHOP.name) {
       return 'Giảm $discount%';
-    } else if (type == VoucherTypes.MONEY_SHOP.name) {
+    } else if (type == VoucherType.MONEY_SHOP.name) {
       return 'Giảm đến ${ConversionUtils.formatCurrency(discount)}';
-    } else if (type == VoucherTypes.MONEY_SYSTEM.name) {
+    } else if (type == VoucherType.MONEY_SYSTEM.name) {
       return 'Giảm đến ${ConversionUtils.formatCurrency(discount)}';
     }
     // else if (type == VoucherTypes.SHIPPING.name) {
@@ -181,9 +187,9 @@ class StringUtils {
   }
 
   static String getVoucherName(String type, {bool lineBreak = false}) {
-    if (type == VoucherTypes.PERCENTAGE_SYSTEM.name || type == VoucherTypes.MONEY_SYSTEM.name) {
+    if (type == VoucherType.PERCENTAGE_SYSTEM.name || type == VoucherType.MONEY_SYSTEM.name) {
       return lineBreak ? 'VTV\nVoucher' : 'VTV Voucher';
-    } else if (type == VoucherTypes.PERCENTAGE_SHOP.name || type == VoucherTypes.MONEY_SHOP.name) {
+    } else if (type == VoucherType.PERCENTAGE_SHOP.name || type == VoucherType.MONEY_SHOP.name) {
       return lineBreak ? 'Shop\nVoucher' : 'Shop Voucher';
     }
     //  else if (type == VoucherTypes.SHIPPING.name) {
@@ -193,14 +199,14 @@ class StringUtils {
     return 'Không xác định được loại voucher';
   }
 
-  static String getVoucherTypeName(VoucherTypes type, [bool showBelongTo = false]) {
-    if (type == VoucherTypes.PERCENTAGE_SYSTEM) {
+  static String getVoucherTypeName(VoucherType type, [bool showBelongTo = false]) {
+    if (type == VoucherType.PERCENTAGE_SYSTEM) {
       return 'Mã giảm giá theo phần trăm${showBelongTo ? ' của hệ thống' : ''}';
-    } else if (type == VoucherTypes.PERCENTAGE_SHOP) {
+    } else if (type == VoucherType.PERCENTAGE_SHOP) {
       return 'Mã giảm giá theo phần trăm${showBelongTo ? ' của shop' : ''}';
-    } else if (type == VoucherTypes.MONEY_SHOP) {
+    } else if (type == VoucherType.MONEY_SHOP) {
       return 'Mã giảm theo số tiền${showBelongTo ? ' của shop' : ''}';
-    } else if (type == VoucherTypes.MONEY_SYSTEM) {
+    } else if (type == VoucherType.MONEY_SYSTEM) {
       return 'Mã giảm theo số tiền${showBelongTo ? ' của hệ thống' : ''}';
     } else {
       return 'Không xác định được loại voucher';
@@ -211,13 +217,13 @@ class StringUtils {
     // }
   }
 
-  static String getPaymentNameByPaymentTypes(PaymentTypes method) {
+  static String getPaymentNameByPaymentTypes(PaymentType method) {
     switch (method) {
-      case PaymentTypes.COD: // Cash on delivery
+      case PaymentType.COD: // Cash on delivery
         return 'Thanh toán khi nhận hàng';
-      case PaymentTypes.VNPay:
+      case PaymentType.VNPay:
         return 'Thanh toán qua cổng VNPay';
-      case PaymentTypes.Wallet:
+      case PaymentType.Wallet:
         return 'Thanh toán bằng VTV Wallet';
       default:
         return method.name;
@@ -609,12 +615,6 @@ class ConversionUtils {
         yield MapEntry('$prefix[$index]$separator${entry.key}', entry.value);
       }
     }
-  }
-}
-
-class FunctionUtils {
-  static Debouncer createDebouncer({required int milliseconds}) {
-    return Debouncer(milliseconds: milliseconds);
   }
 }
 

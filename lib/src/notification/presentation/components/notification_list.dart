@@ -12,12 +12,15 @@ class NotificationList extends StatefulWidget {
     this.actions,
     required this.lazyListController,
     this.separatorBuilder,
+    this.noPermissionWidget,
   });
 
   final List<Widget>? actions;
 
   final LazyListController<NotificationEntity> lazyListController;
   final Widget? Function(BuildContext, int)? separatorBuilder;
+
+  final Widget? noPermissionWidget;
 
   @override
   State<NotificationList> createState() => _NotificationListState();
@@ -60,9 +63,13 @@ class _NotificationListState extends State<NotificationList> {
       },
       builder: (context, state) {
         if (state.status == AuthStatus.unauthenticated) {
-          return const Center(
-            child: Text('Vui lòng đăng nhập để xem thông báo'),
-          );
+          if (widget.noPermissionWidget != null) {
+            return widget.noPermissionWidget!;
+          } else {
+            return const Center(
+              child: Text('Vui lòng đăng nhập để xem thông báo'),
+            );
+          }
         }
         return RefreshIndicator(
           onRefresh: () async {

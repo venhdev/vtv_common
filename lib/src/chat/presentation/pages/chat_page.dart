@@ -41,7 +41,7 @@ class _ChatPageState extends State<ChatPage> {
         pathVariables: {'roomChatId': widget.roomChatId},
       ),
       callback: (frame) {
-        log('(callback) frame.body: ${frame.body.toString()}');
+        log('[Websocket-incoming body]: ${frame.body.toString()}');
 
         if (frame.body == null) return;
         try {
@@ -89,13 +89,16 @@ class _ChatPageState extends State<ChatPage> {
     return Column(
       children: [
         //# connection status
-        if (!isConnected) Text('Đang kết nối...', textAlign: TextAlign.center, style: VTVTheme.hintTextStyle),
+        if (!isConnected) Text('Đang kết nối...', textAlign: TextAlign.center, style: VTVTheme.hintText12),
 
         //# chat list
         Expanded(
-          child: LazyListBuilder(
-            lazyController: widget.lazyListController,
-            itemBuilder: (context, index, _) => widget.lazyListController.build(context, index),
+          child: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: LazyListBuilder(
+              lazyListController: widget.lazyListController,
+              itemBuilder: (context, index, _) => widget.lazyListController.build(context, index),
+            ),
           ),
         ),
         //# chat input
@@ -106,8 +109,8 @@ class _ChatPageState extends State<ChatPage> {
               Expanded(
                 child: TextField(
                   controller: _chatController,
-                  keyboardType: TextInputType.multiline,
                   maxLength: 254,
+                  textInputAction: TextInputAction.send,
                   // hide the max length text counter
                   buildCounter: (_, {required currentLength, required isFocused, required maxLength}) => null,
                   maxLines: 3,
@@ -121,6 +124,7 @@ class _ChatPageState extends State<ChatPage> {
                       borderRadius: BorderRadius.circular(28),
                     ),
                   ),
+                  onSubmitted: (_) => _handleSendChatMessage(),
                 ),
               ),
               IconButton(
@@ -136,10 +140,10 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _handleSendChatMessage() {
+    if (_chatController.text.isEmpty) return;
+    
     final String msgRequest = SendMessageRequest(
       content: _chatController.text,
-      // date: DateTime.now(),
-      // senderUsername: context.read<AuthCubit>().state.auth!.userInfo.username!,
       receiverUsername: widget.receiverUsername,
       roomChatId: widget.roomChatId,
     ).toJson();

@@ -5,14 +5,20 @@ class OptionsDialog<T> extends StatelessWidget {
     super.key,
     required this.title,
     required this.options,
+    this.disableOptions = const [],
     required this.optionBuilder,
     this.titleTextStyle,
   });
 
   final String title;
   final List<T> options;
-  final Widget Function(BuildContext context, T value) optionBuilder;
-  
+  final List<T> disableOptions;
+  /// [optionBuilder] is a function that returns a widget for each option
+  /// - [context] is the current build context
+  /// - [value] is the current option value
+  /// - [disabled] is whether the current option is disabled
+  final Widget Function(BuildContext context, T value, bool disabled) optionBuilder;
+
   // style
   final TextStyle? titleTextStyle;
 
@@ -25,8 +31,8 @@ class OptionsDialog<T> extends StatelessWidget {
       children: List.generate(
         options.length,
         (index) => SimpleDialogOption(
-          onPressed: () => Navigator.pop(context, options[index]),
-          child: optionBuilder(context, options[index]),
+          onPressed: disableOptions.contains(options[index]) ? null : () => Navigator.pop(context, options[index]),
+          child: optionBuilder(context, options[index], disableOptions.contains(options[index])),
         ),
       ),
     );

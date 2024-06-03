@@ -5,7 +5,7 @@ class VTVTheme {
   static ThemeData get lightTheme => ThemeData(
         brightness: Brightness.light,
         colorScheme: const ColorScheme.light(
-          background: Color(0xFFFFFDF5),
+          surface: Color(0xFFFFFDF5),
           primary: Colors.black87,
           primaryContainer: Color(0xFFFFC600),
         ),
@@ -19,7 +19,7 @@ class VTVTheme {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
-            shape: MaterialStateProperty.all(
+            shape: WidgetStateProperty.all(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -37,13 +37,15 @@ class VTVTheme {
   //# Custom Style
 
   // hint text style
-  static TextStyle get hintTextStyle => const TextStyle(
+  static TextStyle get hintText12 => const TextStyle(
         color: Colors.grey,
         fontSize: 12,
       );
 
-  static TextStyle get hintTextMediumStyle => const TextStyle(
+  static TextStyle get hintText13 => const TextStyle(
         color: Colors.grey,
         fontSize: 13,
       );
+
+  static ButtonStyle get shrinkButton => IconButton.styleFrom(tapTargetSize: MaterialTapTargetSize.shrinkWrap);
 }
