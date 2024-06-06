@@ -49,7 +49,8 @@ Future<T?> showDialogToConfirm<T>({
               )
             : null,
         actions: [
-          ButtonBar(
+          // ButtonBar(
+          OverflowBar(
             alignment: MainAxisAlignment.spaceBetween,
             children: [
               hideDismiss
@@ -141,7 +142,7 @@ void showCrossPlatformAboutDialog({
     showAboutDialog(
       context: context,
       applicationName: packageInfo.appName,
-      applicationVersion: packageInfo.version,
+      applicationVersion: '${packageInfo.version}\n${packageInfo.packageName}',
       applicationIcon: (logo != null)
           ? Image.asset(
               logo,
@@ -211,7 +212,7 @@ class LoadingAlertDialog<T> extends StatefulWidget {
 class _LoadingAlertDialogState<T> extends State<LoadingAlertDialog> {
   void invokeCallback() async {
     widget.dataCallback().then((result) {
-      if (context.mounted) {
+      if (mounted) {
         widget.closeBy(context, result);
       }
     });

@@ -37,3 +37,4 @@ typedef FRespData<T> = Future<RespData<T>>;
 
 typedef VoidCallback = void Function();
 typedef ValueSelected<T> = void Function(T value);
+typedef MapS = Map<String, dynamic>;

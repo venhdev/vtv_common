@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../auth.dart';
 import '../../../core/presentation/components/custom_widgets.dart';
-import '../../../core/presentation/components/lazy_list_builder.dart';
+import '../../../core/presentation/components/list/lazy_list_builder.dart';
 import '../../domain/entities/notification_entity.dart';
 
 class NotificationList extends StatefulWidget {

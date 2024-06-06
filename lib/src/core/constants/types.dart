@@ -71,9 +71,12 @@ enum PaymentType {
   Wallet,
 }
 
-enum ActionType { add, update, delete, unknown }
-
 enum NotificationType {
   ORDER,
   NEW_MESSAGE,
 }
+
+//*---------------------Custom-----------------------*//
+enum ActionType { add, update, delete, unknown }
+
+enum LoadStatus { initial, loading, loaded, error }

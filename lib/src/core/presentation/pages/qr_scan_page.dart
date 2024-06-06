@@ -28,6 +28,7 @@ class _QrScannerPageState extends State<QrScannerPage> {
     controller.start();
     controller.barcodes.listen((data) {
       controller.stop();
+      if (!mounted) return;
       Navigator.pop(context, data.barcodes.first.rawValue!);
     });
   }

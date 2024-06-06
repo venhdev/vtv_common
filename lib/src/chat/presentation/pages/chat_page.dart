@@ -6,7 +6,7 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 import '../../../auth/presentation/bloc/auth_cubit.dart';
 import '../../../core/constants/api.dart';
-import '../../../core/presentation/components/lazy_list_builder.dart';
+import '../../../core/presentation/components/list/lazy_list_builder.dart';
 import '../../../core/themes.dart';
 import '../../../core/utils.dart';
 import '../../domain/entities/entities.dart';
