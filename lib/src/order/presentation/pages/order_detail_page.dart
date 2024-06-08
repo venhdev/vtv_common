@@ -315,7 +315,7 @@ class OrderDetailPage extends StatelessWidget {
                       child: Text(
                         ConversionUtils.convertDateTimeToString(
                           orderDetail.transport!.transportHandles[index].createAt,
-                          pattern: 'dd-MM-yyyy\nHH:mm',
+                          pattern: 'dd-MM-yyyy\nhh:mm aa',
                         ),
                         style: const TextStyle(fontSize: 12),
                       ),

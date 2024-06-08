@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:vtv_common/src/core/utils.dart';
 
 import '../../../core/constants/types.dart';
 import '../../../profile/domain/entities/address_entity.dart';
@@ -134,7 +135,7 @@ class OrderEntity extends Equatable {
       paymentTotal: map['paymentTotal'] as int,
       // status: map['status'] as String,
       status: OrderStatus.values.firstWhere((e) => e.name == map['status'] as String),
-      orderDate: DateTime.parse(map['orderDate'] as String),
+      orderDate: DateTimeUtils.tryParseLocal(map['orderDate'] as String)!,
       loyaltyPointHistory: map['loyaltyPointHistoryDTO'] != null
           ? LoyaltyPointHistoryEntity.fromMap(map['loyaltyPointHistoryDTO'] as Map<String, dynamic>)
           : null,

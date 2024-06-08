@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
-import '../../../constants/typedef.dart';
 import '../../../constants/types.dart';
 import '../custom_widgets.dart';
 
@@ -97,9 +96,9 @@ class _FutureListBuilderState<T, V> extends State<FutureListBuilder<T, V>> {
 /// - [V] is the type of the data returned from the future
 class FutureListController<T, V> extends ChangeNotifier {
   FutureListController({
+    required this.items,
     required this.futureData,
     required this.parse,
-    this.items = const [],
     this.fBuilder,
     this.useGrid = true,
     this.crossAxisCount = 2,
@@ -118,7 +117,8 @@ class FutureListController<T, V> extends ChangeNotifier {
 
   //# required fields
   final Future<V> futureData;
-  final List<T>? Function(V data, {void Function(VoidCallback?) onParseError, String? debugLabel}) parse;
+  final List<T>? Function(V unparsedData, void Function({VoidCallback? errorCallback, String? errorMsg}) onParseError)
+      parse;
   List<T> items;
 
   //# control fields
@@ -177,14 +177,19 @@ class FutureListController<T, V> extends ChangeNotifier {
     //> callback before load next page
     await beforeLoadCallback?.call();
 
-    final List<T>? parsed = parse(await futureData, onParseError: (fn) {
+    final List<T>? parsed = parse(await futureData, ({errorCallback, errorMsg}) {
+      log('[FutureListController--$debugLabel--] Error when parsing data: $errorMsg');
+      errorCallback?.call();
+    });
+    
+    if (parsed == null) {
       _loadStatus = LoadStatus.error;
-      fn?.call(); //> define some action like: retry, show error dialog, log, etc.
-    }, debugLabel: debugLabel);
-    if (parsed == null) return;
+      return;
+    } else {
+      items.addAll(parsed);
+      _loadStatus = LoadStatus.loaded;
+    }
 
-    items.addAll(parsed);
-    _loadStatus = LoadStatus.loaded;
     notifyListeners();
   }
 
