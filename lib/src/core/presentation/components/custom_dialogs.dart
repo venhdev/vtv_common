@@ -1,6 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+Future<T?> showDialogWithTextField<T>({
+  required BuildContext context,
+  required String title,
+  String? hintText,
+  String submitButtonText = 'Gửi',
+  String cancelButtonText = 'Hủy',
+  TextStyle? titleTextStyle,
+  TextStyle? contentTextStyle,
+}) async {
+  final TextEditingController textController = TextEditingController();
+  return await showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (context) {
+      return AlertDialog(
+        title: Text(title),
+        titleTextStyle: titleTextStyle,
+        contentTextStyle: contentTextStyle,
+        content: TextField(
+          controller: textController,
+          decoration: InputDecoration(hintText: hintText),
+        ),
+        actions: [
+          TextButton(
+            child: Text(cancelButtonText),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text(submitButtonText),
+            onPressed: () {
+              Navigator.of(context).pop(textController.text);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
 Future<T?> showDialogToConfirm<T>({
   required BuildContext context,
   String? title,

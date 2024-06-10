@@ -97,7 +97,7 @@ class _FutureListBuilderState<T, V> extends State<FutureListBuilder<T, V>> {
 class FutureListController<T, V> extends ChangeNotifier {
   FutureListController({
     required this.items,
-    required this.futureData,
+    required this.futureCallback,
     required this.parse,
     this.fBuilder,
     this.useGrid = true,
@@ -110,18 +110,30 @@ class FutureListController<T, V> extends ChangeNotifier {
   })  : _loadStatus = LoadStatus.initial,
         assert(useGrid && crossAxisCount > 0 || !useGrid) {
     if (scrollable) scrollController = ScrollController();
+    if (filterable) filteredItems = [];
   }
 
+  //# UI
   /// when use [build] method, this method will be invoked to [fBuilder] with corresponding status
   final FWidgetBuilder<T>? fBuilder;
 
   //# required fields
-  final Future<V> futureData;
+  final Future<V> Function() futureCallback;
   final List<T>? Function(V unparsedData, void Function({VoidCallback? errorCallback, String? errorMsg}) onParseError)
       parse;
   List<T> items;
 
+  //# filter fields
+  bool get filterable => _filterCallback != null;
+  List<T> Function(List<T> currentItems, List<T> currentFilteredItems)? _filterCallback;
+  List<T>? filteredItems;
+  void setFilterCallback(List<T> Function(List<T> currentItems, List<T> currentFilteredItems) filterCallback) {
+    _filterCallback = filterCallback;
+    filteredItems ??= [];
+  }
+
   //# control fields
+  final bool scrollable;
   ScrollController? scrollController;
   bool get isEmpty => items.isEmpty;
   bool get isNotEmpty => items.isNotEmpty;
@@ -131,8 +143,6 @@ class FutureListController<T, V> extends ChangeNotifier {
   bool get isLoading => _loadStatus == LoadStatus.loading;
   bool get isLoaded => _loadStatus == LoadStatus.loaded;
   bool get isError => _loadStatus == LoadStatus.error;
-
-  final bool scrollable;
 
   //# style fields
   final bool reverse;
@@ -159,15 +169,17 @@ class FutureListController<T, V> extends ChangeNotifier {
 
   void refresh() {
     if (isLoading) return;
-    if (items.isNotEmpty) {
-      items.clear();
-      notifyListeners();
-    }
-
     loadData();
   }
 
-  Future<void> loadData() async {
+  void performFilter() {
+    if (filterable) {
+      filteredItems = _filterCallback!(items, filteredItems!);
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadData({bool clear = true}) async {
     //> if already loading, do nothing ?? only load when: initial, loaded, error
     if (isLoading) return;
 
@@ -177,15 +189,18 @@ class FutureListController<T, V> extends ChangeNotifier {
     //> callback before load next page
     await beforeLoadCallback?.call();
 
-    final List<T>? parsed = parse(await futureData, ({errorCallback, errorMsg}) {
+    final response = await futureCallback();
+
+    final List<T>? parsed = parse(response, ({errorCallback, errorMsg}) {
       log('[FutureListController--$debugLabel--] Error when parsing data: $errorMsg');
       errorCallback?.call();
     });
-    
+
     if (parsed == null) {
       _loadStatus = LoadStatus.error;
       return;
     } else {
+      if (clear) items.clear();
       items.addAll(parsed);
       _loadStatus = LoadStatus.loaded;
     }

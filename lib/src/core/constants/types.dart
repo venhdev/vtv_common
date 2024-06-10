@@ -13,6 +13,7 @@ enum Role {
 }
 
 enum TypeWork {
+  Unknown,
   SHIPPER,
   PROVIDER,
   MANAGER,

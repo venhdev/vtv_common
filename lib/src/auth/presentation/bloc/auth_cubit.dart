@@ -49,14 +49,18 @@ class AuthCubit extends Cubit<AuthState> {
           final resultCheck = await _checkAndGetTokenIfNeededUC(authEntity.accessToken);
 
           resultCheck.fold(
-            (failure) => emit(AuthState.authenticated(authEntity, message: failure.message)),
+            (failure) => emit(AuthState.error(message: failure.message)),
             (newAccessToken) {
-              log('new access token (null if old token still valid): $newAccessToken');
-              final newAuth = authEntity.copyWith(accessToken: newAccessToken);
+              log('{GetTokenIfNeededUC} --null if still valid: $newAccessToken');
 
-              // save to local storage
-              _authRepository.cacheAuth(newAuth);
-              emit(AuthState.authenticated(newAuth));
+              //> save to local storage
+              if (newAccessToken != null) {
+                final newAuth = authEntity.copyWith(accessToken: newAccessToken);
+                _authRepository.cacheAuth(newAuth);
+                emit(AuthState.authenticated(newAuth));
+              } else {
+                emit(AuthState.authenticated(authEntity));
+              }
             },
           );
         },

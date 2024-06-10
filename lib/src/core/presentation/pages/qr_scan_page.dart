@@ -43,9 +43,7 @@ class _QrScannerPageState extends State<QrScannerPage> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: const Text('Quét mã vận đơn'),
-      ),
+      appBar: AppBar(title: const Text('Quét mã QR')),
       body: Stack(
         fit: StackFit.expand,
         children: [
