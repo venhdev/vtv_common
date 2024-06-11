@@ -17,12 +17,6 @@ const _defaultMillionAbbreviation = 'M'; // million
 const _defaultBillionAbbreviation = 'B'; // billion
 const _defaultTrillionAbbreviation = 'T'; // trillion
 
-class FactoryContainer {
-  static Debouncer createDebouncer({required int milliseconds}) {
-    return Debouncer(milliseconds: milliseconds);
-  }
-}
-
 class ValidationUtils {
   static bool isValidEmail(String email) {
     return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
@@ -618,13 +612,17 @@ class ConversionUtils {
   }
 }
 
-class BuilderUtils {
+class Creator {
+  static Debouncer debouncer({required int milliseconds}) {
+    return Debouncer(milliseconds: milliseconds);
+  }
+
   static Uri uri({
     required String path,
     Map<String, String>? queryParameters,
     Map<String, String>? pathVariables,
     String? scheme,
-    String? prefix,
+    String prefix = '',
     String? host,
     int? port,
   }) {
@@ -645,12 +643,13 @@ class BuilderUtils {
       });
     }
 
-    path = path.startsWith('/') ? path : '/$path';
+    prefix = prefix.startsWith('/') ? prefix : '/$prefix';
+    path = path.startsWith('/') ? '$prefix$path' : '$prefix/$path';
     return Uri(
+      path: path,
       scheme: scheme,
       host: host,
       port: port,
-      path: path,
       queryParameters: queryParameters,
     );
   }
@@ -669,7 +668,7 @@ class BuilderUtils {
       queryParameters: queryParameters,
       pathVariables: pathVariables,
       scheme: scheme,
-      prefix: prefix,
+      prefix: prefix ?? '',
       host: host,
       port: port,
     ).toString();

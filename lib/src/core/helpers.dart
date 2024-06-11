@@ -33,7 +33,7 @@ class UiHelper {
 
     if (duration != null) {
       // _timer = Timer(duration ?? const Duration(seconds: 2), _dismiss);
-      final debouncer = FactoryContainer.createDebouncer(milliseconds: 2000);
+      final debouncer = Creator.debouncer(milliseconds: 2000);
       debouncer.run(_dismiss);
     }
   }

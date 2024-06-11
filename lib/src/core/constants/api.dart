@@ -1,3 +1,5 @@
+import '../utils.dart';
+
 part './apis/auth_api.dart';
 part './apis/guest_api.dart';
 part './apis/common_api.dart';
@@ -5,7 +7,7 @@ part './apis/common_api.dart';
 const int kPORT = 8585;
 const String kHOST = 'example.com';
 // const String kHOST = '172.16.20.208';
-String host = '192.168.1.8'; // NOTE: For development purposes
+String host = '192.168.1.100'; // NOTE: For development purposes
 
 // Http Headers
 Map<String, String> baseHttpHeaders({
@@ -30,30 +32,13 @@ Uri uriBuilder({
   String prefix = '/api',
   // String host = 'example.com', //! NOTE: Change to kDOMAIN for production
 }) {
-  //> Handle multiple pattern in pathVariables
-  if (pathVariables != null) {
-    // check if path contain : || {*} or not
-    assert(path.contains(':') || path.contains(RegExp(r'{.*}')),
-        'Not valid pathVariables in path: $path, it should be :key or {key}');
-
-    assert(!(path.contains(':') && path.contains(RegExp(r'{.*}'))),
-        'Not valid pathVariables in path: $path, it should use only one pattern');
-
-    pathVariables.forEach((key, value) {
-      if (path.contains(':$key')) {
-        path = path.replaceAll(':$key', value);
-      } else if (path.contains('{$key}')) {
-        path = path.replaceAll('{$key}', value);
-      }
-    });
-  }
-
-  path = path.startsWith('/') ? path : '/$path';
-  return Uri(
+  return Creator.uri(
     scheme: scheme,
     host: host,
     port: kPORT,
-    path: '$prefix$path',
+    path: path,
+    prefix: prefix,
     queryParameters: queryParameters,
+    pathVariables: pathVariables,
   );
 }

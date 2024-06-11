@@ -36,7 +36,7 @@ class _ChatPageState extends State<ChatPage> {
   void onConnect(StompFrame frame) {
     stompClient.subscribe(
       // headers: {'Authorization': 'Bearer ${context.read<AuthCubit>().state.auth!.accessToken}'},
-      destination: BuilderUtils.uriPath(
+      destination: Creator.uriPath(
         path: '/room/:roomChatId/chat',
         pathVariables: {'roomChatId': widget.roomChatId},
       ),
