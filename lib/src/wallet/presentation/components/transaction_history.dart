@@ -123,6 +123,14 @@ String getTransactionTypeName(String? type) {
       return 'Thanh toán VNPAY';
     case 'PAYMENT_WALLET':
       return 'Thanh toán ví VTV';
+    case 'COMPLETED_ORDER_COD':
+      return 'Hoàn thành đơn hàng COD';
+    case 'COMPLETED_ORDER_VNPAY':
+      return 'Hoàn thành đơn hàng VNPAY';
+    case 'COMPLETED_ORDER_WALLET':
+      return 'Hoàn thành đơn hàng ví VTV';
+    case 'COMPLETED_ORDER':
+      return 'Hoàn thành đơn hàng';
     default:
       return type ?? 'Khác';
   }

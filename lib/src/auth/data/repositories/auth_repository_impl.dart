@@ -55,6 +55,9 @@ class AuthRepositoryImpl implements AuthRepository {
   FResult<AuthEntity> retrieveAuth() async {
     try {
       final authData = await _secureStorageHelper.readAuth();
+      if (authData == null) {
+        return const Left(CacheFailure(message: 'Không tìm thấy thông tin người dùng!'));
+      }
       return Right(authData);
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
@@ -92,8 +95,11 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   FRespData<String> getNewAccessToken() async {
     try {
-      final localAuth = await _secureStorageHelper.readAuth();
-      final newAccessToken = await _authDataSource.getNewAccessToken(localAuth.refreshToken);
+      final auth = await _secureStorageHelper.readAuth();
+      if (auth == null) {
+        return const Left(UnexpectedError(message: 'Không tìm thấy thông tin người dùng!'));
+      }
+      final newAccessToken = await _authDataSource.getNewAccessToken(auth.refreshToken);
       return Right(newAccessToken);
     } on CacheException catch (e) {
       return Left(UnexpectedError(message: e.message));

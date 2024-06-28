@@ -7,7 +7,7 @@ part './apis/common_api.dart';
 const int kPORT = 8585;
 const String kHOST = 'example.com';
 // const String kHOST = '172.16.20.208';
-String host = '192.168.1.100'; // NOTE: For development purposes
+String host = '192.168.1.100'; // NOTE: dev
 
 // Http Headers
 Map<String, String> baseHttpHeaders({

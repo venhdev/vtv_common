@@ -14,8 +14,10 @@ class ShopEntity extends Equatable {
   final String email;
   final String avatar;
   final String description;
-  final DateTime openTime;
-  final DateTime closeTime;
+  // final DateTime openTime;
+  // final DateTime closeTime;
+  final String openTime;
+  final String closeTime;
   final String status;
   final int customerId;
   final String wardCode;
@@ -76,8 +78,8 @@ class ShopEntity extends Equatable {
       'email': email,
       'avatar': avatar,
       'description': description,
-      'openTime': openTime.toIso8601String(),
-      'closeTime': closeTime.toIso8601String(),
+      'openTime': openTime,
+      'closeTime': closeTime,
       'status': status,
       'customerId': customerId,
       'wardCode': wardCode,
@@ -96,10 +98,10 @@ class ShopEntity extends Equatable {
       email: map['email'] as String,
       avatar: map['avatar'] as String,
       description: map['description'] as String,
-      // openTime: map['openTime'] as String,
-      openTime: DateTime.parse(map['openTime'] as String),
-      // closeTime: map['closeTime'] as String,
-      closeTime: DateTime.parse(map['closeTime'] as String),
+      openTime: map['openTime'] as String,
+      closeTime: map['closeTime'] as String,
+      // openTime: DateTime.parse(map['openTime'] as String),
+      // closeTime: DateTime.parse(map['closeTime'] as String),
       status: map['status'] as String,
       customerId: map['customerId'] as int,
       wardCode: map['wardCode'] as String,

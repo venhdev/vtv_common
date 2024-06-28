@@ -36,7 +36,7 @@ class ServerException implements Exception {
   final String message;
 
   /// The URL of the HTTP request or response that failed.
-  final Uri? uri; // REVIEW: maybe use String instead of Uri
+  final Uri? uri;
 
   @override
   String toString() {

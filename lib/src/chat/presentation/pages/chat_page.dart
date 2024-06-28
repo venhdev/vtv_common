@@ -141,7 +141,7 @@ class _ChatPageState extends State<ChatPage> {
 
   void _handleSendChatMessage() {
     if (_chatController.text.isEmpty) return;
-    
+
     final String msgRequest = SendMessageRequest(
       content: _chatController.text,
       receiverUsername: widget.receiverUsername,

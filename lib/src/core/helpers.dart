@@ -24,7 +24,7 @@ class UiHelper {
   bool isDarkMode() {
     return Theme.of(context).brightness == Brightness.dark;
   }
-  //TODO change to dark/light mode with provider
+  // _TODO change to dark/light mode with provider
 
   void show({required WidgetBuilder builder, Duration? duration}) {
     _dismiss();
@@ -131,12 +131,13 @@ class SecureStorageHelper {
     }
   }
 
-  Future<AuthEntity> readAuth() async {
+  Future<AuthEntity?> readAuth() async {
     final userInfo = await getUserInfo;
     final accessToken = await this.accessToken;
     final refreshToken = await this.refreshToken;
     if (userInfo == null || accessToken == null || refreshToken == null) {
-      throw CacheException(message: 'Không tìm thấy thông tin người dùng!');
+      // throw CacheException(message: 'Không tìm thấy thông tin người dùng!');
+      return null;
     }
     return AuthEntity(
       userInfo: userInfo,

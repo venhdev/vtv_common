@@ -1,7 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:vtv_common/src/core/utils.dart';
 // ignore_for_file: avoid_print
 
 void main() {
+
+  test('uri test', () {
+    print('path connect: ${Creator.uriPath(
+      path: '/room/:roomChatId/chat',
+      pathVariables: {'roomChatId': 'b01c7503-31a2-4f9b-a0fd-165620103740'},
+    )}');
+  });
   test('test formatWithSuffix', () async {
     print(formatCurrencyWithAbbreviation('12', fraction: 10));
     print(formatCurrencyWithAbbreviation('1', fraction: 10, extra: true));

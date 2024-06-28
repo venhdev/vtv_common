@@ -51,6 +51,7 @@ Future<T?> showDialogToConfirm<T>({
   String dismissText = 'Không',
   TextStyle? titleTextStyle,
   TextStyle? contentTextStyle,
+  TextAlign? contentTextAlign = TextAlign.center,
   Color? dismissBackgroundColor,
   Color? confirmBackgroundColor,
   Color titleColor = Colors.black87,
@@ -71,7 +72,7 @@ Future<T?> showDialogToConfirm<T>({
         title: title != null
             ? Text(
                 title,
-                textAlign: TextAlign.center, // Căn giữa tiêu đề
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   color: titleColor,
                   fontWeight: FontWeight.bold,
@@ -82,7 +83,7 @@ Future<T?> showDialogToConfirm<T>({
         content: content != null
             ? Text(
                 content,
-                textAlign: TextAlign.center,
+                textAlign: contentTextAlign,
                 style: TextStyle(
                   color: contentColor,
                   fontSize: 16.0,
@@ -216,6 +217,7 @@ void showCrossPlatformAboutDialog({
 Future<T?> showDialogToPerform<T>(
   BuildContext context, {
   required Future<T> Function() dataCallback,
+  void Function(dynamic data)? onData,
   required void Function(BuildContext context, dynamic result) closeBy,
   String message = 'Đang tải',
 }) async {
@@ -228,6 +230,7 @@ Future<T?> showDialogToPerform<T>(
         key: alertDialogKey,
         message: message,
         dataCallback: dataCallback,
+        onData: onData,
         closeBy: closeBy,
       );
     },
@@ -239,11 +242,13 @@ class LoadingAlertDialog<T> extends StatefulWidget {
     super.key,
     required this.message,
     required this.dataCallback,
+    this.onData,
     required this.closeBy,
   });
 
   final String message;
   final Future<T> Function() dataCallback;
+  final void Function(dynamic)? onData;
   final void Function(BuildContext context, T result) closeBy;
 
   @override
@@ -252,7 +257,8 @@ class LoadingAlertDialog<T> extends StatefulWidget {
 
 class _LoadingAlertDialogState<T> extends State<LoadingAlertDialog> {
   void invokeCallback() async {
-    widget.dataCallback().then((result) {
+    await widget.dataCallback().then((result) {
+      widget.onData?.call(result);
       if (mounted) {
         widget.closeBy(context, result);
       }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/types.dart';
 import '../../../core/utils.dart';
 
-enum OrderStatusBadgeType { customer, vendor, driver }
+enum OrderStatusBadgeType { customer, vendor, shipper }
 
 class OrderStatusBadge extends StatelessWidget {
   const OrderStatusBadge({
@@ -27,8 +27,8 @@ class OrderStatusBadge extends StatelessWidget {
     switch (type) {
       case OrderStatusBadgeType.customer || OrderStatusBadgeType.vendor:
         return StringUtils.getOrderStatusName(status);
-      case OrderStatusBadgeType.driver:
-        return StringUtils.getOrderStatusNameByDriver(status);
+      case OrderStatusBadgeType.shipper:
+        return StringUtils.getOrderStatusNameByShipper(status);
       default:
         return StringUtils.getOrderStatusName(status);
     }

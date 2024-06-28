@@ -77,9 +77,6 @@ SuccessResponse handleDioResponseNoData(dio.Response response, Uri url) {
 SuccessResponse<T> handleDioResponse<T, R>(
   dio.Response response,
   Uri url, {
-  //! REMEMBER: parse is a function that will parse the data from the API's response body to the expected data type [T].
-  //? [R] is response body, so it's typically need to access the data inside: e.g. data['userDTO'].
-  //? then the parse function will be like this: (data) => UserEntity.fromMap(data['userDTO'])
   T Function(R data)? parse,
   bool hasData = true,
 }) {
@@ -102,6 +99,7 @@ SuccessResponse<T> handleDioResponse<T, R>(
           status: response.data['status'] ?? 'unknown status',
         );
       } else {
+        // type: List, String, int, double, bool
         return SuccessResponse(
           data: result,
           code: response.statusCode,

@@ -270,7 +270,7 @@ class StringUtils {
     }
   }
 
-  static String getOrderStatusNameByDriver(OrderStatus? status) {
+  static String getOrderStatusNameByShipper(OrderStatus? status) {
     switch (status) {
       // case null:
       //   return 'Tất cả';
@@ -643,7 +643,8 @@ class Creator {
       });
     }
 
-    prefix = prefix.startsWith('/') ? prefix : '/$prefix';
+    // only handle prefix if it is not empty
+    if (prefix != '') prefix = prefix.startsWith('/') ? prefix : '/$prefix';
     path = path.startsWith('/') ? '$prefix$path' : '$prefix/$path';
     return Uri(
       path: path,

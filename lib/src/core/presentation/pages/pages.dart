@@ -7,4 +7,5 @@ export 'no_connection_overlay.dart';
 export 'no_permission_page.dart';
 export 'photo_view.dart';
 export 'qr_scan_page.dart';
+export 'qr_scan_with_custom_overlay_page.dart';
 export 'qr_view_page.dart';

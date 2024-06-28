@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 import '../../../constants/types.dart';
 import '../custom_widgets.dart';
@@ -28,7 +29,7 @@ class _FutureListBuilderState<T, V> extends State<FutureListBuilder<T, V>> {
   //> scrollController dispose handled by parent
   @override
   void initState() {
-    log('[FutureListBuilder] initState() --${widget.futureListController.debugLabel ?? 'no label'}--');
+    log('[FutureListBuilder] initState() --${widget.futureListController._debugLabel ?? 'no label'}--');
     super.initState();
     // listen to the changes of the future list controller
     widget.futureListController.addListener(() {
@@ -38,7 +39,7 @@ class _FutureListBuilderState<T, V> extends State<FutureListBuilder<T, V>> {
 
   @override
   void dispose() {
-    log('[FutureListBuilder] dispose() --${widget.futureListController.debugLabel ?? 'no label'}--');
+    log('[FutureListBuilder] dispose() --${widget.futureListController._debugLabel ?? 'no label'}--');
     widget.futureListController.removeListener(() {});
     super.dispose();
   }
@@ -92,6 +93,57 @@ class _FutureListBuilderState<T, V> extends State<FutureListBuilder<T, V>> {
 
 //*-------------------------------------------------CONTROLLER---------------------------------------------------*//
 
+class FilterListController<T, V, F> extends FutureListController<T, V> {
+  FilterListController({
+    required super.items,
+    required super.futureCallback,
+    required super.parse,
+    required this.filterParams,
+    super.fBuilder,
+    super.useGrid = true,
+    super.reverse = false,
+    super.beforeLoadCallback,
+    super.afterLoadCallback,
+    super.scrollDirection = Axis.vertical,
+    super.scrollable = false,
+  });
+
+  //# filter state
+  bool _isFiltering = false;
+  bool get isFiltering => _isFiltering;
+
+  //# filter fields
+  bool get filterable => _filterCallback != null;
+  List<T> Function(List<T> currentItems, List<T> currentFilteredItems, F filterParams)? _filterCallback;
+  List<T>? filteredItems;
+  void setFilterCallback(
+    List<T> Function(List<T> currentItems, List<T> currentFilteredItems, F filterParams) filterCallback,
+  ) {
+    _filterCallback = filterCallback;
+    filteredItems ??= [];
+  }
+
+  F filterParams;
+
+  void performFilter() {
+    if (filterable) {
+      _isFiltering = true;
+      notifyListeners();
+
+      Logger().i('Performing filter with params: $filterParams, items: ${items.length}');
+
+      if (items.isEmpty) {
+        filteredItems = [];
+      } else {
+        filteredItems = _filterCallback!(items, filteredItems!, filterParams);
+      }
+
+      _isFiltering = false;
+      notifyListeners();
+    }
+  }
+}
+
 /// - [T] is the type of each item in the list
 /// - [V] is the type of the data returned from the future
 class FutureListController<T, V> extends ChangeNotifier {
@@ -110,7 +162,6 @@ class FutureListController<T, V> extends ChangeNotifier {
   })  : _loadStatus = LoadStatus.initial,
         assert(useGrid && crossAxisCount > 0 || !useGrid) {
     if (scrollable) scrollController = ScrollController();
-    if (filterable) filteredItems = [];
   }
 
   //# UI
@@ -121,18 +172,11 @@ class FutureListController<T, V> extends ChangeNotifier {
   final Future<V> Function() futureCallback;
   final List<T>? Function(V unparsedData, void Function({VoidCallback? errorCallback, String? errorMsg}) onParseError)
       parse;
-  List<T> items;
-
-  //# filter fields
-  bool get filterable => _filterCallback != null;
-  List<T> Function(List<T> currentItems, List<T> currentFilteredItems)? _filterCallback;
-  List<T>? filteredItems;
-  void setFilterCallback(List<T> Function(List<T> currentItems, List<T> currentFilteredItems) filterCallback) {
-    _filterCallback = filterCallback;
-    filteredItems ??= [];
-  }
+  final List<T> items;
 
   //# control fields
+  bool get firstRun => _firstRun;
+  bool _firstRun = true; // whether first time loaded
   final bool scrollable;
   ScrollController? scrollController;
   bool get isEmpty => items.isEmpty;
@@ -152,11 +196,19 @@ class FutureListController<T, V> extends ChangeNotifier {
   final bool useGrid;
   final int crossAxisCount; // only for GridView
 
+  VoidCallback? _firstRunCallback;
+  void setFirstRunCallback(VoidCallback? callback) {
+    _firstRunCallback = callback;
+  }
+
   final Future<void> Function()? beforeLoadCallback;
   final Future<void> Function()? afterLoadCallback;
 
   //# debug
-  String? debugLabel;
+  String? _debugLabel;
+  void setDebugLabel(String label) {
+    _debugLabel = label;
+  }
 
   //# methods
   /// set [clear] to false if there are some initial items
@@ -167,15 +219,16 @@ class FutureListController<T, V> extends ChangeNotifier {
     });
   }
 
-  void refresh() {
+  FutureOr<void> refresh() async {
     if (isLoading) return;
-    loadData();
+    await loadData();
   }
 
-  void performFilter() {
-    if (filterable) {
-      filteredItems = _filterCallback!(items, filteredItems!);
-      notifyListeners();
+  FutureOr<void> refreshAndFilter() async {
+    if (isLoading) return;
+    await loadData();
+    if (this is FilterListController) {
+      (this as FilterListController).performFilter();
     }
   }
 
@@ -192,7 +245,7 @@ class FutureListController<T, V> extends ChangeNotifier {
     final response = await futureCallback();
 
     final List<T>? parsed = parse(response, ({errorCallback, errorMsg}) {
-      log('[FutureListController--$debugLabel--] Error when parsing data: $errorMsg');
+      log('[FutureListController--$_debugLabel--] Error when parsing data: $errorMsg');
       errorCallback?.call();
     });
 
@@ -203,6 +256,11 @@ class FutureListController<T, V> extends ChangeNotifier {
       if (clear) items.clear();
       items.addAll(parsed);
       _loadStatus = LoadStatus.loaded;
+
+      if (_firstRun) {
+        _firstRunCallback?.call();
+        _firstRun = false;
+      }
     }
 
     notifyListeners();
