@@ -127,7 +127,8 @@ class OrderSectionPaymentMethod extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    assert(disabled || (balance != null && totalPayment != null));
+    assert(disabled || (balance != null && totalPayment != null),
+        'balance and totalPayment must be provided when disabled is false. current balance: $balance, totalPayment: $totalPayment, disabled: $disabled');
 
     return Wrapper(
       disabled: disabled,
@@ -143,15 +144,11 @@ class OrderSectionPaymentMethod extends StatelessWidget {
       suffixLabel: Row(
         children: [
           Row(children: [
-            // Text(suffixLabelText ?? '(Chọn phương thức khác)',
-            //     style: const TextStyle(fontSize: 12, color: Colors.grey)),
-            // const SizedBox(width: 2),
-            // paymentHintByMethod(paymentMethod),
             Text(paymentMethod.name),
             const SizedBox(width: 2),
             Icon(paymentIcon(paymentMethod), size: 20, color: paymentColor(paymentMethod)),
           ]),
-          const Icon(Icons.arrow_forward_ios_outlined, size: 12, color: Colors.grey),
+          if (!disabled) const Icon(Icons.arrow_forward_ios_outlined, size: 12, color: Colors.grey),
         ],
       ),
       child: Align(

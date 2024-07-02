@@ -45,6 +45,9 @@ class OrderSectionShippingMethod extends StatelessWidget {
                         children: [
                           for (final transport in ok.data!)
                             ListTile(
+                              tileColor: transport.transportProviderShortName == _orderShippingMethod
+                                  ? Colors.grey.shade200
+                                  : null,
                               leading: const Icon(Icons.local_shipping),
                               title: Text(transport.transportProviderFullName,
                                   style: const TextStyle(
@@ -55,15 +58,17 @@ class OrderSectionShippingMethod extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Dự kiến ngày giao: ${ConversionUtils.convertDateTimeToString(transport.estimatedDeliveryTime)}',
+                                    'Dự kiến giao ngày: ${ConversionUtils.convertDateTimeToString(transport.estimatedDeliveryTime)}',
                                   ),
                                   Text('Phí vẩn chuyển: ${ConversionUtils.formatCurrency(transport.shippingCost)}'),
                                 ],
                               ),
-                              onTap: () {
-                                onSelected?.call(transport);
-                                Navigator.of(context).pop();
-                              },
+                              onTap: transport.transportProviderShortName == _orderShippingMethod
+                                  ? null
+                                  : () {
+                                      onSelected?.call(transport);
+                                      Navigator.of(context).pop();
+                                    },
                             ),
                         ],
                       ),
@@ -97,7 +102,7 @@ class OrderSectionShippingMethod extends StatelessWidget {
       suffixLabel: Row(
         children: [
           Text(_orderShippingMethod),
-          const Icon(Icons.arrow_forward_ios_outlined, size: 12, color: Colors.grey),
+          if (selectable) const Icon(Icons.arrow_forward_ios_outlined, size: 12, color: Colors.grey),
         ],
       ),
       useBoxShadow: false,

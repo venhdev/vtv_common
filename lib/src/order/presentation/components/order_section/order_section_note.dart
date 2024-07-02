@@ -17,20 +17,16 @@ class OrderSectionNote extends StatelessWidget {
     return TextField(
       readOnly: readOnly,
       style: const TextStyle(fontSize: 14),
-      // controller: TextEditingController(text: _placeOrderWithCartParam.note),
-      controller: TextEditingController(text: note),
+      controller: TextEditingController(text: readOnly ? 'Ghi chú: $note' : note),
       decoration: const InputDecoration(
-        hintText: 'Ghi chú',
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
-        ),
+        hintText: 'Ghi chú cho người bán (nếu có)',
+        // enabledBorder: UnderlineInputBorder(
+        //   borderSide: BorderSide(color: Colors.grey),
+        // ),
+        border: InputBorder.none, // no border
         hintStyle: TextStyle(color: Colors.grey),
       ),
       onChanged: onChanged,
-      // onChanged: (value) {
-      //   // onLocalNoteOrderRequestChanged(value);
-      //   // _placeOrderWithCartParam = _placeOrderWithCartParam.copyWith(note: value);
-      // },
     );
   }
 }

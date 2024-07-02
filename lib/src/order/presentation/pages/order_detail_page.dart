@@ -130,7 +130,6 @@ class OrderDetailPage extends StatelessWidget {
                 const SizedBox(height: 8),
 
                 //! payment method
-                // _buildPaymentMethod(),
                 OrderSectionPaymentMethod(
                   disabled: true,
                   paymentMethod: orderDetail.order.paymentMethod,
@@ -140,7 +139,6 @@ class OrderDetailPage extends StatelessWidget {
 
                 //! total price
                 OrderSectionSingleOrderPayment(order: orderDetail.order),
-                // hideVoucherCode: true,
 
                 //! note
                 if (orderDetail.order.note?.isNotEmpty ?? false) ...[
@@ -209,19 +207,6 @@ class OrderDetailPage extends StatelessWidget {
       ],
     );
   }
-
-  // Icon(Icons.copy),
-  // IconButton(
-  //   icon: const Icon(Icons.copy),
-  //   style: IconButton.styleFrom(
-  //     padding: EdgeInsets.zero,
-  //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-  //   ),
-  //   onPressed: () {
-  //     Clipboard.setData(ClipboardData(text: orderDetail.order.orderId.toString()));
-  //     Fluttertoast.showToast(msg: 'Đã sao chép mã đơn hàng');
-  //   },
-  // ),
 
   Widget _transportSummary(BuildContext context) {
     return Wrapper(
@@ -294,7 +279,10 @@ class OrderDetailPage extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           OrderSectionShippingMethod(
-              orderShippingMethod: orderDetail.order.shippingMethod, orderShippingFee: orderDetail.order.shippingFee),
+            orderShippingMethod: orderDetail.order.shippingMethod,
+            orderShippingFee: orderDetail.order.shippingFee,
+            estimatedDeliveryDate: orderDetail.shipping.estimatedDeliveryTime,
+          ),
           const SizedBox(height: 4),
           DeliveryAddress(address: orderDetail.order.address, color: Colors.white, suffixIcon: null),
           Timeline.tileBuilder(

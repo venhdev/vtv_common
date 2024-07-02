@@ -18,6 +18,7 @@ class Wrapper extends StatelessWidget {
     this.useBoxShadow = true,
     this.crossAxisAlignment = CrossAxisAlignment.start,
     this.labelCrossAxisAlignment = CrossAxisAlignment.center,
+    this.borderRadius = const BorderRadius.all(Radius.circular(4)),
   });
 
   final VoidCallback? onPressed;
@@ -38,6 +39,7 @@ class Wrapper extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final BoxBorder? border;
   final bool useBoxShadow;
+  final BorderRadius? borderRadius;
 
   final CrossAxisAlignment crossAxisAlignment;
   final CrossAxisAlignment labelCrossAxisAlignment;
@@ -50,11 +52,12 @@ class Wrapper extends StatelessWidget {
       margin: margin,
       child: InkWell(
         onTap: disabled ? null : onPressed,
+        borderRadius: borderRadius,
         child: Ink(
           padding: padding,
           decoration: BoxDecoration(
             border: border,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: borderRadius,
             color: backgroundColor,
             boxShadow: useBoxShadow
                 ? [

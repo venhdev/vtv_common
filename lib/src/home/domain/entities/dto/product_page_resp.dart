@@ -36,7 +36,7 @@ class ProductPageResp extends IBasePageResp<ProductEntity> {
       page: map['page'] as int,
       size: map['size'] as int,
       totalPage: map['totalPage'] as int,
-      items: ProductEntity.fromList(map['productDTOs'] as List<dynamic>),
+      items: map['productDTOs'] == null ? [] : ProductEntity.fromList(map['productDTOs'] as List<dynamic>),
     );
   }
 

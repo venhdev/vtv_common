@@ -73,7 +73,7 @@ class DeliveryAddress extends StatelessWidget {
                     maxLines: maxLines,
                     overflow: overflow,
                     TextSpan(
-                      text: 'Địa chỉ nhận hàng: ',
+                      text: 'Địa chỉ: ',
                       children: [
                         TextSpan(
                           text:
