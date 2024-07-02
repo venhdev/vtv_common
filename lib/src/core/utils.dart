@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'base/debouncer.dart';
 import 'constants/types.dart';
@@ -18,8 +20,14 @@ const _defaultBillionAbbreviation = 'B'; // billion
 const _defaultTrillionAbbreviation = 'T'; // trillion
 
 class ValidationUtils {
-  static bool isValidEmail(String email) {
+  static bool isValidEmail(String? email) {
+    if (email == null) return false;
     return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+  }
+
+  static bool isUUID(String? uuid) {
+    if (uuid == null) return false;
+    return RegExp(r'^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$').hasMatch(uuid);
   }
 }
 
@@ -246,7 +254,9 @@ class StringUtils {
       case OrderStatus.PENDING:
         return 'Chờ xác nhận';
       case OrderStatus.PROCESSING:
-        return 'Đang đóng gói';
+        return 'Đang xử lý';
+      case OrderStatus.PICKED_UP:
+        return 'Đã giao cho ĐVVC';
       case OrderStatus.PICKUP_PENDING:
         return 'Chờ lấy hàng';
       case OrderStatus.SHIPPING:
@@ -673,5 +683,23 @@ class Creator {
       host: host,
       port: port,
     ).toString();
+  }
+}
+
+class MapUtils {
+  static Future<void> openMapWithQuery(final String query) async {
+    // final path = 'geo://www.google.com/maps/search/?api=1&query=$query';
+    // final url = Uri.parse(path);
+
+    if (Platform.isAndroid) {
+      final url = Uri(scheme: 'geo', host: '0,0', queryParameters: {'q': query});
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url);
+      } else {
+        throw 'Could not launch $url';
+      }
+    } else {
+      throw 'Unsupported platform';
+    }
   }
 }

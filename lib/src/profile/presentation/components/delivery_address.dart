@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../domain/entities/address_entity.dart';
 
-class Address extends StatelessWidget {
-  const Address({
+class DeliveryAddress extends StatelessWidget {
+  const DeliveryAddress({
     super.key,
     required this.address,
     this.onTap,

@@ -8,7 +8,7 @@ import '../../../core/presentation/components/wrapper.dart';
 import '../../../core/presentation/pages/qr_view_page.dart';
 import '../../../core/themes.dart';
 import '../../../core/utils.dart';
-import '../../../profile/presentation/components/address.dart';
+import '../../../profile/presentation/components/delivery_address.dart';
 import '../../domain/entities/order_detail_entity.dart';
 import '../../domain/entities/order_entity.dart';
 import '../../domain/entities/order_item_entity.dart';
@@ -296,7 +296,7 @@ class OrderDetailPage extends StatelessWidget {
           OrderSectionShippingMethod(
               orderShippingMethod: orderDetail.order.shippingMethod, orderShippingFee: orderDetail.order.shippingFee),
           const SizedBox(height: 4),
-          Address(address: orderDetail.order.address, color: Colors.white, suffixIcon: null),
+          DeliveryAddress(address: orderDetail.order.address, color: Colors.white, suffixIcon: null),
           Timeline.tileBuilder(
             padding: const EdgeInsets.all(8),
             theme: TimelineThemeData(nodePosition: 0),

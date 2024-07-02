@@ -10,6 +10,7 @@ class MessageScreen extends StatelessWidget {
     this.onPressed,
     this.onIconLongPressed,
   });
+
   factory MessageScreen.error([
     String? message,
     Icon? icon,
@@ -18,6 +19,16 @@ class MessageScreen extends StatelessWidget {
         message: message ?? 'Lỗi không xác định',
         icon: icon ?? const Icon(Icons.error),
         textStyle: const TextStyle(color: Colors.red),
+      );
+
+  factory MessageScreen.info([
+    String message = '',
+    Icon? icon,
+  ]) =>
+      MessageScreen(
+        message: message,
+        icon: icon ?? const Icon(Icons.info),
+        textStyle: const TextStyle(color: Colors.blue),
       );
 
   final String message;

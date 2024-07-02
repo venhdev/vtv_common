@@ -3,34 +3,34 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../components/scanner_button_widgets.dart';
 
-// OverlayQrScannerView
-class QrScannerPage extends StatefulWidget {
-  const QrScannerPage({super.key});
+class QrScanner extends StatefulWidget {
+  const QrScanner({super.key, this.overlayBuilder, this.options});
+
+  final Widget Function(BuildContext context, BoxConstraints constraints, MobileScannerController controller)?
+      overlayBuilder;
+  final void Function(BuildContext context, MobileScannerController controller)? options;
 
   @override
-  State<QrScannerPage> createState() => _QrScannerPageState();
+  State<QrScanner> createState() => _QrScannerState();
 }
 
-class _QrScannerPageState extends State<QrScannerPage> {
+class _QrScannerState extends State<QrScanner> {
   final MobileScannerController controller = MobileScannerController(
     formats: const [BarcodeFormat.qrCode],
   );
 
-  void popWithScannedData(String data) {
-    if (context.mounted) {
-      Navigator.pop(context, data);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    controller.start();
-    controller.barcodes.listen((data) {
-      controller.stop();
-      if (!mounted) return;
-      Navigator.pop(context, data.barcodes.first.rawValue!);
-    });
+    if (widget.options != null) {
+      widget.options!(context, controller);
+    }
+    // controller.start();
+    // controller.barcodes.listen((data) {
+    //   controller.stop();
+    //   if (!mounted) return;
+    //   Navigator.pop(context, data.barcodes.first.rawValue!);
+    // });
   }
 
   @override
@@ -43,7 +43,11 @@ class _QrScannerPageState extends State<QrScannerPage> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(title: const Text('Quét mã QR')),
+      appBar: AppBar(
+        title: const Text('Quét mã QR'),
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+      ),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -55,6 +59,9 @@ class _QrScannerPageState extends State<QrScannerPage> {
               errorBuilder: (context, error, child) {
                 return ScannerErrorWidget(error: error);
               },
+              overlayBuilder: widget.overlayBuilder == null
+                  ? null
+                  : (context, constraints) => widget.overlayBuilder!(context, constraints, controller),
               // overlayBuilder: (context, constraints) {
               //   return Padding(
               //     padding: const EdgeInsets.all(16.0),
@@ -214,9 +221,11 @@ class ScannerErrorWidget extends StatelessWidget {
       case MobileScannerErrorCode.controllerUninitialized:
         errorMessage = 'Controller not ready.';
       case MobileScannerErrorCode.permissionDenied:
-        errorMessage = 'Permission denied';
+        // errorMessage = 'Permission denied';
+        errorMessage = 'Quyền truy cập máy ảnh bị từ chối';
       case MobileScannerErrorCode.unsupported:
-        errorMessage = 'Scanning is unsupported on this device';
+        // errorMessage = 'Scanning is unsupported on this device';
+        errorMessage = 'Thiết bị không được hỗ trợ';
       default:
         errorMessage = 'Generic Error';
         break;

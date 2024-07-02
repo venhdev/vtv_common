@@ -3,6 +3,6 @@
 
 
 export 'district_entity.dart';
-export 'full_address_resp.dart';
+export 'address_resp.dart';
 export 'province_entity.dart';
 export 'ward_entity.dart';

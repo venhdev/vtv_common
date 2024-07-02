@@ -19,7 +19,7 @@ abstract class GuestDataSource {
   Future<SuccessResponse<List<ProvinceEntity>>> getProvinces();
   Future<SuccessResponse<List<DistrictEntity>>> getDistrictsByProvinceCode(String provinceCode);
   Future<SuccessResponse<List<WardEntity>>> getWardsByDistrictCode(String districtCode);
-  Future<SuccessResponse<FullAddressResp>> getFullAddressByWardCode(String wardCode);
+  Future<SuccessResponse<AddressResp>> getFullAddressByWardCode(String wardCode);
 
   //# category-shop-guest-controller
   Future<SuccessResponse<List<ShopCategoryEntity>>> getCategoryShopByShopId(int shopId);
@@ -93,16 +93,16 @@ class GuestDataSourceImpl implements GuestDataSource {
   }
 
   @override
-  Future<SuccessResponse<FullAddressResp>> getFullAddressByWardCode(String wardCode) async {
+  Future<SuccessResponse<AddressResp>> getFullAddressByWardCode(String wardCode) async {
     final url = uriBuilder(path: '$kAPILocationWardFullAddressURL/$wardCode');
     final response = await _dio.getUri(
       url,
     );
 
-    return handleDioResponse<FullAddressResp, Map<String, dynamic>>(
+    return handleDioResponse<AddressResp, Map<String, dynamic>>(
       response,
       url,
-      parse: (jsonMap) => FullAddressResp.fromMap(jsonMap),
+      parse: (jsonMap) => AddressResp.fromMap(jsonMap),
     );
   }
 

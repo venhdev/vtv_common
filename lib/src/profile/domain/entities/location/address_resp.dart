@@ -5,20 +5,20 @@ import 'district_entity.dart';
 import 'province_entity.dart';
 import 'ward_entity.dart';
 
-class FullAddressResp {
+class AddressResp {
   final String administrativeRegionName;
   final ProvinceEntity province;
   final DistrictEntity district;
   final WardEntity ward;
 
-  FullAddressResp({
+  AddressResp({
     required this.administrativeRegionName,
     required this.province,
     required this.district,
     required this.ward,
   });
 
-  FullAddressResp copyWith({
+  AddressResp copyWith({
     String? status,
     String? message,
     int? code,
@@ -27,7 +27,7 @@ class FullAddressResp {
     DistrictEntity? district,
     WardEntity? ward,
   }) {
-    return FullAddressResp(
+    return AddressResp(
       administrativeRegionName: administrativeRegionName ?? this.administrativeRegionName,
       province: province ?? this.province,
       district: district ?? this.district,
@@ -38,14 +38,14 @@ class FullAddressResp {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'administrativeRegionName': administrativeRegionName,
-      'provinceDto': province.toMap(),
-      'districtDto': district.toMap(),
-      'wardDto': ward.toMap(),
+      'provinceDTO': province.toMap(),
+      'districtDTO': district.toMap(),
+      'wardDTO': ward.toMap(),
     };
   }
 
-  factory FullAddressResp.fromMap(Map<String, dynamic> map) {
-    return FullAddressResp(
+  factory AddressResp.fromMap(Map<String, dynamic> map) {
+    return AddressResp(
       administrativeRegionName: map['administrativeRegionName'] as String,
       province: ProvinceEntity.fromMap(map['provinceDTO'] as Map<String, dynamic>),
       district: DistrictEntity.fromMap(map['districtDTO'] as Map<String, dynamic>),
@@ -55,11 +55,11 @@ class FullAddressResp {
 
   String toJson() => json.encode(toMap());
 
-  factory FullAddressResp.fromJson(String source) =>
-      FullAddressResp.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory AddressResp.fromJson(String source) =>
+      AddressResp.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  bool operator ==(covariant FullAddressResp other) {
+  bool operator ==(covariant AddressResp other) {
     if (identical(this, other)) return true;
 
     return other.administrativeRegionName == administrativeRegionName &&

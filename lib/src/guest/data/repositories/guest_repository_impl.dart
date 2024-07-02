@@ -52,7 +52,7 @@ class GuestRepositoryImpl implements GuestRepository {
   }
 
   @override
-  FRespData<String> getFullAddressByWardCode(String wardCode) async {
+  FRespData<String> getAddressByWardCode(String wardCode) async {
     return await handleDataResponseFromDataSource(
       dataCallback: () async {
         final fullAddressResp = await _guestDataSource.getFullAddressByWardCode(wardCode);

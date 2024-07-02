@@ -15,7 +15,7 @@ abstract class GuestRepository {
   FRespData<List<ProvinceEntity>> getProvinces();
   FRespData<List<DistrictEntity>> getDistrictsByProvinceCode(String provinceCode);
   FRespData<List<WardEntity>> getWardsByDistrictCode(String districtCode);
-  FRespData<String> getFullAddressByWardCode(String wardCode);
+  FRespData<String> getAddressByWardCode(String wardCode);
 
   //# category-shop-guest-controller
   FRespData<List<ShopCategoryEntity>> getCategoryShopByShopId(int shopId);
