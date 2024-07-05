@@ -21,7 +21,7 @@ class OrderSectionShippingMethod extends StatelessWidget {
   final DateTime? _estimatedDeliveryDate;
 
   final bool selectable;
-  final ValueSelected<ShippingEntity>? onSelected;
+  final ValueCallback<ShippingEntity>? onSelected;
   final FRespData<List<ShippingEntity>>? futureData;
 
   void selectTransportMethodDialog(BuildContext context) {

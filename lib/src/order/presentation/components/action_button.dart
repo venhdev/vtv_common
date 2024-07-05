@@ -21,13 +21,18 @@ class ActionButton extends StatelessWidget {
         backgroundColor: Colors.green.shade300,
       );
   factory ActionButton.customerCompleteOrder(void Function()? onCompleteOrderPressed) => ActionButton(
-        label: 'Đã nhận được hàng',
+        label: 'Đã nhận hàng',
         onPressed: onCompleteOrderPressed,
         backgroundColor: Colors.green.shade300,
       );
   factory ActionButton.customerCancelOrder(void Function()? onCancelOrderPressed) => ActionButton(
         label: 'Hủy đơn hàng',
         onPressed: onCancelOrderPressed,
+        backgroundColor: Colors.red.shade300,
+      );
+  factory ActionButton.customerReturnOrder(void Function()? onReturnOrderPressed) => ActionButton(
+        label: 'Trả hàng',
+        onPressed: onReturnOrderPressed,
         backgroundColor: Colors.red.shade300,
       );
   factory ActionButton.customerRePurchase(void Function()? onRePurchasePressed) => ActionButton(

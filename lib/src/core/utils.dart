@@ -263,6 +263,8 @@ class StringUtils {
         return 'Đang giao';
       case OrderStatus.DELIVERED:
         return 'Đã giao';
+      case OrderStatus.RETURNED:
+        return 'Trả hàng';
       case OrderStatus.COMPLETED:
         return 'Hoàn thành';
 

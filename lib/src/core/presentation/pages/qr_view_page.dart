@@ -11,20 +11,32 @@ class QrViewPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
-        child: QrImageView(
-          data: data,
-          version: QrVersions.auto,
-          size: 250,
-          errorStateBuilder: (cxt, err) {
-            return const Center(
-              child: Text(
-                'Uh oh! Something went wrong...',
-                textAlign: TextAlign.center,
-              ),
-            );
-          },
-        ),
+        child: QrView(data: data, size: 250),
       ),
+    );
+  }
+}
+
+class QrView extends StatelessWidget {
+  const QrView({super.key, required this.data, this.size});
+
+  final String data;
+  final double? size;
+
+  @override
+  Widget build(BuildContext context) {
+    return QrImageView(
+      data: data,
+      version: QrVersions.auto,
+      size: size,
+      errorStateBuilder: (cxt, err) {
+        return const Center(
+          child: Text(
+            'Uh oh! Something went wrong...',
+            textAlign: TextAlign.center,
+          ),
+        );
+      },
     );
   }
 }

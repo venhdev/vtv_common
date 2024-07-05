@@ -200,15 +200,17 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
   String _getEmptyMessage(OrderStatus? status) {
     switch (status) {
       case OrderStatus.WAITING:
-        return 'Không có đơn hàng chờ xác nhận nào!';
+        return 'Không có đơn hàng nào cần xác nhận!';
       case OrderStatus.PENDING:
-        return 'Không có đơn hàng chờ xác nhận nào!';
+        return 'Không có đơn hàng nào chờ shop xác nhận!';
       case OrderStatus.SHIPPING:
         return 'Không có đơn hàng đang giao nào!';
       case OrderStatus.COMPLETED:
         return 'Không có đơn hàng đã giao nào!';
       case OrderStatus.CANCEL:
         return 'Không có đơn hàng đã hủy nào!';
+      case OrderStatus.RETURNED:
+        return 'Không có đơn trả hàng nào!';
       default:
         return 'Không có đơn hàng nào!';
     }

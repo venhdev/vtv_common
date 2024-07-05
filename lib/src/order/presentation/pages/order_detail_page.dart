@@ -37,6 +37,7 @@ class OrderDetailPage extends StatelessWidget {
     required this.orderDetail,
     required this.onCompleteOrderPressed,
     required this.onCancelOrderPressed,
+    required this.onReturnOrderPressed,
     required this.onRePurchasePressed,
     required this.customerReviewBtn,
     required this.onPayPressed,
@@ -63,6 +64,7 @@ class OrderDetailPage extends StatelessWidget {
         onCancelOrderPressed = null,
         onRePurchasePressed = null,
         customerReviewBtn = null,
+        onReturnOrderPressed = null,
         onChatPressed = null,
         onPayPressed = null;
 
@@ -82,6 +84,7 @@ class OrderDetailPage extends StatelessWidget {
   //! Customer required properties
   final Future<void> Function(String orderId)? onCompleteOrderPressed;
   final Future<void> Function(String orderId)? onCancelOrderPressed;
+  final Future<void> Function(String orderId)? onReturnOrderPressed;
   final Future<void> Function(String orderId)? onPayPressed;
   final Future<void> Function()? onChatPressed;
   final Future<void> Function(List<OrderItemEntity> orderItems)? onRePurchasePressed;
@@ -418,6 +421,11 @@ class OrderDetailPage extends StatelessWidget {
                             flex: 2,
                             child: ActionButton.customerCancelOrder(
                                 () => onCancelOrderPressed!(orderDetail.order.orderId!))),
+                      if (status == OrderStatus.DELIVERED)
+                        Expanded(
+                            flex: 2,
+                            child: ActionButton.customerReturnOrder(
+                                () => onReturnOrderPressed!(orderDetail.order.orderId!))),
                     ],
                   ),
                 ),
