@@ -4,6 +4,7 @@ import '../../../core/constants/types.dart';
 import '../../../core/utils.dart';
 
 enum OrderStatusBadgeType { customer, vendor, shipper }
+//> shipper is not use???
 
 class OrderStatusBadge extends StatelessWidget {
   const OrderStatusBadge({

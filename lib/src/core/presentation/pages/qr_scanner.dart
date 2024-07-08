@@ -124,7 +124,8 @@ class _QrScannerState extends State<QrScanner> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  RetryMobileScannerButton(controller: controller),
+                  RetryMobileScannerTextButton(controller: controller),
+                  // RetryMobileScannerButton(controller: controller),
                   // StartStopMobileScannerButton(controller: controller),
                   ToggleFlashlightButton(controller: controller),
                   // SwitchCameraButton(controller: controller),

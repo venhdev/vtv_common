@@ -7,6 +7,7 @@ class DeliveryAddress extends StatelessWidget {
     super.key,
     required this.address,
     this.onTap,
+    this.onSuffixTap,
     this.prefixIcon = Icons.location_on_outlined,
     this.suffixIcon = Icons.chevron_right,
     this.margin,
@@ -20,7 +21,8 @@ class DeliveryAddress extends StatelessWidget {
 
   final AddressEntity address;
 
-  final void Function()? onTap;
+  final VoidCallback? onTap;
+  final VoidCallback? onSuffixTap;
 
   final IconData? suffixIcon;
   final IconData? prefixIcon;
@@ -101,7 +103,7 @@ class DeliveryAddress extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             // > icon
-            if (suffixIcon != null) Icon(suffixIcon),
+            if (suffixIcon != null) IconButton(icon: Icon(suffixIcon), onPressed: onSuffixTap),
           ],
         ),
       ),

@@ -57,7 +57,9 @@ enum OrderStatus {
   PROCESSING,
   CANCEL, // đơn đã hủy
   RETURNED, // đơn được yêu cầu trả lại
-  DELIVERED, // đã giao ??? đang được giaoC
+  REFUNDED, // đơn được đã được hoàn tiền
+  DELIVERED, // đã giao ??? đang được giao
+
 
   // for vendor only
   UNPAID, // chưa thanh toán

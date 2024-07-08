@@ -75,6 +75,34 @@ class RetryMobileScannerButton extends StatelessWidget {
   }
 }
 
+class RetryMobileScannerTextButton extends StatelessWidget {
+  const RetryMobileScannerTextButton({required this.controller, super.key});
+
+  final MobileScannerController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: controller,
+      builder: (context, state, child) {
+        if (!state.isInitialized || !state.isRunning) {
+          return TextButton.icon(
+            // color: Colors.white,
+            label: const Text('Quét lại', style: TextStyle(color: Colors.white)),
+            icon: const Icon(Icons.qr_code_scanner, color: Colors.white),
+            // iconSize: 32.0,
+            onPressed: () async {
+              await controller.start();
+            },
+          );
+        }
+
+        return const SizedBox.shrink();
+      },
+    );
+  }
+}
+
 class StartStopMobileScannerButton extends StatelessWidget {
   const StartStopMobileScannerButton({required this.controller, super.key});
 

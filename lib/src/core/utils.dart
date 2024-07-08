@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../profile/domain/entities/address_entity.dart';
 import 'base/debouncer.dart';
 import 'constants/types.dart';
 
@@ -261,10 +262,14 @@ class StringUtils {
         return 'Chờ lấy hàng';
       case OrderStatus.SHIPPING:
         return 'Đang giao';
+      case OrderStatus.WAREHOUSE:
+        return 'Lưu kho';
       case OrderStatus.DELIVERED:
         return 'Đã giao';
       case OrderStatus.RETURNED:
         return 'Trả hàng';
+      case OrderStatus.REFUNDED:
+        return 'Đã hoàn tiền';
       case OrderStatus.COMPLETED:
         return 'Hoàn thành';
 
@@ -311,15 +316,17 @@ class StringUtils {
       // return status.name;
     }
   }
+
+  static String getAddress(AddressEntity address) {
+    return '${address.fullAddress}, ${address.wardFullName}, ${address.districtFullName}, ${address.provinceFullName}';
+  }
 }
 
 class ColorUtils {
   static Color? getOrderStatusBackgroundColor(OrderStatus? status, {int? shade}) {
     if (shade != null) {
       switch (status) {
-        case OrderStatus.WAITING:
-          return Colors.grey[shade + 200];
-        case OrderStatus.PENDING:
+        case OrderStatus.WAITING || OrderStatus.PENDING:
           return Colors.grey[shade + 200];
         case OrderStatus.PROCESSING:
           return Colors.orange[shade];
@@ -329,7 +336,7 @@ class ColorUtils {
           return Colors.blue[shade];
         case OrderStatus.DELIVERED:
           return Colors.blue[shade];
-        case OrderStatus.COMPLETED:
+        case OrderStatus.COMPLETED || OrderStatus.REFUNDED:
           return Colors.green[shade];
         case OrderStatus.CANCEL:
           return Colors.red[shade];
@@ -338,9 +345,7 @@ class ColorUtils {
       }
     } else {
       switch (status) {
-        case OrderStatus.WAITING:
-          return Colors.grey.shade400;
-        case OrderStatus.PENDING:
+        case OrderStatus.WAITING || OrderStatus.PENDING:
           return Colors.grey.shade400;
         case OrderStatus.PROCESSING:
           return Colors.orange.shade400;
@@ -350,7 +355,7 @@ class ColorUtils {
           return Colors.blue.shade400;
         case OrderStatus.DELIVERED:
           return Colors.blue.shade400;
-        case OrderStatus.COMPLETED:
+        case OrderStatus.COMPLETED || OrderStatus.REFUNDED:
           return Colors.green;
         case OrderStatus.CANCEL:
           return Colors.red.shade400;
@@ -688,7 +693,7 @@ class Creator {
   }
 }
 
-class MapUtils {
+class LaunchUtils {
   static Future<void> openMapWithQuery(final String query) async {
     // final path = 'geo://www.google.com/maps/search/?api=1&query=$query';
     // final url = Uri.parse(path);
@@ -702,6 +707,33 @@ class MapUtils {
       }
     } else {
       throw 'Unsupported platform';
+    }
+  }
+
+  static Future<void> openMapNavigationWithQuery(final String query) async {
+    // final path = 'geo://www.google.com/maps/search/?api=1&query=$query';
+    // final url = Uri.parse(path);
+
+    if (Platform.isAndroid) {
+      // final url = Uri(scheme: 'geo', host: '0,0', queryParameters: {'q': query});
+      final url = Uri.parse('google.navigation:q=$query');
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url);
+      } else {
+        throw 'Could not launch $url';
+      }
+    } else {
+      throw 'Unsupported platform';
+    }
+  }
+
+  static Future<void> openCallWithPhoneNumber(final String phoneNumber) async {
+    final url = Uri.parse('tel:$phoneNumber');
+    // final url = Uri(scheme: 'tel', path: phoneNumber);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 }

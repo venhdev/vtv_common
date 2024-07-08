@@ -55,14 +55,14 @@ class GuestRepositoryImpl implements GuestRepository {
   FRespData<String> getAddressByWardCode(String wardCode) async {
     return await handleDataResponseFromDataSource(
       dataCallback: () async {
-        final fullAddressResp = await _guestDataSource.getFullAddressByWardCode(wardCode);
+        final addressResp = await _guestDataSource.getFullAddressByWardCode(wardCode);
         return SuccessResponse(
-            code: fullAddressResp.code,
-            message: fullAddressResp.message,
-            status: fullAddressResp.status,
+            code: addressResp.code,
+            message: addressResp.message,
+            status: addressResp.status,
             // ward -> district -> province
             data:
-                '${fullAddressResp.data?.ward.fullName}, ${fullAddressResp.data?.district.fullName}, ${fullAddressResp.data?.province.fullName}');
+                '${addressResp.data?.ward.fullName}, ${addressResp.data?.district.fullName}, ${addressResp.data?.province.fullName}');
       },
     );
   }

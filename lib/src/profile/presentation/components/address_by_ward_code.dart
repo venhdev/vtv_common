@@ -33,7 +33,7 @@ class AddressByWardCode extends StatelessWidget {
                 if (showDirection)
                   IconButton(
                       onPressed: () {
-                        MapUtils.openMapWithQuery(ok.data!);
+                        LaunchUtils.openMapWithQuery(ok.data!);
                       },
                       icon: const Icon(Icons.directions, color: Colors.blue)),
               ],
