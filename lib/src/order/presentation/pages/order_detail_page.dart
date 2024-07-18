@@ -312,10 +312,9 @@ class OrderDetailPage extends StatelessWidget {
                       ),
                     ),
                     Expanded(
+                      // (${orderDetail.transport!.transportHandles[index].transportStatus})
                       flex: 3,
-                      child: Text(
-                        '(${orderDetail.transport!.transportHandles[index].transportStatus}) ${orderDetail.transport!.transportHandles[index].messageStatus}',
-                      ),
+                      child: Text(orderDetail.transport!.transportHandles[index].messageStatus),
                     ),
                   ],
                 ),

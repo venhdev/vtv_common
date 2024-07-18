@@ -41,6 +41,15 @@ class ProductEntity extends Equatable {
     required this.productVariants,
   });
 
+  String get largestDiscount {
+    // in each productVariants has r'-$discountPercent%' format, get the largest one
+    return productVariants.map((e) => e.discountPercent).reduce((value, element) {
+      final valueInt = int.parse(value.replaceAll(r'%', ''));
+      final elementInt = int.parse(element.replaceAll(r'%', ''));
+      return valueInt < elementInt ? value : element;
+    });
+  }
+
   // has attribute
   bool get hasAttribute {
     return productVariants.first.attributes.isNotEmpty;

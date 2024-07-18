@@ -35,6 +35,7 @@ class OrderPurchasePage extends StatefulWidget {
     required OrderPurchaseItem Function(OrderEntity, void Function()) vendorItemBuilder,
     String appBarTitle = 'Đơn hàng của bạn',
     List<Widget>? actions,
+    Widget Function(int index, MultiOrderEntity multiOrder)? topBuilder,
   }) =>
       OrderPurchasePage(
         dataCallback: dataCallback,
@@ -44,6 +45,7 @@ class OrderPurchasePage extends StatefulWidget {
         appBarTitle: appBarTitle,
         actions: actions,
         vendorItemBuilder: vendorItemBuilder,
+        topBuilder: topBuilder,
       );
 
   const OrderPurchasePage({
@@ -56,6 +58,7 @@ class OrderPurchasePage extends StatefulWidget {
     this.actions,
     this.customerItemBuilder,
     this.vendorItemBuilder,
+    this.topBuilder,
   });
 
   static const String routeName = 'purchase';
@@ -72,6 +75,7 @@ class OrderPurchasePage extends StatefulWidget {
   //# custom app bar
   final String appBarTitle;
   final List<Widget>? actions;
+  final Widget Function(int index, MultiOrderEntity multiOrder)? topBuilder;
 
   //! Customer required
   /// call [onReceivedCallback] when customer tap received >> reload & navigate to OrderDetailPage
@@ -150,19 +154,6 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                                 index: index,
                                 multiOrderResp: listMultiOrder[index],
                                 onRefresh: () => setState(() {}),
-                                // onReceivedCallback: (completedOrder) {
-                                //   // - 1. update order list in [OrderPurchasePage]
-                                //   // - 2. navigate to [OrderDetailPage] with new [OrderDetailEntity]
-                                //   setState(() {});
-                                //   // context.go(OrderDetailPage.path, extra: completedOrder);
-                                //   Navigator.of(context).push(
-                                //     MaterialPageRoute(
-                                //       builder: (context) {
-                                //         return OrderDetailPage(orderDetail: completedOrder, isVendor: widget.isVendor);
-                                //       },
-                                //     ),
-                                //   );
-                                // },
                               )
                             : _buildVendorTabBarView(
                                 index: index,
@@ -244,14 +235,16 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
         error.message ?? 'Lỗi khi lấy dữ liệu đơn hàng!',
         _getIcon(widget.pageController.tapPages[index]),
       ),
-      (multiOrderRes) {
-        if (multiOrderRes.data!.orders.isEmpty) {
+      (ok) {
+        final multiOrder = ok.data!;
+
+        if (multiOrder.orders.isEmpty) {
           return MessageScreen.error(
             _getEmptyMessage(widget.pageController.tapPages[index]),
             _getIcon(widget.pageController.tapPages[index]),
           );
         }
-        final multiOrder = multiOrderRes.data!;
+
         return Column(
           children: [
             Row(
@@ -289,14 +282,15 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
         _getEmptyMessage(widget.pageController.tapPages[index]),
         _getIcon(widget.pageController.tapPages[index]),
       ),
-      (multiOrderRes) {
-        if (multiOrderRes.data!.orders.isEmpty) {
+      (ok) {
+        final multiOrder = ok.data!;
+
+        if (multiOrder.orders.isEmpty) {
           return MessageScreen.error(
             _getEmptyMessage(widget.pageController.tapPages[index]),
             _getIcon(widget.pageController.tapPages[index]),
           );
         }
-        final multiOrder = multiOrderRes.data!;
         return Column(
           children: [
             Row(
@@ -308,6 +302,10 @@ class _OrderPurchasePageState extends State<OrderPurchasePage> {
                 const SizedBox(width: 4),
               ],
             ),
+
+            //# top builder
+            if (widget.topBuilder != null) widget.topBuilder!(index, multiOrder),
+
             Expanded(
               child: ListView.separated(
                 separatorBuilder: (context, index) => const Divider(),

@@ -9,6 +9,7 @@ class ProductVariantEntity extends Equatable {
   final int productVariantId;
   final String sku;
   final String image; // may return empty string -> productImage
+  final String discountPercent; // r'$discountPercent%'
   final int? originalPrice;
   final int price;
   final int quantity;
@@ -22,6 +23,7 @@ class ProductVariantEntity extends Equatable {
     required this.productVariantId,
     required this.sku,
     required this.image,
+    required this.discountPercent,
     required this.originalPrice,
     required this.price,
     required this.quantity,
@@ -36,6 +38,7 @@ class ProductVariantEntity extends Equatable {
     int? productVariantId,
     String? sku,
     String? image,
+    String? discountPercent,
     int? originalPrice,
     int? price,
     int? quantity,
@@ -49,6 +52,7 @@ class ProductVariantEntity extends Equatable {
       productVariantId: productVariantId ?? this.productVariantId,
       sku: sku ?? this.sku,
       image: image ?? this.image,
+      discountPercent: discountPercent ?? this.discountPercent,
       originalPrice: originalPrice ?? this.originalPrice, // nullable
       price: price ?? this.price,
       quantity: quantity ?? this.quantity,
@@ -65,6 +69,7 @@ class ProductVariantEntity extends Equatable {
       productVariantId: map['productVariantId'].toInt() as int,
       sku: map['sku'] as String,
       image: map['image'] as String,
+      discountPercent: map['discountPercent'] as String,
       originalPrice: map['originalPrice']?.toInt() as int?,
       price: map['price'].toInt() as int,
       quantity: map['quantity'].toInt() as int,
@@ -72,8 +77,7 @@ class ProductVariantEntity extends Equatable {
       productId: map['productId'].toInt() as int,
       productName: map['productName'] as String,
       productImage: map['productImage'] as String,
-      attributes:
-          AttributeEntity.fromList(map['attributeDTOs'] as List<dynamic>),
+      attributes: AttributeEntity.fromList(map['attributeDTOs'] as List<dynamic>),
     );
   }
 
@@ -87,11 +91,6 @@ class ProductVariantEntity extends Equatable {
 
   factory ProductVariantEntity.fromJson(String source) =>
       ProductVariantEntity.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  @override
-  String toString() {
-    return 'ProductVariantEntity(productVariantId: $productVariantId, sku: $sku, image: $image, originalPrice: $originalPrice, price: $price, quantity: $quantity, status: $status, productId: $productId, productName: $productName, productImage: $productImage, attributeDTOs: $attributes)';
-  }
 
   @override
   List<Object?> get props => [
@@ -113,6 +112,7 @@ class ProductVariantEntity extends Equatable {
       'productVariantId': productVariantId,
       'sku': sku,
       'image': image,
+      'discountPercent': discountPercent,
       'originalPrice': originalPrice,
       'price': price,
       'quantity': quantity,
@@ -125,4 +125,7 @@ class ProductVariantEntity extends Equatable {
   }
 
   String toJson() => json.encode(toMap());
+
+  @override
+  bool get stringify => true;
 }

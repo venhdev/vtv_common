@@ -661,7 +661,7 @@ class Creator {
     }
 
     // only handle prefix if it is not empty
-    if (prefix != '') prefix = prefix.startsWith('/') ? prefix : '/$prefix';
+    if (prefix != '') prefix = prefix.startsWith('/') ? prefix : '/$prefix'; //> make sure prefix starts with '/'
     path = path.startsWith('/') ? '$prefix$path' : '$prefix/$path';
     return Uri(
       path: path,

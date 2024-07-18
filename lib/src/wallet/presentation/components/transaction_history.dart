@@ -7,10 +7,6 @@ import '../../domain/entities/transaction_entity.dart';
 import '../../domain/entities/wallet_entity.dart';
 
 class TransactionHistory extends StatelessWidget {
-  // AppBar(title: const Text('Lịch sử điểm thưởng'))
-  // static const routeName = 'transaction-history';
-  // static const path = '/user/transaction-history';
-
   const TransactionHistory({
     super.key,
     required this.dataCallback,
@@ -104,7 +100,9 @@ class TransactionHistoryItem extends StatelessWidget {
             ),
             style: const TextStyle(fontSize: 12, color: Colors.grey)),
         trailing: Text(
-          transaction.money.isNegative ? transaction.money.toString() : '+${transaction.money}',
+          transaction.money.isNegative
+              ? ConversionUtils.formatCurrency(transaction.money)
+              : '+${ConversionUtils.formatCurrency(transaction.money)}',
           style: TextStyle(
             color: transaction.money.isNegative ? Colors.red : Colors.green,
             fontWeight: FontWeight.bold,
@@ -123,7 +121,7 @@ String getTransactionTypeName(String? type) {
       return 'Thanh toán VNPAY';
     case 'PAYMENT_WALLET':
       return 'Thanh toán ví VTV';
-    case 'COMPLETED_ORDER_COD':
+    case 'COMPLETED_ORDER_COD' || 'COMPLETED_ORDER_COD_SYSTEM':
       return 'Hoàn thành đơn hàng COD';
     case 'COMPLETED_ORDER_VNPAY':
       return 'Hoàn thành đơn hàng VNPAY';

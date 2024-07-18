@@ -42,7 +42,8 @@ class OrderSectionPaymentMethod extends StatelessWidget {
     if (!PaymentType.values.contains(method)) return const SizedBox.shrink();
 
     if (disabled && method != PaymentType.COD) {
-      return Text(paid ? 'Đã thanh toán' : 'Chưa thanh toán', style: _hintStyle);
+      // return Text(paid ? 'Đã thanh toán' : 'Chưa thanh toán', style: _hintStyle);
+      return const SizedBox.shrink();
     }
 
     switch (method) {
